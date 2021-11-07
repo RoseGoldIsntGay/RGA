@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "RoseGoldAddons",
+    "name": "RoseGold Addons",
+    "description": "RoseGold's QOL Modifications",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      ""
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
