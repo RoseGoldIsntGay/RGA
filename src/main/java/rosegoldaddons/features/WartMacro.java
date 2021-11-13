@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
 import rosegoldaddons.commands.WartSetup;
+import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.RenderUtils;
 
 import java.awt.*;
@@ -124,7 +125,7 @@ public class WartMacro {
                         double xdiff = Math.abs(savex - Minecraft.getMinecraft().thePlayer.posX);
                         double zdiff = Math.abs(savez - Minecraft.getMinecraft().thePlayer.posZ);
                         if(xdiff < 2 && zdiff < 2) {
-                            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("stuck detected."));
+                            ChatUtils.sendMessage("stuck detected.");
                             KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindLeft.getKeyCode(), true);
                             Thread.sleep(500);
                             KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindLeft.getKeyCode(), false);

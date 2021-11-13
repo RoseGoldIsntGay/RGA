@@ -7,6 +7,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import org.jetbrains.annotations.NotNull;
+import rosegoldaddons.utils.ChatUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class WartSetup implements ICommand {
                 wartEnd = (int) Math.floor(Double.parseDouble(args[1]));
             }
         } else {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§cInvalid Arguments."));
+            ChatUtils.sendMessage("§cInvalid Arguments.");
         }
     }
 

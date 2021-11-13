@@ -1,6 +1,8 @@
 package rosegoldaddons.utils;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -17,7 +19,13 @@ public class RotationUtils {
     static boolean antiafking = false;
 
     public static void antiAfk() {
-        if(snek || Minecraft.getMinecraft().currentScreen != null) return;
+        if(Minecraft.getMinecraft().currentScreen != null) {
+            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {}
+            else {
+                return;
+            }
+        }
+        if(snek) return;
         KeyBinding right = Minecraft.getMinecraft().gameSettings.keyBindRight;
         KeyBinding left = Minecraft.getMinecraft().gameSettings.keyBindLeft;
         new Thread(() -> {
@@ -36,7 +44,13 @@ public class RotationUtils {
     }
 
     public static void shootEman() {
-        if(snek || Minecraft.getMinecraft().currentScreen != null) return;
+        if(Minecraft.getMinecraft().currentScreen != null) {
+            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {}
+            else {
+                return;
+            }
+        }
+        if(snek) return;
         new Thread(() -> {
             try {
                 snek = true;
@@ -55,7 +69,13 @@ public class RotationUtils {
     }
 
     public static void facePos(Vec3 vector) {
-        if(working || Minecraft.getMinecraft().currentScreen != null) return;
+        if(Minecraft.getMinecraft().currentScreen != null) {
+            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {}
+            else {
+                return;
+            }
+        }
+        if(working) return;
         new Thread(() -> {
             try {
                 working = true;

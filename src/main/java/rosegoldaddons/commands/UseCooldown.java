@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import org.jetbrains.annotations.NotNull;
+import rosegoldaddons.utils.ChatUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,20 +43,20 @@ public class UseCooldown implements ICommand {
                 int cd = Integer.parseInt(args[0]);
                 if (cd == 0) {
                     items.remove(curStack.getDisplayName());
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§aSuccessfully Removed " + curStack.getDisplayName() + "§a."));
+                    ChatUtils.sendMessage("§aSuccessfully Removed " + curStack.getDisplayName() + "§a.");
                     return;
                 }
                 if (cd < 1) {
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§cInvalid Miliseconds, Minimum delay 1 Milisecond."));
+                    ChatUtils.sendMessage("§cInvalid Miliseconds, Minimum delay 1 Milisecond.");
                     return;
                 }
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§aSuccessfully Added " + curStack.getDisplayName() + "§a with delay of " + cd + " ms."));
+                ChatUtils.sendMessage("§aSuccessfully Added " + curStack.getDisplayName() + "§a with delay of " + cd + " ms.");
                 items.put(curStack.getDisplayName(), cd);
             } else {
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§cError getting current held item."));
+                ChatUtils.sendMessage("§cError getting current held item.");
             }
         } else {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§cInvalid Arguments."));
+            ChatUtils.sendMessage("§cInvalid Arguments.");
         }
     }
 

@@ -45,6 +45,10 @@ public class Config extends Vigilant {
             category = "RoseGoldAddons", subcategory = "General", min = 0, max = 100)
     public int macroRadius = 0;
 
+    @Property(type = PropertyType.SLIDER, name = "Monkey Pet Level", description = "Level of your legendary monkey, needed to maximize foraging macro efficiency",
+            category = "RoseGoldAddons", subcategory = "General", min = 1, max = 100)
+    public int monkeyLevel = 0;
+
     public Config() {
         super(new File("./config/rosegoldaddons/config.toml"), "RoseGold Addons");
         initialize();

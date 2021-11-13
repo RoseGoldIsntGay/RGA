@@ -16,6 +16,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import rosegoldaddons.Main;
+import rosegoldaddons.utils.ChatUtils;
 import scala.actors.threadpool.Arrays;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class Rosedrobe implements ICommand {
                 openWardrobe = true;
                 slot = Integer.parseInt(args[0]);
             } else {
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§cInvalid Arguments."));
+                ChatUtils.sendMessage("§cInvalid Arguments.");
                 return;
             }
         }

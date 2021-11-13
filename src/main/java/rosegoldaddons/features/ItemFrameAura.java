@@ -14,6 +14,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
+import rosegoldaddons.utils.ChatUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class ItemFrameAura {
                                         currRotationAmount = currRotationAmount - 8;
                                         toClick = endRotationAmount - currRotationAmount;
                                     }
-                                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("" + toClick));
+                                    ChatUtils.sendMessage("" + toClick);
                                     for (int i = 0; i < toClick; i++) {
                                         //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("clicked"));
                                         rightClick();
@@ -131,7 +132,7 @@ public class ItemFrameAura {
         });
 
         String patternName = getPattern(redWools, greenWools, topLeft);
-        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(patternName));
+        ChatUtils.sendMessage(patternName);
         clickPatternAura(patternName, topLeft);
     }
 
