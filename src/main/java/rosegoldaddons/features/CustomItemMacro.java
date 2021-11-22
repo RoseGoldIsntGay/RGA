@@ -10,7 +10,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
 import rosegoldaddons.commands.UseCooldown;
-import rosegoldaddons.commands.WartSetup;
 
 import java.lang.reflect.Method;
 
@@ -26,14 +25,23 @@ public class CustomItemMacro {
                 try {
                     milis++;
                     int prevItem = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-                    for (String i : UseCooldown.items.keySet()) {
-                        //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(Math.floor(UseCooldown.items.get(i)/1000) + " " + milis));
-                        if (milis % Math.floor(UseCooldown.items.get(i)/100) == 0) {
+                    for (String i : UseCooldown.RCitems.keySet()) {
+                        if (milis % Math.floor(UseCooldown.RCitems.get(i)/100) == 0) {
                             int slot = findItemInHotbar(i);
                             if (slot != -1) {
                                 Minecraft.getMinecraft().thePlayer.inventory.currentItem = slot;
                                 rightClick();
                                 Thread.sleep(1);
+                            }
+                        }
+                    }
+                    for (String i : UseCooldown.LCitems.keySet()) {
+                        if (milis % Math.floor(UseCooldown.LCitems.get(i)/100) == 0) {
+                            int slot = findItemInHotbar(i);
+                            if (slot != -1) {
+                                Minecraft.getMinecraft().thePlayer.inventory.currentItem = slot;
+                                Thread.sleep(100);
+                                click();
                             }
                         }
                     }
@@ -57,6 +65,21 @@ public class CustomItemMacro {
             }
             rightClickMouse.setAccessible(true);
             rightClickMouse.invoke(Minecraft.getMinecraft());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void click() {
+        try {
+            Method clickMouse;
+            try {
+                clickMouse = Minecraft.class.getDeclaredMethod("func_147116_af");
+            } catch (NoSuchMethodException e) {
+                clickMouse = Minecraft.class.getDeclaredMethod("clickMouse");
+            }
+            clickMouse.setAccessible(true);
+            clickMouse.invoke(Minecraft.getMinecraft());
         } catch (Exception e) {
             e.printStackTrace();
         }

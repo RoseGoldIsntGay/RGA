@@ -16,6 +16,7 @@ import rosegoldaddons.Main;
 import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.RenderUtils;
 import rosegoldaddons.utils.RotationUtils;
+import scala.actors.threadpool.helpers.ThreadHelpers;
 
 import java.awt.*;
 import java.lang.reflect.Method;
@@ -24,6 +25,7 @@ import java.util.Random;
 
 public class ForagingIslandMacro {
     private Thread thread;
+    private String[] cum = {"wtf??", "hello?", "hi?", "uhhhhhh", "what the", "??????"};
 
     @SubscribeEvent
     public void renderWorld(RenderWorldLastEvent event) {
@@ -34,6 +36,9 @@ public class ForagingIslandMacro {
                         BlockPos furthestDirt = furthestEmptyDirt();
                         //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("furthest dirt "+furthestDirt));
                         int sapling = findItemInHotbar("Jungle Sapling");
+                        if(sapling == -1) {
+                            sapling = findItemInHotbar("Oak Sapling");
+                        }
                         int bonemeal = findItemInHotbar("Bone Meal");
                         int treecap = findItemInHotbar("Treecapitator");
                         int rod = findItemInHotbar("Rod");
@@ -76,19 +81,25 @@ public class ForagingIslandMacro {
                                 RotationUtils.facePos(new Vec3(dirt.getX() + 0.5, dirt.getY(), dirt.getZ() + 0.5));
                                 if (bonemeal != -1 && treecap != -1) {
                                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = bonemeal;
-                                    Thread.sleep(200);
+                                    Random rand = new Random();
+                                    int toAdd = 0;
+                                    if(Main.configFile.randomizeForaging) {
+                                        toAdd = rand.nextInt(20);
+                                    }
+                                    ChatUtils.sendMessage("extra delay: "+toAdd+"%");
+                                    Thread.sleep(Math.round(150*(1+(toAdd/100))));
                                     rightClick();
                                     rightClick();
                                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = treecap;
-                                    Thread.sleep(150);
+                                    Thread.sleep(Math.round(Main.configFile.treecapDelay*(1+(toAdd/100))));
                                     KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode(), true);
-                                    Thread.sleep(100);
+                                    Thread.sleep(Math.round(150*(1+(toAdd/100))));
                                     KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode(), false);
-                                    Thread.sleep(25);
+                                    Thread.sleep(Math.round(25*(1+(toAdd/100))));
                                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = rod;
-                                    Thread.sleep(200);
+                                    Thread.sleep(Math.round(Main.configFile.prerodDelay*(1+(toAdd/100))));
                                     rightClick();
-                                    Thread.sleep((2000 - Main.configFile.monkeyLevel * 10L));
+                                    Thread.sleep(Math.round(Main.configFile.postrodDelay*(1+(toAdd/100))));
                                 }
                             }
                         }
@@ -104,9 +115,25 @@ public class ForagingIslandMacro {
     @SubscribeEvent
     public void renderWorld2(RenderWorldLastEvent event) {
         if (!Main.forageOnIsland) return;
-        BlockPos furthestDirt = furthestEmptyDirt();
-        if (furthestDirt != null) {
-            RenderUtils.drawBlockBox(furthestDirt, Color.RED, true, event.partialTicks);
+        BlockPos e = closestDirt();
+        if(e == null) {
+            Main.forageOnIsland = false;
+            ChatUtils.sendMessage("§cNo dirt in range of player");
+            ChatUtils.sendMessage("§cForaging Macro Deactivated");
+            if(Main.configFile.forageantisus) {
+                int rand = new Random().nextInt(cum.length);
+                int rand2 = new Random().nextInt(5000);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(rand2);
+                        Minecraft.getMinecraft().thePlayer.sendChatMessage(cum[rand]);
+                        Thread.sleep(rand2*2);
+                        Minecraft.getMinecraft().getNetHandler().getNetworkManager().closeChannel(new ChatComponentText("Antisus activated lets hope you didnt get banned"));
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }).start();
+            }
         }
     }
 

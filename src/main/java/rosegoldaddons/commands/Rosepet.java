@@ -5,20 +5,19 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import org.jetbrains.annotations.NotNull;
 import rosegoldaddons.utils.ChatUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WartSetup implements ICommand {
-    public static int wartEnd = 99999;
-    public static String cardinal = "west";
+public class Rosepet implements ICommand {
+    public static boolean openPetS = false;
+    public static String name = "";
 
     @Override
     public String getCommandName() {
-        return "wartsetup";
+        return "rosepet";
     }
 
     @Override
@@ -33,22 +32,14 @@ public class WartSetup implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        if(args.length == 2) {
-            if(args[0].equals("west")) {
-                cardinal = "west";
-            } else if(args[0].equals("north")) {
-                cardinal = "north";
-            } else if(args[0].equals("east")) {
-                cardinal = "east";
-            } else if(args[0].equals("south")) {
-                cardinal = "south";
-            }
-
-            if(isNumeric(args[1])) {
-                wartEnd = (int) Math.floor(Double.parseDouble(args[1]));
-            }
+        if (args.length == 0) {
+            Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
+            openPetS = true;
         } else {
-            ChatUtils.sendMessage("§cInvalid Arguments.");
+            Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
+            openPetS = true;
+            name = args[0];
+
         }
     }
 
@@ -70,14 +61,5 @@ public class WartSetup implements ICommand {
     @Override
     public int compareTo(@NotNull ICommand o) {
         return 0;
-    }
-
-    private boolean isNumeric(String str) {
-        try {
-            Double.parseDouble(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
     }
 }

@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class BloodTriggerBot {
-    private static String[] names = {"Revoker", "Psycho", "Reaper", "Cannibal", "Mute", "Ooze", "Putrid", "Freak", "Leech", "Tear", "Parasite", "Flamer", "Skull", "Mr. Dead", "Vader", "Frost", "Walker", "WanderingSoul"};
+    private static String[] names = {"Bonzo", "Revoker", "Psycho", "Reaper", "Cannibal", "Mute", "Ooze", "Putrid", "Freak", "Leech", "Tear", "Parasite", "Flamer", "Skull", "Mr. Dead", "Vader", "Frost", "Walker", "WanderingSoul", "Shadow Assassin", "Lost Adventurer", "Livid", "Professor"};
     private static ArrayList<Entity> bloodMobs = null;
     private Thread thread;
 
@@ -34,7 +34,7 @@ public class BloodTriggerBot {
             thread = new Thread(() -> {
                 try {
                     for (Entity entity : bloodMobs) {
-                        if (isLookingAtBloodMob(entity.getEntityBoundingBox(), event)) {
+                        if (isLookingAtAABB(entity.getEntityBoundingBox(), event)) {
                             click();
                             Thread.sleep(100);
                         }
@@ -47,10 +47,11 @@ public class BloodTriggerBot {
         }
     }
 
-    private static boolean isLookingAtBloodMob(AxisAlignedBB aabb, RenderWorldLastEvent event) {
+    private static boolean isLookingAtAABB(AxisAlignedBB aabb, RenderWorldLastEvent event) {
         Vec3 position = new Vec3(Minecraft.getMinecraft().thePlayer.posX, (Minecraft.getMinecraft().thePlayer.posY + Minecraft.getMinecraft().thePlayer.getEyeHeight()), Minecraft.getMinecraft().thePlayer.posZ);
         Vec3 look = Minecraft.getMinecraft().thePlayer.getLook(event.partialTicks);
-        for (int i = 0; i < 30; i++) {
+        look = scaleVec(look, 0.5F);
+        for (int i = 0; i < 64; i++) {
             if (aabb.minX <= position.xCoord && aabb.maxX >= position.xCoord && aabb.minY <= position.yCoord && aabb.maxY >= position.yCoord && aabb.minZ <= position.zCoord && aabb.maxZ >= position.zCoord) {
                 return true;
             }
@@ -75,6 +76,10 @@ public class BloodTriggerBot {
             }
         }
         return bloodMobs;
+    }
+
+    private static Vec3 scaleVec(Vec3 vec, float f) {
+        return new Vec3(vec.xCoord * (double)f, vec.yCoord * (double)f, vec.zCoord * (double)f);
     }
 
     public static void click() {

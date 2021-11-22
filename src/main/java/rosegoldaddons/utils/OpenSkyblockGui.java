@@ -11,14 +11,19 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import rosegoldaddons.commands.Backpack;
 import rosegoldaddons.commands.LobbySwap;
+import rosegoldaddons.commands.Rosepet;
 
 import java.util.List;
+import java.util.Locale;
 
 public class OpenSkyblockGui {
     int windowId;
+    int windowId2;
+    int windowClicks = 0;
     boolean openingWardrobe = false;
     boolean lobbySwapping = false;
     boolean openingBP = false;
+    boolean openingPets = false;
 
     @SubscribeEvent
     public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
@@ -147,8 +152,48 @@ public class OpenSkyblockGui {
         }).start();
     }
 
+    @SubscribeEvent
+    public void guiDraw4(GuiScreenEvent.BackgroundDrawnEvent event) {
+        if (!Rosepet.openPetS || openingPets) return;
+        new Thread(() -> {
+            try {
+                openingPets = true;
+                if (event.gui instanceof GuiChest) {
+                    Container container = ((GuiChest) event.gui).inventorySlots;
+                    if (container instanceof ContainerChest) {
+                        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
+                        List<Slot> invSlots = container.inventorySlots;
+                        if (chestName.contains("Pets")) {
+                            if (!Rosepet.name.equals("")) {
+                                int i;
+                                for (i = 0; i < invSlots.size(); i++) {
+                                    if (!invSlots.get(i).getHasStack()) continue;
+
+                                    if (StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName()).toLowerCase().contains(Rosepet.name.toLowerCase())) {
+                                        clickSlot(invSlots.get(i));
+                                        Rosepet.openPetS = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                openingPets = false;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     private void clickSlot(Slot slot) {
         windowId = Minecraft.getMinecraft().thePlayer.openContainer.windowId;
-        Minecraft.getMinecraft().playerController.windowClick(windowId, slot.slotNumber, 0, 0, Minecraft.getMinecraft().thePlayer);
+        Minecraft.getMinecraft().playerController.windowClick(windowId, slot.slotNumber, 2, 0, Minecraft.getMinecraft().thePlayer);
+    }
+
+    private void clickSlot2(Slot slot) {
+        if(windowClicks == 0)
+            windowId2 = Minecraft.getMinecraft().thePlayer.openContainer.windowId;
+        Minecraft.getMinecraft().playerController.windowClick(windowId + windowClicks, slot.slotNumber, 2, 0, Minecraft.getMinecraft().thePlayer);
+        windowClicks++;
     }
 }

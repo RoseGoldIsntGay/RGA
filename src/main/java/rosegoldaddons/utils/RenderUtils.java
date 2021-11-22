@@ -679,4 +679,17 @@ public class RenderUtils {
         tessellator.draw();
     }
 
+    public static void enableChams() {
+        GL11.glEnable(32823);
+        GlStateManager.enablePolygonOffset();
+        GlStateManager.doPolygonOffset(1.0F, -1000000.0F);
+    }
+
+    public static void disableChams() {
+        GL11.glDisable(32823);
+        GlStateManager.doPolygonOffset(1.0F, 1000000.0F);
+        GlStateManager.disablePolygonOffset();
+    }
+
+
 }

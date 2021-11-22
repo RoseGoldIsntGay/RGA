@@ -1,34 +1,22 @@
 package rosegoldaddons.commands;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.command.CommandBase;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.StringUtils;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
-import rosegoldaddons.Main;
 import rosegoldaddons.utils.ChatUtils;
-import scala.actors.threadpool.Arrays;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rosedrobe implements ICommand {
-    public static boolean openWardrobe = false;
-    public static int slot = 0;
-
+public class AllEntities implements ICommand {
     @Override
     public String getCommandName() {
-        return "rosedrobe";
+        return "allentities";
     }
 
     @Override
@@ -43,19 +31,8 @@ public class Rosedrobe implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        if (args.length == 0) {
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
-            slot = 0;
-            openWardrobe = true;
-        } else {
-            if (isNumeric(args[0])) {
-                Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
-                openWardrobe = true;
-                slot = Integer.parseInt(args[0]);
-            } else {
-                ChatUtils.sendMessage("§cInvalid Arguments.");
-                return;
-            }
+        for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
+            ChatUtils.sendMessage(""+entity1);
         }
     }
 

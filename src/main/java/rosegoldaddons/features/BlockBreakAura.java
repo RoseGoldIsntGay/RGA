@@ -65,7 +65,7 @@ public class BlockBreakAura {
     }
 
     private BlockPos closestGemstone() {
-        int r = 4;
+        int r = 5;
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos.add(0, 1, 0);
         Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
