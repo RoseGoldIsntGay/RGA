@@ -11,19 +11,19 @@ import java.util.Comparator;
 public class Config extends Vigilant {
     public static Config INSTANCE = new Config();
 
+    @Property(type = PropertyType.SWITCH, name = "Gui Lag", description = "trole",
+            category = "RoseGoldAddons", subcategory = "General")
+    public boolean guilag = true;
+
     @Property(type = PropertyType.SWITCH, name = "Auto Start Dungeon + Ready", description = "Automatically starts the dungeon and gets ready.",
             category = "Dungeons", subcategory = "General")
     public boolean AutoReady = true;
 
     public boolean autoArrowAlign = true;
 
-    @Property(type = PropertyType.SLIDER, name = "Auto Arrow Align Delay", description = "How often to click an item frame (in miliseconds)",
-            category = "Dungeons", subcategory = "General", max = 500)
-    public int autoArrowAlignDelay = 10;
-
     @Property(type = PropertyType.SWITCH, name = "Party Untransfer", description = "When you really dont wanna be party leader.",
             category = "RoseGoldAddons", subcategory = "General")
-    public boolean AutoUntransfer = true;
+    public boolean AutoUntransfer = false;
 
     @Property(type = PropertyType.SWITCH, name = "Enderman ESP", description = "**NOT** Needed for enderman macro.",
             category = "RoseGoldAddons", subcategory = "General")
@@ -50,8 +50,20 @@ public class Config extends Vigilant {
     public int smoothLookVelocity = 50;
 
     @Property(type = PropertyType.SLIDER, name = "Macro Range", description = "Look for entities only in radius of the player, 0 = unlimited",
-            category = "RoseGoldAddons", subcategory = "General", max = 100)
+            category = "RoseGoldAddons", subcategory = "General", max = 300)
     public int macroRadius = 0;
+
+    @Property(type = PropertyType.SWITCH, name = "Ping on world change", description = "Send a message to a Discord Webhook to ping on world change",
+            category = "Discord", subcategory = "General")
+    public boolean pingworldchange = false;
+
+    @Property(type = PropertyType.TEXT, name = "Discord ID", description = "Discord ID to ping",
+            category = "Discord", subcategory = "General")
+    public String discordid = "";
+
+    @Property(type = PropertyType.TEXT, name = "Webhook URL", description = "Webhook URL to use when pinging",
+            category = "Discord", subcategory = "General")
+    public String hookurl = "";
 
     @Property(type = PropertyType.SLIDER, name = "Delay Before Breaking Tree", description = "Miliseconds to wait before breaking tree",
              category = "Foraging", subcategory = "General", max = 2000)
@@ -73,8 +85,60 @@ public class Config extends Vigilant {
             category = "Foraging", subcategory = "General")
     public boolean forageantisus = false;
 
+    @Property(type = PropertyType.SWITCH, name = "Prioritize Gemstone Blocks", description = "Will first search for full blocks, then panes",
+            category = "Mining", subcategory = "General")
+    public boolean prioblocks = false;
+
+    @Property(type = PropertyType.SLIDER, name = "Hardstone Nuker Height", description = "Range to break above the player",
+            category = "Mining", subcategory = "General", max = 5)
+    public int hardrange = 0;
+
+    @Property(type = PropertyType.SELECTOR, name = "Actions", description = "Type of action to perform when opening a brewing stand",
+            category = "Alchemy", subcategory = "General", options = {"Collect + Sell", "Insert Water Bottles", "Insert Nether Wart", "Insert Cane / Eye", "Insert Glowstone"})
+    public int alchindex = 0;
+
+    @Property(type = PropertyType.SWITCH, name = "Auto Open Brewing Stand", description = "Only for Collecting + Selling, use with an auto brewer",
+            category = "Alchemy", subcategory = "General")
+    public boolean openstand = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Close GUI When Done", description = "Automatically close the GUI when done",
+            category = "Alchemy", subcategory = "General")
+    public boolean alchclose = true;
+
+    @Property(type = PropertyType.SLIDER, name = "Action Delay", description = "Millisecond delay between actions",
+            category = "Alchemy", subcategory = "General", max = 1000)
+    public int alchsleep = 300;
+
+    @Property(type = PropertyType.SELECTOR, name = "Nuker Crop Type", description = "Select the type of crop you want to nuke",
+            category = "Farming", subcategory = "General", options = {"Any Crop Except Cane or Cactus", "Cane or Cactus", "Nether Wart", "Wheat", "Carrot", "Potato", "Pumpkin", "Melon", "Mushroom", "Cocoa"})
+    public int farmNukeIndex = 0;
+
+    @Property(type = PropertyType.SWITCH, name = "Look at nuked block", description = "Looks at currently nuked block to look less sus",
+            category = "Mining", subcategory = "General")
+    public boolean mithrilLook = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Skip Titanium", description = "Mithril nuker will now ignore titanium",
+            category = "Mining", subcategory = "General")
+    public boolean ignoreTitanium = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Auto Slayer", description = "Automatically use batphone",
+            category = "RoseGoldAddons", subcategory = "General")
+    public boolean autoSlayer = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Click Maddox", description = "Automatically click maddox on boss kill",
+            category = "RoseGoldAddons", subcategory = "General")
+    public boolean clickMaddox = false;
+
+    @Property(type = PropertyType.SELECTOR, name = "Slayer Type", description = "Type of slayer to auto start",
+            category = "RoseGoldAddons", subcategory = "General", options = {"None", "Zombie 3", "Zombie 4", "Zombie 5", "Spider 3", "Spider 4", "Sven 3", "Sven 4", "Enderman 2", "Enderman 3", "Enderman 4"})
+    public int slayerTypeIndex = 0;
+
+    @Property(type = PropertyType.SWITCH, name = "Hilarity", description = "",
+            category = "RoseGoldAddons", subcategory = "General")
+    public boolean funnyStuff = true;
+
     public Config() {
-        super(new File("./config/rosegoldaddons/config.toml"), "RoseGold Addons", new JVMAnnotationPropertyCollector(), new ConfigSorting());
+        super(new File("./config/rosegoldaddons/config.toml"), "RoseGoldAddons", new JVMAnnotationPropertyCollector(), new ConfigSorting());
         initialize();
     }
 

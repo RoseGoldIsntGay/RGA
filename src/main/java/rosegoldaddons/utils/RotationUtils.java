@@ -55,11 +55,11 @@ public class RotationUtils {
             try {
                 snek = true;
                 KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), true);
-                Thread.sleep(100);
+                Thread.sleep(50);
                 KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), false);
-                Thread.sleep(100);
+                Thread.sleep(50);
                 KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), true);
-                Thread.sleep(100);
+                Thread.sleep(50);
                 KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindSneak.getKeyCode(), false);
                 snek = false;
             } catch (Exception e) {

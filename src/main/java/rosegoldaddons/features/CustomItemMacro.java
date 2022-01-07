@@ -30,8 +30,7 @@ public class CustomItemMacro {
                             int slot = findItemInHotbar(i);
                             if (slot != -1) {
                                 Minecraft.getMinecraft().thePlayer.inventory.currentItem = slot;
-                                rightClick();
-                                Thread.sleep(1);
+                                Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot));
                             }
                         }
                     }
@@ -55,23 +54,8 @@ public class CustomItemMacro {
         }
     }
 
-    public static void rightClick() {
-        try {
-            Method rightClickMouse = null;
-            try {
-                rightClickMouse = Minecraft.class.getDeclaredMethod("rightClickMouse");
-            } catch (NoSuchMethodException e) {
-                rightClickMouse = Minecraft.class.getDeclaredMethod("func_147121_ag");
-            }
-            rightClickMouse.setAccessible(true);
-            rightClickMouse.invoke(Minecraft.getMinecraft());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void click() {
-        try {
+        /*try {
             Method clickMouse;
             try {
                 clickMouse = Minecraft.class.getDeclaredMethod("func_147116_af");
@@ -82,7 +66,8 @@ public class CustomItemMacro {
             clickMouse.invoke(Minecraft.getMinecraft());
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+        Minecraft.getMinecraft().thePlayer.swingItem();
     }
 
     private static int findItemInHotbar(String name) {

@@ -14,6 +14,7 @@ import java.util.List;
 public class Rosepet implements ICommand {
     public static boolean openPetS = false;
     public static String name = "";
+    public static int petSlot = 0;
 
     @Override
     public String getCommandName() {
@@ -32,14 +33,15 @@ public class Rosepet implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        if (args.length == 0) {
+        if (args.length == 1) {
             Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
             openPetS = true;
-        } else {
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
-            openPetS = true;
+            if(isNumeric(args[0])) {
+                petSlot = Integer.parseInt(args[0]);
+            }
             name = args[0];
-
+        } else {
+            ChatUtils.sendMessage("Invalid Arguments");
         }
     }
 
@@ -61,5 +63,14 @@ public class Rosepet implements ICommand {
     @Override
     public int compareTo(@NotNull ICommand o) {
         return 0;
+    }
+
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

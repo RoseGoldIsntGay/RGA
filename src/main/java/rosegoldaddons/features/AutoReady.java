@@ -1,47 +1,25 @@
 package rosegoldaddons.features;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
-
-import java.awt.Color;
 import java.util.List;
-import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
-import net.minecraft.network.play.server.S45PacketTitle;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import rosegoldaddons.Config;
 import rosegoldaddons.Main;
-import rosegoldaddons.events.RenderLivingEntityEvent;
-import rosegoldaddons.utils.OutlineUtils;
-import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
-import scala.collection.parallel.ParIterableLike;
 
 public class AutoReady {
     boolean startDung = false;
     boolean checkingEntities = false;
-    String currentMenu = "";
     static int windowId;
-
-    private double getDist2Entities(Entity entity1, Entity entity2) {
-        return Math.sqrt(Math.pow((entity1.getPosition().getX() - entity2.getPosition().getX()), 2) + Math.pow((entity1.getPosition().getY() - entity2.getPosition().getY()), 2) + Math.pow((entity1.getPosition().getZ() - entity2.getPosition().getZ()), 2));
-    }
 
     private static void interactWithEntity(Entity entity) {
         PlayerControllerMP playerControllerMP = Minecraft.getMinecraft().playerController;

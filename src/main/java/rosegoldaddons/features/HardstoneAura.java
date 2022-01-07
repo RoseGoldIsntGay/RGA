@@ -1,14 +1,17 @@
 package rosegoldaddons.features;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
+import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.server.S2APacketParticles;
 import net.minecraft.util.*;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -18,57 +21,45 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
 import rosegoldaddons.events.ReceivePacketEvent;
+import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.RenderUtils;
 import rosegoldaddons.utils.RotationUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class HardstoneMacro {
+public class HardstoneAura {
     private ArrayList<Vec3> solved = new ArrayList<>();
-    private BlockPos closestStone = null;
-    private Vec3 closestChest = null;
-    private Thread thread;
-    private boolean breaking = false;
+    private ArrayList<BlockPos> broken = new ArrayList<>();
+    private static int currentDamage;
+    private static BlockPos closestStone;
+    private static Vec3 closestChest;
     private boolean stopHardstone = false;
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (!Main.autoHardStone) {
-            if (breaking) {
-                KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode(), false);
-                breaking = false;
-            }
+            currentDamage = 0;
+            broken.clear();
             return;
         }
-        if (event.phase.toString().equals("START") && closestStone != null && !stopHardstone) {
-            RotationUtils.facePos(new Vec3(closestStone.getX() + 0.5, closestStone.getY() - 1, closestStone.getZ() + 0.5));
-            //Minecraft.getMinecraft().playerController.onPlayerDamageBlock(closestStone, EnumFacing.fromAngle(Minecraft.getMinecraft().thePlayer.rotationYaw));
-            MovingObjectPosition objectMouseOver = Minecraft.getMinecraft().objectMouseOver;
-            if (objectMouseOver != null && objectMouseOver.typeOfHit.toString() == "BLOCK") {
-                BlockPos pos = objectMouseOver.getBlockPos();
-                Block block = Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock();
-                if (block == Blocks.stone || block == Blocks.coal_ore || block == Blocks.diamond_ore || block == Blocks.emerald_ore
-                        || block == Blocks.gold_ore || block == Blocks.iron_ore || block == Blocks.lapis_ore || block == Blocks.redstone_ore) {
-                    int pickaxe = PowderMacro.findItemInHotbar("Jungle");
-                    if (pickaxe != -1) Minecraft.getMinecraft().thePlayer.inventory.currentItem = pickaxe;
-                    if (!breaking) {
-                        KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode(), true);
-                        breaking = true;
-                    }
-                } else {
-                    if (breaking) {
-                        KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode(), false);
-                        breaking = false;
-                    }
-                }
-
+        if (!stopHardstone) {
+            if (broken.size() > 10) {
+                broken.clear();
             }
-        }
-        if (stopHardstone) {
-            if (breaking) {
-                KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode(), false);
-                breaking = false;
+            closestStone = closestStone();
+            if (closestStone != null) {
+                MovingObjectPosition fake = Minecraft.getMinecraft().objectMouseOver;
+                fake.hitVec = new Vec3(closestStone);
+                EnumFacing enumFacing = fake.sideHit;
+                if (currentDamage == 0 && enumFacing != null) {
+                    Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, closestStone, enumFacing));
+                }
+                MovingObjectPosition real = Minecraft.getMinecraft().objectMouseOver;
+                if (real != null && real.entityHit == null) {
+                    Minecraft.getMinecraft().thePlayer.swingItem();
+                }
+                broken.add(closestStone);
             }
         }
     }
@@ -96,25 +87,21 @@ public class HardstoneMacro {
 
     @SubscribeEvent
     public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
-        new Thread(() -> {
-            try {
-                if (event.gui instanceof GuiChest) {
-                    Container container = ((GuiChest) event.gui).inventorySlots;
-                    if (container instanceof ContainerChest) {
-                        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-                        if (chestName.contains("Treasure")) {
-                            breaking = false;
-                            solved.add(closestChest);
-                            stopHardstone = false;
-                            Thread.sleep(20);
-                            Minecraft.getMinecraft().thePlayer.closeScreen();
-                        }
-                    }
+        if(Main.configFile.guilag) {
+            Minecraft.getMinecraft().gameSettings.setOptionFloatValue(GameSettings.Options.FRAMERATE_LIMIT, 1);
+        }
+        if(!Main.autoHardStone) return;
+        if (event.gui instanceof GuiChest) {
+            Container container = ((GuiChest) event.gui).inventorySlots;
+            if (container instanceof ContainerChest) {
+                String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
+                if (chestName.contains("Treasure")) {
+                    solved.add(closestChest);
+                    stopHardstone = false;
+                    Minecraft.getMinecraft().thePlayer.closeScreen();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }).start();
+        }
     }
 
     @SubscribeEvent
@@ -142,14 +129,14 @@ public class HardstoneMacro {
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos.add(0, 1, 0);
         Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
-        Vec3i vec3i = new Vec3i(r, 1, r);
+        Vec3i vec3i = new Vec3i(r, 1 + Main.configFile.hardrange, r);
         Vec3i vec3i2 = new Vec3i(r, 0, r);
         ArrayList<Vec3> stones = new ArrayList<Vec3>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i2))) {
                 IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                 //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
-                if (blockState.getBlock() == Blocks.stone) {
+                if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
             }
@@ -188,7 +175,7 @@ public class HardstoneMacro {
         double smallest = 9999;
         Vec3 closest = null;
         for (Vec3 chest : chests) {
-            if(!solved.contains(chest)) {
+            if (!solved.contains(chest)) {
                 double dist = chest.distanceTo(playerVec);
                 if (dist < smallest) {
                     smallest = dist;

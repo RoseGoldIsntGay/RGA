@@ -2,198 +2,97 @@ package rosegoldaddons.utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import rosegoldaddons.commands.Backpack;
-import rosegoldaddons.commands.LobbySwap;
+import rosegoldaddons.commands.Rosedrobe;
 import rosegoldaddons.commands.Rosepet;
+import scala.Int;
+import tv.twitch.chat.Chat;
 
 import java.util.List;
-import java.util.Locale;
 
 public class OpenSkyblockGui {
-    int windowId;
-    int windowId2;
-    int windowClicks = 0;
-    boolean openingWardrobe = false;
-    boolean lobbySwapping = false;
-    boolean openingBP = false;
-    boolean openingPets = false;
+    private static boolean openTrades = false;
 
     @SubscribeEvent
     public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (!rosegoldaddons.commands.Rosedrobe.openWardrobe || openingWardrobe) return;
-        new Thread(() -> {
-            try {
-                openingWardrobe = true;
-                if (event.gui instanceof GuiChest) {
-                    Container container = ((GuiChest) event.gui).inventorySlots;
-                    if (container instanceof ContainerChest) {
-                        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-                        List<Slot> invSlots = container.inventorySlots;
-                        if (chestName.contains("Pets")) {
-                            int i;
-                            for (i = 0; i < invSlots.size(); i++) {
-                                if (!invSlots.get(i).getHasStack()) continue;
-                                String slotName = StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName());
-                                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(slotName));
-                                if (slotName.equals("Go Back")) {
-                                    clickSlot(invSlots.get(i));
-                                }
-                            }
-                        } else if (chestName.contains("SkyBlock")) {
-                            int i;
-                            for (i = 0; i < invSlots.size(); i++) {
-                                if (!invSlots.get(i).getHasStack()) continue;
-                                if (StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName()).equals("Wardrobe")) {
-                                    clickSlot(invSlots.get(i));
-                                    if (rosegoldaddons.commands.Rosedrobe.slot == 0)
-                                        rosegoldaddons.commands.Rosedrobe.openWardrobe = false;
-                                }
-                            }
-                        } else if (chestName.contains("Wardrobe")) {
-                            if (rosegoldaddons.commands.Rosedrobe.slot != 0) {
-                                int i;
-                                for (i = 0; i < invSlots.size(); i++) {
-                                    if (!invSlots.get(i).getHasStack()) continue;
-                                    String slotName = "Slot " + rosegoldaddons.commands.Rosedrobe.slot + ":";
-                                    if (StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName()).contains(slotName)) {
-                                        clickSlot(invSlots.get(i));
-                                        Minecraft.getMinecraft().thePlayer.closeScreen();
-                                        rosegoldaddons.commands.Rosedrobe.openWardrobe = false;
-                                    }
-                                }
-                            }
+        if(!Rosedrobe.openWardrobe && !openTrades && !Rosepet.openPetS) return;
+        ChatUtils.sendMessage("OpenSkyblockGui");
+        if (event.gui instanceof GuiChest) {
+            Container container = ((GuiChest) event.gui).inventorySlots;
+            if (container instanceof ContainerChest) {
+                String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
+                if (Rosedrobe.openWardrobe) {
+                    if (chestName.contains("Pets")) {
+                        clickSlot(48, 0, 0);
+                        clickSlot(32, 0, 1);
+                        if (Rosedrobe.slot > 0) {
+                            clickSlot(Rosedrobe.slot + 35, 0, 2);
+                            Minecraft.getMinecraft().thePlayer.closeScreen();
                         }
+                        Rosedrobe.openWardrobe = false;
+                    }
+                } else if (openTrades) {
+                    if (chestName.contains("Pets")) {
+                        clickSlot(48, 0, 0);
+                        clickSlot(22, 0, 1);
+                        openTrades = false;
+                    }
+                } else if (Rosepet.openPetS) {
+                    if (chestName.contains("Pets")) {
+                        int currPage = 1;
+                        int lastPage = 1;
+                        if(chestName.startsWith("(")) {
+                            currPage = Integer.parseInt(chestName.substring(chestName.indexOf("(")+1, chestName.indexOf("/")));
+                            lastPage = Integer.parseInt(chestName.substring(chestName.indexOf("/")+1, chestName.indexOf(")")));
+                        }
+                        String petName = Rosepet.name;
+                        int petSlot = Rosepet.petSlot;
+                        if(petSlot != 0) {
+                            clickSlot(petSlot - 1, 0, 0);
+                            Rosepet.petSlot = 0;
+                            Rosepet.openPetS = false;
+                            return;
+                        }
+                        if (!petName.equals("")) {
+                            List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+                            for (Slot slot : chestInventory) {
+                                if (!slot.getHasStack()) continue;
+                                if (slot.getStack().getDisplayName().contains(petName)) {
+                                    clickSlot(slot.slotNumber, 0, 0);
+                                    Minecraft.getMinecraft().thePlayer.closeScreen();
+                                    Rosepet.openPetS = false;
+                                    return;
+                                }
+                            }
+                            if (currPage < lastPage) {
+                                clickSlot(53, 0, 0);
+                            } else {
+                                Rosepet.openPetS = false;
+                                Minecraft.getMinecraft().thePlayer.closeScreen();
+                                ChatUtils.sendMessage("No pet named "+petName+" found.");
+                            }
+                        } else {
+                            ChatUtils.sendMessage("Invalid Pet Name");
+                            Rosepet.openPetS = false;
+                        }
+
                     }
                 }
-                openingWardrobe = false;
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }).start();
+        }
     }
 
-    @SubscribeEvent
-    public void guiDraw2(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (!LobbySwap.swapLobby || lobbySwapping) return;
-        new Thread(() -> {
-            try {
-                lobbySwapping = true;
-                if (event.gui instanceof GuiChest) {
-                    Container container = ((GuiChest) event.gui).inventorySlots;
-                    if (container instanceof ContainerChest) {
-                        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-                        List<Slot> invSlots = container.inventorySlots;
-                        if (chestName.contains("SkyBlock")) {
-                            int i;
-                            for (i = 0; i < invSlots.size(); i++) {
-                                if (!invSlots.get(i).getHasStack()) continue;
-                                if (StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName()).equals("Enter the Crystal Hollows")) {
-                                    clickSlot(invSlots.get(i));
-                                }
-                            }
-                        } else if (chestName.contains("Enter the")) {
-                            int i;
-                            for (i = 0; i < invSlots.size(); i++) {
-                                if (!invSlots.get(i).getHasStack()) continue;
-                                if (StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName()).equals("Confirm")) {
-                                    clickSlot(invSlots.get(i));
-                                    LobbySwap.swapLobby = false;
-                                }
-                            }
-                            Thread.sleep(2000);
-                            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(Minecraft.getMinecraft().theWorld.getWorldTime() + " ticks"));
-                        }
-                    }
-                }
-                lobbySwapping = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+    public static void openTradesMenu() {
+        openTrades = true;
+        Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
     }
 
-    @SubscribeEvent
-    public void guiDraw3(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (!Backpack.openBP || openingBP) return;
-        new Thread(() -> {
-            try {
-                openingBP = true;
-                if (event.gui instanceof GuiChest) {
-                    Container container = ((GuiChest) event.gui).inventorySlots;
-                    if (container instanceof ContainerChest) {
-                        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-                        List<Slot> invSlots = container.inventorySlots;
-                        if (chestName.contains("Storage")) {
-                            if (Backpack.bpSlot != 0) {
-                                int i;
-                                for (i = 0; i < invSlots.size(); i++) {
-                                    if (!invSlots.get(i).getHasStack()) continue;
-                                    String slotName = "Slot " + Backpack.bpSlot;
-                                    if (StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName()).contains(slotName)) {
-                                        clickSlot(invSlots.get(i));
-                                        Backpack.openBP = false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                openingBP = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
-
-    @SubscribeEvent
-    public void guiDraw4(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (!Rosepet.openPetS || openingPets) return;
-        new Thread(() -> {
-            try {
-                openingPets = true;
-                if (event.gui instanceof GuiChest) {
-                    Container container = ((GuiChest) event.gui).inventorySlots;
-                    if (container instanceof ContainerChest) {
-                        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-                        List<Slot> invSlots = container.inventorySlots;
-                        if (chestName.contains("Pets")) {
-                            if (!Rosepet.name.equals("")) {
-                                int i;
-                                for (i = 0; i < invSlots.size(); i++) {
-                                    if (!invSlots.get(i).getHasStack()) continue;
-
-                                    if (StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName()).toLowerCase().contains(Rosepet.name.toLowerCase())) {
-                                        clickSlot(invSlots.get(i));
-                                        Rosepet.openPetS = false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                openingPets = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
-
-    private void clickSlot(Slot slot) {
-        windowId = Minecraft.getMinecraft().thePlayer.openContainer.windowId;
-        Minecraft.getMinecraft().playerController.windowClick(windowId, slot.slotNumber, 2, 0, Minecraft.getMinecraft().thePlayer);
-    }
-
-    private void clickSlot2(Slot slot) {
-        if(windowClicks == 0)
-            windowId2 = Minecraft.getMinecraft().thePlayer.openContainer.windowId;
-        Minecraft.getMinecraft().playerController.windowClick(windowId + windowClicks, slot.slotNumber, 2, 0, Minecraft.getMinecraft().thePlayer);
-        windowClicks++;
+    private void clickSlot(int slot, int type, int windowAdd) {
+        Minecraft.getMinecraft().playerController.windowClick(Minecraft.getMinecraft().thePlayer.openContainer.windowId + windowAdd, slot, type, 0, Minecraft.getMinecraft().thePlayer);
     }
 }

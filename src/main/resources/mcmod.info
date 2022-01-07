@@ -1,7 +1,7 @@
 [
   {
-    "modid": "RoseGoldAddons",
-    "name": "RoseGold Addons",
+    "modid": "timechanger",
+    "name": "RoseGoldAddons",
     "description": "RoseGold's QOL Modifications",
     "version": "${version}",
     "mcversion": "${mcversion}",

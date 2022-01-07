@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class BloodTriggerBot {
-    private static String[] names = {"Bonzo", "Revoker", "Psycho", "Reaper", "Cannibal", "Mute", "Ooze", "Putrid", "Freak", "Leech", "Tear", "Parasite", "Flamer", "Skull", "Mr. Dead", "Vader", "Frost", "Walker", "WanderingSoul", "Shadow Assassin", "Lost Adventurer", "Livid", "Professor"};
+    private static String[] names = {"Bonzo", "Revoker", "Psycho", "Reaper", "Cannibal", "Mute", "Ooze", "Putrid", "Freak", "Leech", "Tear", "Parasite", "Flamer", "Skull", "Mr. Dead", "Vader", "Frost", "Walker", "WanderingSoul", "Shadow Assassin", "Lost Adventurer", "Livid", "Professor", "Spirit Bear"};
     private static ArrayList<Entity> bloodMobs = null;
     private Thread thread;
 

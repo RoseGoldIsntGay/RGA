@@ -32,9 +32,6 @@ public class PowderMacro {
                 Vec3 particlePos = new Vec3(packet.getXCoordinate(), packet.getYCoordinate() - 0.7, packet.getZCoordinate());
                 if (closestChest != null) {
                     double dist = closestChest.distanceTo(particlePos);
-                    /*Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(dist + ""));
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(closestChest.toString()));
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(particlePos.toString()));*/
                     if (dist < 1) {
                         particlePos = particlePos.add(new Vec3(0, -1, 0));
                         int drill = findItemInHotbar("X655");

@@ -4,8 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -14,18 +12,16 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import rosegoldaddons.Main;
 import rosegoldaddons.utils.ChatUtils;
-import rosegoldaddons.utils.RenderUtils;
 import rosegoldaddons.utils.RotationUtils;
-import scala.actors.threadpool.helpers.ThreadHelpers;
 
-import java.awt.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Random;
 
 public class ForagingIslandMacro {
     private Thread thread;
-    private String[] cum = {"wtf??", "hello?", "hi?", "uhhhhhh", "what the", "??????"};
+    private final String[] responses = {"wtf??", "hello?", "hi?", "uhhhhhh", "what the", "??????"};
 
     @SubscribeEvent
     public void renderWorld(RenderWorldLastEvent event) {
@@ -55,6 +51,7 @@ public class ForagingIslandMacro {
                             ChatUtils.sendMessage("§cNo Fishing Rod in hotbar");
                         }
                         if(sapling == -1 || bonemeal == -1 || treecap == -1 || rod == -1) {
+                            playAnnoyingAlert();
                             Main.forageOnIsland = false;
                             ChatUtils.sendMessage("§cForaging Macro Deactivated");
                             return;
@@ -86,7 +83,7 @@ public class ForagingIslandMacro {
                                     if(Main.configFile.randomizeForaging) {
                                         toAdd = rand.nextInt(20);
                                     }
-                                    ChatUtils.sendMessage("extra delay: "+toAdd+"%");
+                                    //ChatUtils.sendMessage("extra delay: "+toAdd+"%");
                                     Thread.sleep(Math.round(150*(1+(toAdd/100))));
                                     rightClick();
                                     rightClick();
@@ -120,13 +117,14 @@ public class ForagingIslandMacro {
             Main.forageOnIsland = false;
             ChatUtils.sendMessage("§cNo dirt in range of player");
             ChatUtils.sendMessage("§cForaging Macro Deactivated");
+            playAnnoyingAlert();
             if(Main.configFile.forageantisus) {
-                int rand = new Random().nextInt(cum.length);
-                int rand2 = new Random().nextInt(5000);
+                int rand = new Random().nextInt(responses.length);
+                int rand2 = new Random().nextInt(2000);
                 new Thread(() -> {
                     try {
                         Thread.sleep(rand2);
-                        Minecraft.getMinecraft().thePlayer.sendChatMessage(cum[rand]);
+                        Minecraft.getMinecraft().thePlayer.sendChatMessage("/ac "+responses[rand]);
                         Thread.sleep(rand2*2);
                         Minecraft.getMinecraft().getNetHandler().getNetworkManager().closeChannel(new ChatComponentText("Antisus activated lets hope you didnt get banned"));
                     } catch (Exception exception) {
@@ -241,5 +239,31 @@ public class ForagingIslandMacro {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void playAlert() {
+        Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+    }
+
+    private static void playAnnoyingAlert() {
+        new Thread(() -> {
+            try {
+                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Thread.sleep(100);
+                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Thread.sleep(100);
+                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Thread.sleep(100);
+                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Thread.sleep(100);
+                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Thread.sleep(100);
+                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Thread.sleep(100);
+                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }).start();
     }
 }

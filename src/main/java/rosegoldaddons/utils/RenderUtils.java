@@ -2,6 +2,7 @@ package rosegoldaddons.utils;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -13,6 +14,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -102,10 +104,10 @@ public class RenderUtils {
         glDepthMask(false);
 
         glColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() != 255 ? color.getAlpha() : outline ? 26 : 35);
-        drawFilledBox(axisAlignedBB);
+        //drawFilledBox(axisAlignedBB);
 
         if (outline) {
-            glLineWidth(1F);
+            glLineWidth(3F);
             enableGlCap(GL_LINE_SMOOTH);
             glColor(color);
 
@@ -176,14 +178,14 @@ public class RenderUtils {
         );
 
         if (outline) {
-            glLineWidth(1F);
+            glLineWidth(3F);
             enableGlCap(GL_LINE_SMOOTH);
             glColor(color.getRed(), color.getGreen(), color.getBlue(), 95);
             drawSelectionBoundingBox(axisAlignedBB);
         }
 
         glColor(color.getRed(), color.getGreen(), color.getBlue(), outline ? 26 : 35);
-        drawFilledBox(axisAlignedBB);
+        //drawFilledBox(axisAlignedBB);
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         glDepthMask(true);
         resetCaps();
@@ -624,6 +626,87 @@ public class RenderUtils {
         final ScaledResolution scaledResolution = new ScaledResolution(mc);
         final int factor = scaledResolution.getScaleFactor();
         glScissor((int) (x * factor), (int) ((scaledResolution.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
+    }
+
+    /**
+     * Modified from NotEnoughUpdates under Creative Commons Attribution-NonCommercial 3.0
+     * https://github.com/Moulberry/NotEnoughUpdates/blob/master/LICENSE
+     */
+    public static void renderWaypointText(String str, double X, double Y, double Z, float partialTicks) {
+        GlStateManager.alphaFunc(516, 0.1F);
+
+        GlStateManager.pushMatrix();
+
+        Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
+        double viewerX = viewer.lastTickPosX + (viewer.posX - viewer.lastTickPosX) * partialTicks;
+        double viewerY = viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * partialTicks;
+        double viewerZ = viewer.lastTickPosZ + (viewer.posZ - viewer.lastTickPosZ) * partialTicks;
+
+        double x = X - viewerX;
+        double y = Y - viewerY - viewer.getEyeHeight();
+        double z = Z - viewerZ;
+
+        double distSq = x * x + y * y + z * z;
+        double dist = Math.sqrt(distSq);
+        if(distSq > 144) {
+            x *= 12 / dist;
+            y *= 12 / dist;
+            z *= 12 / dist;
+        }
+        GlStateManager.translate(x, y, z);
+        GlStateManager.translate(0, viewer.getEyeHeight(), 0);
+
+        drawNametag(str);
+
+        GlStateManager.rotate(-Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.translate(0, -0.25f, 0);
+        GlStateManager.rotate(-Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+
+        drawNametag(EnumChatFormatting.YELLOW.toString() + Math.round(dist) + " blocks");
+
+        GlStateManager.popMatrix();
+
+        GlStateManager.disableLighting();
+    }
+
+    public static void drawNametag(String str) {
+        FontRenderer fontrenderer = Minecraft.getMinecraft().fontRendererObj;
+        float f = 1.6F;
+        float f1 = 0.016666668F * f;
+        GlStateManager.pushMatrix();
+        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.scale(-f1, -f1, f1);
+        GlStateManager.disableLighting();
+        GlStateManager.depthMask(false);
+        GlStateManager.disableDepth();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        int i = 0;
+
+        int j = fontrenderer.getStringWidth(str) / 2;
+        GlStateManager.disableTexture2D();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        worldrenderer.pos(-j - 1, -1 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        worldrenderer.pos(-j - 1, 8 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        worldrenderer.pos(j + 1, 8 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        worldrenderer.pos(j + 1, -1 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        fontrenderer.drawString(str, -fontrenderer.getStringWidth(str) / 2, i, 553648127);
+        GlStateManager.depthMask(true);
+
+        fontrenderer.drawString(str, -fontrenderer.getStringWidth(str) / 2, i, -1);
+
+        GlStateManager.enableDepth();
+        GlStateManager.enableBlend();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.popMatrix();
     }
 
     /**
