@@ -11,10 +11,6 @@ import java.util.Comparator;
 public class Config extends Vigilant {
     public static Config INSTANCE = new Config();
 
-    @Property(type = PropertyType.SWITCH, name = "Gui Lag", description = "trole",
-            category = "RoseGoldAddons", subcategory = "General")
-    public boolean guilag = true;
-
     @Property(type = PropertyType.SWITCH, name = "Auto Start Dungeon + Ready", description = "Automatically starts the dungeon and gets ready.",
             category = "Dungeons", subcategory = "General")
     public boolean AutoReady = true;
@@ -117,9 +113,13 @@ public class Config extends Vigilant {
             category = "Mining", subcategory = "General")
     public boolean mithrilLook = false;
 
-    @Property(type = PropertyType.SWITCH, name = "Skip Titanium", description = "Mithril nuker will now ignore titanium",
+    @Property(type = PropertyType.SWITCH, name = "Skip Titanium", description = "Mithril nuker will ignore titanium",
             category = "Mining", subcategory = "General")
     public boolean ignoreTitanium = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Include Ores", description = "Hardstone Nuker will also nuke ores",
+            category = "Mining", subcategory = "General")
+    public boolean includeOres = false;
 
     @Property(type = PropertyType.SWITCH, name = "Auto Slayer", description = "Automatically use batphone",
             category = "RoseGoldAddons", subcategory = "General")
@@ -133,9 +133,17 @@ public class Config extends Vigilant {
             category = "RoseGoldAddons", subcategory = "General", options = {"None", "Zombie 3", "Zombie 4", "Zombie 5", "Spider 3", "Spider 4", "Sven 3", "Sven 4", "Enderman 2", "Enderman 3", "Enderman 4"})
     public int slayerTypeIndex = 0;
 
-    @Property(type = PropertyType.SWITCH, name = "Hilarity", description = "",
+    @Property(type = PropertyType.SWITCH, name = "Potato Mode", description = "This brings back memories...",
+            category = "RoseGoldAddons", subcategory = "General")
+    public boolean guilag = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Hilarity", description = "Those pesky admins!",
             category = "RoseGoldAddons", subcategory = "General")
     public boolean funnyStuff = true;
+
+    @Property(type = PropertyType.SWITCH, name = "Nucleus ESP", description = "ESP for rare items dropped from nucleus",
+            category = "ESP", subcategory = "General")
+    public boolean nucleusESP = false;
 
     public Config() {
         super(new File("./config/rosegoldaddons/config.toml"), "RoseGoldAddons", new JVMAnnotationPropertyCollector(), new ConfigSorting());

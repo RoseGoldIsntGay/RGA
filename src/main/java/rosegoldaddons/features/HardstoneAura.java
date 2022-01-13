@@ -139,6 +139,11 @@ public class HardstoneAura {
                 if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
+                if(Main.configFile.includeOres) {
+                    if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack && !broken.contains(blockPos)) {
+                        stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                    }
+                }
             }
         }
         double smallest = 9999;

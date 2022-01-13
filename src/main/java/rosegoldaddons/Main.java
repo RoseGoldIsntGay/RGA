@@ -96,6 +96,7 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new AutoSlayer());
         MinecraftForge.EVENT_BUS.register(new PlayerUtils());
         MinecraftForge.EVENT_BUS.register(new CanePlanter());
+        MinecraftForge.EVENT_BUS.register(new ArmorStandESPs());
         configFile.initialize();
         ClientCommandHandler.instance.registerCommand(new OpenSettings());
         ClientCommandHandler.instance.registerCommand(new Rosedrobe());
@@ -184,9 +185,14 @@ public class Main {
                     msg1.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://cheatersgetbanned.me"));
                     ChatComponentText msg2 = new ChatComponentText("§0§7Thanks to Harry282 (SBClient):§b https://github.com/Harry282/Skyblock-Client");
                     msg2.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/Harry282/Skyblock-Client"));
-                    ChatUtils.sendMessage("§0§7Thanks to pizza boy (Pizza Client)");
+                    ChatComponentText msg3 = new ChatComponentText("§0§7Thanks to pizza boy (Pizza Client): https://github.com/PizzaboiBestLegit/Pizza-Client");
+                    msg3.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/PizzaboiBestLegit/Pizza-Client"));
+                    ChatComponentText msg4 = new ChatComponentText("§0§7Check out the RoseGoldAddons Discord Server!");
+                    msg4.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/Tmk2hwzdxm"));
                     Minecraft.getMinecraft().thePlayer.addChatMessage(msg1);
                     Minecraft.getMinecraft().thePlayer.addChatMessage(msg2);
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(msg3);
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(msg4);
                     firstLoginThisSession = false;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -197,7 +203,7 @@ public class Main {
 
     @SubscribeEvent
     public void onWorldChange(WorldEvent.Unload event) {
-        if(forageOnIsland) {
+        if(forageOnIsland || nukeWood || nukeCrops || mithrilNuker || gemNukeToggle) {
             ChatUtils.sendMessage("§cDetected World Change, Stopping All Macros");
             forageOnIsland = false;
             nukeWood = false;
@@ -211,7 +217,7 @@ public class Main {
     public void tick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
         if(Minecraft.getMinecraft().gameSettings.limitFramerate == 1) {
-            Minecraft.getMinecraft().gameSettings.setOptionFloatValue(GameSettings.Options.FRAMERATE_LIMIT, 240);
+            Minecraft.getMinecraft().gameSettings.setOptionFloatValue(GameSettings.Options.FRAMERATE_LIMIT, 260.0F);
         }
         if (display != null) {
             try {

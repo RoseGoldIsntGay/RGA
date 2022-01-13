@@ -85,15 +85,6 @@ public class EntityReach {
                             RenderUtils.drawEntityBox(entity, Color.MAGENTA, true, event.partialTicks);
                         }
                     }
-                    else if(itemStack.serializeNBT().getCompoundTag("tag").getCompoundTag("SkullOwner").getCompoundTag("Properties").toString().contains("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZhZGRiZDVkZWRhZDQwOTk5NDczYmU0YTdmNDhmNjIzNmE3OWEwZGNlOTcxYjVkYmQ3MzcyMDE0YWUzOTRkIn19fQ==")) {
-                        RenderUtils.drawEntityBox(entity, Color.GREEN, true, event.partialTicks);
-                    }
-                    else if(itemStack.serializeNBT().getCompoundTag("tag").getCompoundTag("SkullOwner").getCompoundTag("Properties").toString().contains("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRhNDE0ZDI5Y2M5ZWJiZmMxY2JkY2QyMTFlZWU0NzI2ZDA2NzZiZTI2MmU5Y2I4ZWVmZmFmZDFmYzM4MGIxNCJ9fX0=")) {
-                        RenderUtils.drawEntityBox(entity, Color.YELLOW, true, event.partialTicks);
-                    }
-                    else if(itemStack.serializeNBT().getCompoundTag("tag").getCompoundTag("SkullOwner").getCompoundTag("Properties").toString().contains("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjMxMmE1YTEyZWNiMjRkNjg1MmRiMzg4ZTZhMzQ3MjFjYzY3ZjUyMmNjZGU3ZTgyNGI5Zjc1ZTk1MDM2YWM5MyJ9fX0=")) {
-                        RenderUtils.drawEntityBox(entity, Color.WHITE, true, event.partialTicks);
-                    }
                 }
             }
         }
@@ -121,7 +112,7 @@ public class EntityReach {
         Vec3 position = new Vec3(Minecraft.getMinecraft().thePlayer.posX, (Minecraft.getMinecraft().thePlayer.posY + Minecraft.getMinecraft().thePlayer.getEyeHeight()), Minecraft.getMinecraft().thePlayer.posZ);
         Vec3 look = Minecraft.getMinecraft().thePlayer.getLook(event.partialTicks);
         look = scaleVec(look, 0.2F);
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 320; i++) {
             if (aabb.minX <= position.xCoord && aabb.maxX >= position.xCoord && aabb.minY <= position.yCoord && aabb.maxY >= position.yCoord && aabb.minZ <= position.zCoord && aabb.maxZ >= position.zCoord) {
                 return true;
             }
