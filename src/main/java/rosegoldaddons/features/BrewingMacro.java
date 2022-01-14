@@ -52,12 +52,12 @@ public class BrewingMacro {
         if (!Main.brewingMacro) return;
         if (thread == null || !thread.isAlive()) {
             thread = new Thread(() -> {
-                try {
-                    if (event.gui instanceof GuiChest) {
-                        Container container = ((GuiChest) event.gui).inventorySlots;
-                        if (container instanceof ContainerChest) {
-                            String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-                            int sleep = Main.configFile.alchsleep;
+                if (event.gui instanceof GuiChest) {
+                    Container container = ((GuiChest) event.gui).inventorySlots;
+                    if (container instanceof ContainerChest) {
+                        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
+                        int sleep = Main.configFile.alchsleep;
+                        try {
                             if (Main.configFile.alchindex == 0) {
                                 if (chestName.contains("Brewing Stand")) {
                                     List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
@@ -75,7 +75,7 @@ public class BrewingMacro {
                                 }
                                 if (sell) {
                                     if (chestName.contains("SkyBlock")) {
-                                        Thread.sleep(100);
+                                        Thread.sleep(sleep);
                                         clickSlot(22, 0, 0);
                                     } else if (chestName.contains("Trades")) {
                                         List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
@@ -102,7 +102,7 @@ public class BrewingMacro {
                                             }
                                         }
                                     }
-                                    if(Main.configFile.alchclose) {
+                                    if (Main.configFile.alchclose) {
                                         Minecraft.getMinecraft().thePlayer.closeScreen();
                                     }
                                 }
@@ -114,15 +114,15 @@ public class BrewingMacro {
                                         if (!chestInventory.get(13).getHasStack()) {
                                             if (slot.getStack().getDisplayName().contains("Nether Wart") && slot.slotNumber >= 54) {
                                                 clickSlot(slot.slotNumber, 0, 0);
-                                                Thread.sleep(sleep/2);
+                                                Thread.sleep(sleep / 2);
                                                 clickSlot(13, 1, 0);
-                                                Thread.sleep(sleep/2);
+                                                Thread.sleep(sleep / 2);
                                                 clickSlot(slot.slotNumber, 0, 0);
                                                 break;
                                             }
                                         }
                                     }
-                                    if(Main.configFile.alchclose) {
+                                    if (Main.configFile.alchclose) {
                                         Minecraft.getMinecraft().thePlayer.closeScreen();
                                     }
                                 }
@@ -134,15 +134,15 @@ public class BrewingMacro {
                                         if (!chestInventory.get(13).getHasStack()) {
                                             if ((slot.getStack().getDisplayName().contains("Sugar") || slot.getStack().getDisplayName().contains("Spider Eye")) && slot.slotNumber >= 54) {
                                                 clickSlot(slot.slotNumber, 0, 0);
-                                                Thread.sleep(sleep/2);
+                                                Thread.sleep(sleep / 2);
                                                 clickSlot(13, 1, 0);
-                                                Thread.sleep(sleep/2);
+                                                Thread.sleep(sleep / 2);
                                                 clickSlot(slot.slotNumber, 0, 0);
                                                 break;
                                             }
                                         }
                                     }
-                                    if(Main.configFile.alchclose) {
+                                    if (Main.configFile.alchclose) {
                                         Minecraft.getMinecraft().thePlayer.closeScreen();
                                     }
                                 }
@@ -154,24 +154,25 @@ public class BrewingMacro {
                                         if (!chestInventory.get(13).getHasStack()) {
                                             if (slot.getStack().getDisplayName().contains("Glowstone") && slot.slotNumber >= 54) {
                                                 clickSlot(slot.slotNumber, 0, 0);
-                                                Thread.sleep(sleep/2);
+                                                Thread.sleep(sleep / 2);
                                                 clickSlot(13, 1, 0);
-                                                Thread.sleep(sleep/2);
+                                                Thread.sleep(sleep / 2);
                                                 clickSlot(slot.slotNumber, 0, 0);
                                                 break;
                                             }
                                         }
                                     }
-                                    if(Main.configFile.alchclose) {
+                                    if (Main.configFile.alchclose) {
                                         Minecraft.getMinecraft().thePlayer.closeScreen();
                                     }
                                 }
                             }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
-                } catch (Exception exception) {
-                    exception.printStackTrace();
                 }
+
             }, "brewing");
             thread.start();
         }

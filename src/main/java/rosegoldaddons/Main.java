@@ -10,8 +10,10 @@ import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -54,6 +56,7 @@ public class Main {
     public static boolean nukeWood = false;
     public static boolean placeCane = false;
     private static boolean firstLoginThisSession = true;
+    private static boolean oldanim = false;
 
     //Hello decompiler and / or source code checker! this is just some funny stuff, you do not have to worry about it!
     private final String[] cumsters = {"W0FETUlOXSBNaW5pa2xvb24=", "W0FETUlOXSBQbGFuY2tl", "W0FETUlOXSBKYXlhdmFybWVu", "W0FETUlOXSBEY3Ry"};
@@ -175,6 +178,16 @@ public class Main {
         }
     }
 
+    @Mod.EventHandler
+    public void post(FMLPostInitializationEvent event) {
+        Loader.instance().getActiveModList().forEach(modContainer -> {
+            if (modContainer.getModId().equals("oldanimations")) {
+                oldanim = true;
+            }
+        });
+    }
+
+
     @SubscribeEvent
     public void onConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         if(firstLoginThisSession) {
@@ -185,15 +198,25 @@ public class Main {
                     msg1.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://cheatersgetbanned.me"));
                     ChatComponentText msg2 = new ChatComponentText("§0§7Thanks to Harry282 (SBClient):§b https://github.com/Harry282/Skyblock-Client");
                     msg2.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/Harry282/Skyblock-Client"));
-                    ChatComponentText msg3 = new ChatComponentText("§0§7Thanks to pizza boy (Pizza Client): https://github.com/PizzaboiBestLegit/Pizza-Client");
+                    ChatComponentText msg3 = new ChatComponentText("§0§7Thanks to pizza boy (Pizza Client):§b https://github.com/PizzaboiBestLegit/Pizza-Client");
                     msg3.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/PizzaboiBestLegit/Pizza-Client"));
-                    ChatComponentText msg4 = new ChatComponentText("§0§7Check out the RoseGoldAddons Discord Server!");
+                    ChatComponentText msg4 = new ChatComponentText("§0§7Check out the RoseGoldAddons §bDiscord Server!");
                     msg4.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/Tmk2hwzdxm"));
                     Minecraft.getMinecraft().thePlayer.addChatMessage(msg1);
                     Minecraft.getMinecraft().thePlayer.addChatMessage(msg2);
                     Minecraft.getMinecraft().thePlayer.addChatMessage(msg3);
                     Minecraft.getMinecraft().thePlayer.addChatMessage(msg4);
                     firstLoginThisSession = false;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+        if(oldanim) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(6000);
+                    ChatUtils.sendMessage("§l§4Old Animations Mod was detected in your mods folder. This mod breaks some key RoseGoldAddons features, please uninstall it before asking for support as it is known to cause a lot of issues. Thanks.");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

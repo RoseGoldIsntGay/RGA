@@ -18,7 +18,9 @@ public class ChatUtils {
     /* § */
 
     public static void sendMessage(String message) {
-        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§f[§aRoseGoldAddons§f] "+message));
+        if (Minecraft.getMinecraft().thePlayer != null) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§f[§aRoseGoldAddons§f] " + message));
+        }
     }
 
     public static ChatStyle createClickStyle(ClickEvent.Action action, String value) {

@@ -36,6 +36,7 @@ public class GhostMacro {
     private static Entity getClosestCreeper() {
         Entity eman = null;
         double closest = 9999.0;
+        if(Minecraft.getMinecraft().theWorld == null) return null;
         for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
             if (entity1 instanceof EntityCreeper && !(((EntityCreeper) entity1).getHealth() == 0)) {
                 double dist = entity1.getDistanceSq(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);

@@ -52,11 +52,11 @@ public class HardstoneAura {
                 MovingObjectPosition fake = Minecraft.getMinecraft().objectMouseOver;
                 fake.hitVec = new Vec3(closestStone);
                 EnumFacing enumFacing = fake.sideHit;
-                if (currentDamage == 0 && enumFacing != null) {
+                if (currentDamage == 0 && enumFacing != null && Minecraft.getMinecraft().thePlayer != null) {
                     Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, closestStone, enumFacing));
                 }
                 MovingObjectPosition real = Minecraft.getMinecraft().objectMouseOver;
-                if (real != null && real.entityHit == null) {
+                if (real != null && real.entityHit == null && Minecraft.getMinecraft().thePlayer != null) {
                     Minecraft.getMinecraft().thePlayer.swingItem();
                 }
                 broken.add(closestStone);
@@ -125,6 +125,8 @@ public class HardstoneAura {
     }
 
     private BlockPos closestStone() {
+        if(Minecraft.getMinecraft().theWorld == null) return null;
+        if(Minecraft.getMinecraft().thePlayer == null) return null;
         int r = 6;
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos.add(0, 1, 0);
@@ -162,6 +164,8 @@ public class HardstoneAura {
     }
 
     private Vec3 closestChest() {
+        if(Minecraft.getMinecraft().theWorld == null) return null;
+        if(Minecraft.getMinecraft().thePlayer == null) return null;
         int r = 6;
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos.add(0, 1, 0);

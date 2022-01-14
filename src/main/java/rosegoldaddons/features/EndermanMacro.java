@@ -2,7 +2,6 @@ package rosegoldaddons.features;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -12,7 +11,6 @@ import rosegoldaddons.utils.RenderUtils;
 import rosegoldaddons.utils.RotationUtils;
 
 import java.awt.*;
-import java.util.Random;
 
 public class EndermanMacro {
     private static Entity enderman;
@@ -36,6 +34,7 @@ public class EndermanMacro {
     private static Entity getClosestEnderman() {
         Entity eman = null;
         double closest = 9999;
+        if(Minecraft.getMinecraft().theWorld == null) return null;
         for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
             if (entity1 instanceof EntityEnderman && !(((EntityEnderman) entity1).getHealth() == 0)) {
                 double dist = entity1.getDistanceSq(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);

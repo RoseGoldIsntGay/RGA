@@ -36,7 +36,7 @@ public class GemstoneAura {
             return;
         }
         if (event.phase == TickEvent.Phase.END) {
-            if(PlayerUtils.pickaxeAbilityReady) {
+            if(PlayerUtils.pickaxeAbilityReady && Minecraft.getMinecraft().thePlayer != null) {
                 Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem));
             }
             if(currentDamage > 100) {
