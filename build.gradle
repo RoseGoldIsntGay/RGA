@@ -4,7 +4,7 @@ plugins {
     id "org.spongepowered.mixin" version "0.6-SNAPSHOT"
 }
 
-version = "2.5.4-pre1"
+version = "2.5.4"
 group = "rosegoldaddons"
 archivesBaseName = "RoseGoldAddons"
 

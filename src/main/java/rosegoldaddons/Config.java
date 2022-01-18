@@ -89,6 +89,10 @@ public class Config extends Vigilant {
             category = "Mining", subcategory = "General", max = 5)
     public int hardrange = 0;
 
+    @Property(type = PropertyType.SELECTOR, name = "Hardstone Nuker Type", description = "Choose which pattern hardstone nuker will follow",
+            category = "Mining", subcategory = "General", options = {"Closest Block", "Facing Axis"})
+    public int hardIndex = 0;
+
     @Property(type = PropertyType.SELECTOR, name = "Actions", description = "Type of action to perform when opening a brewing stand",
             category = "Alchemy", subcategory = "General", options = {"Collect + Sell", "Insert Water Bottles", "Insert Nether Wart", "Insert Cane / Eye", "Insert Glowstone"})
     public int alchindex = 0;
