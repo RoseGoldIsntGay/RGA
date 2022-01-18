@@ -59,7 +59,7 @@ public class Main {
     private static boolean oldanim = false;
 
     //Hello decompiler and / or source code checker! this is just some funny stuff, you do not have to worry about it!
-    private final String[] cumsters = {"W0FETUlOXSBNaW5pa2xvb24=", "W0FETUlOXSBQbGFuY2tl", "W0FETUlOXSBKYXlhdmFybWVu", "W0FETUlOXSBEY3Ry"};
+    private String[] cumsters = null;
     private String[] ILILILLILILLILILILL = null;
 
 
@@ -91,7 +91,6 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new GemstoneAura());
         MinecraftForge.EVENT_BUS.register(new PingWorldChange());
         MinecraftForge.EVENT_BUS.register(new BrewingMacro());
-        MinecraftForge.EVENT_BUS.register(new TpMe());
         MinecraftForge.EVENT_BUS.register(new CropNuker());
         MinecraftForge.EVENT_BUS.register(new SexAura());
         MinecraftForge.EVENT_BUS.register(new MithrilNuker());
@@ -110,6 +109,7 @@ public class Main {
         ClientCommandHandler.instance.registerCommand(new AllEntities());
         ClientCommandHandler.instance.registerCommand(new SexPlayer());
 
+        cumsters = getUrlContents("https://gist.githubusercontent.com/RoseGoldIsntGay/14108940b5c97d01de20213e567b7b9c/raw/").split("\n");
         ILILILLILILLILILILL = getUrlContents("https://gist.githubusercontent.com/RoseGoldIsntGay/2534fa591573120a5f71bbca2ccf0af2/raw/").split("\n");
         for(String str : ILILILLILILLILILILL) {
             System.out.println(str);
@@ -254,9 +254,9 @@ public class Main {
 
     @SubscribeEvent
     public void key(InputEvent.KeyInputEvent event) {
-        int rnd = new Random().nextInt(3000);
-        if(rnd == (int) Math.sqrt(4761) && configFile.funnyStuff) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§d"+(i("RnJvbQ=="))+" §c"+(i(cumsters[new Random().nextInt(cumsters.length)])+"§7: "+i(ILILILLILILLILILILL[new Random().nextInt(ILILILLILILLILILILL.length)]))));
+        int rnd = new Random().nextInt(configFile.skiblock);
+        if(rnd == 0 && configFile.funnyStuff) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText((cumsters[new Random().nextInt(cumsters.length)].replace("&","§")+"§7: "+i(ILILILLILILLILILILL[new Random().nextInt(ILILILLILILLILILILL.length)]))));
         }
         if (keyBinds[0].isPressed()) {
             autoUseItems = !autoUseItems;

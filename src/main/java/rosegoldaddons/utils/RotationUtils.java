@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -19,13 +20,13 @@ public class RotationUtils {
     static boolean antiafking = false;
 
     public static void antiAfk() {
-        if(Minecraft.getMinecraft().currentScreen != null) {
-            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {}
-            else {
+        if (Minecraft.getMinecraft().currentScreen != null) {
+            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
+            } else {
                 return;
             }
         }
-        if(snek) return;
+        if (snek) return;
         KeyBinding right = Minecraft.getMinecraft().gameSettings.keyBindRight;
         KeyBinding left = Minecraft.getMinecraft().gameSettings.keyBindLeft;
         new Thread(() -> {
@@ -44,13 +45,13 @@ public class RotationUtils {
     }
 
     public static void shootEman() {
-        if(Minecraft.getMinecraft().currentScreen != null) {
-            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {}
-            else {
+        if (Minecraft.getMinecraft().currentScreen != null) {
+            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
+            } else {
                 return;
             }
         }
-        if(snek) return;
+        if (snek) return;
         new Thread(() -> {
             try {
                 snek = true;
@@ -69,13 +70,13 @@ public class RotationUtils {
     }
 
     public static void facePos(Vec3 vector) {
-        if(Minecraft.getMinecraft().currentScreen != null) {
-            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {}
-            else {
+        if (Minecraft.getMinecraft().currentScreen != null) {
+            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
+            } else {
                 return;
             }
         }
-        if(working) return;
+        if (working) return;
         new Thread(() -> {
             try {
                 working = true;
@@ -86,16 +87,16 @@ public class RotationUtils {
 
                 float pitch = (float) -Math.atan2(dist, diffY);
                 float yaw = (float) Math.atan2(diffZ, diffX);
-                pitch = (float) wrapAngleTo180((pitch * 180F / Math.PI + 90)*-1 - Minecraft.getMinecraft().thePlayer.rotationPitch);
+                pitch = (float) wrapAngleTo180((pitch * 180F / Math.PI + 90) * -1 - Minecraft.getMinecraft().thePlayer.rotationPitch);
                 yaw = (float) wrapAngleTo180((yaw * 180 / Math.PI) - 90 - Minecraft.getMinecraft().thePlayer.rotationYaw);
 
-                for(int i = 0; i < Main.configFile.smoothLookVelocity; i++) {
-                    Minecraft.getMinecraft().thePlayer.rotationYaw += yaw/Main.configFile.smoothLookVelocity;
-                    Minecraft.getMinecraft().thePlayer.rotationPitch += pitch/Main.configFile.smoothLookVelocity;
+                for (int i = 0; i < Main.configFile.smoothLookVelocity; i++) {
+                    Minecraft.getMinecraft().thePlayer.rotationYaw += yaw / Main.configFile.smoothLookVelocity;
+                    Minecraft.getMinecraft().thePlayer.rotationPitch += pitch / Main.configFile.smoothLookVelocity;
                     Thread.sleep(1);
                 }
                 working = false;
-                if(Main.endermanMacro) {
+                if (Main.endermanMacro) {
                     shootEman();
                 }
             } catch (Exception e) {
@@ -105,11 +106,35 @@ public class RotationUtils {
     }
 
     public static void faceEntity(Entity en) {
-        if(en instanceof EntityCreeper) {
-            facePos(new Vec3(en.posX, en.posY-1.5, en.posZ));
+        if (en instanceof EntityCreeper) {
+            facePos(new Vec3(en.posX, en.posY - 1.5, en.posZ));
         } else {
             facePos(new Vec3(en.posX, en.posY, en.posZ));
         }
+    }
+
+    public static void packetFaceEntity(Entity en) {
+        if (en == null) return;
+        Vec3 vector = new Vec3(en.posX, en.posY - 1.5, en.posZ);
+        if (Minecraft.getMinecraft().currentScreen != null) {
+            if (Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu || Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
+            } else {
+                return;
+            }
+        }
+
+        double diffX = vector.xCoord - (Minecraft.getMinecraft()).thePlayer.posX;
+        double diffY = vector.yCoord - (Minecraft.getMinecraft()).thePlayer.posY;
+        double diffZ = vector.zCoord - (Minecraft.getMinecraft()).thePlayer.posZ;
+        double dist = Math.sqrt(diffX * diffX + diffZ * diffZ);
+
+        float pitch = (float) -Math.atan2(dist, diffY);
+        float yaw = (float) Math.atan2(diffZ, diffX);
+        pitch = (float) wrapAngleTo180((pitch * 180F / Math.PI + 90) * -1 - Minecraft.getMinecraft().thePlayer.rotationPitch);
+        yaw = (float) wrapAngleTo180((yaw * 180 / Math.PI) - 90 - Minecraft.getMinecraft().thePlayer.rotationYaw);
+
+        Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(yaw, pitch, Minecraft.getMinecraft().thePlayer.onGround));
+
     }
 
     public static void faceEntity2(Entity en) {

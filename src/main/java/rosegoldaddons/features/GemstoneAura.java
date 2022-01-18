@@ -36,19 +36,19 @@ public class GemstoneAura {
             return;
         }
         if (event.phase == TickEvent.Phase.END) {
-            if(PlayerUtils.pickaxeAbilityReady && Minecraft.getMinecraft().thePlayer != null) {
+            if (PlayerUtils.pickaxeAbilityReady && Minecraft.getMinecraft().thePlayer != null) {
                 Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem));
             }
-            if(currentDamage > 100) {
+            if (currentDamage > 100) {
                 currentDamage = 0;
             }
-            if(blockPos != null) {
+            if (blockPos != null) {
                 IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                 if (blockState.getBlock() != Blocks.stained_glass && blockState.getBlock() != Blocks.stained_glass_pane) {
                     currentDamage = 0;
                 }
             }
-            if(currentDamage == 0) {
+            if (currentDamage == 0) {
                 blockPos = closestGemstone();
             }
             if (blockPos != null) {
@@ -113,23 +113,20 @@ public class GemstoneAura {
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                 IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
                 if (blockState.getBlock() == Blocks.stained_glass) {
                     chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
-                if(!Main.configFile.prioblocks) {
+                if (!Main.configFile.prioblocks) {
                     if (blockState.getBlock() == Blocks.stained_glass_pane) {
                         chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                     }
                 }
             }
-            if(Main.configFile.prioblocks) {
+            if (Main.configFile.prioblocks) {
                 for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                     IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
-                    if(!Main.configFile.prioblocks) {
-                        if (blockState.getBlock() == Blocks.stained_glass_pane) {
-                            chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
-                        }
+                    if (blockState.getBlock() == Blocks.stained_glass_pane) {
+                        chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                     }
                 }
             }

@@ -117,7 +117,7 @@ public class Config extends Vigilant {
             category = "Mining", subcategory = "General")
     public boolean ignoreTitanium = false;
 
-    @Property(type = PropertyType.SWITCH, name = "Include Ores", description = "Hardstone Nuker will also nuke ores",
+    @Property(type = PropertyType.SWITCH, name = "Include Ores", description = "Hardstone & Mithril Nukers will also nuke ores",
             category = "Mining", subcategory = "General")
     public boolean includeOres = false;
 
@@ -134,12 +134,16 @@ public class Config extends Vigilant {
     public int slayerTypeIndex = 0;
 
     @Property(type = PropertyType.SWITCH, name = "Potato Mode", description = "This brings back memories...",
-            category = "RoseGoldAddons", subcategory = "General")
+            category = "Memes", subcategory = "General")
     public boolean guilag = false;
 
-    @Property(type = PropertyType.SWITCH, name = "Hilarity", description = "Those pesky admins!",
-            category = "RoseGoldAddons", subcategory = "General")
+    @Property(type = PropertyType.SWITCH, name = "Hilarity", description = "Pls no wipe mr admin :(",
+            category = "Memes", subcategory = "General")
     public boolean funnyStuff = true;
+
+    @Property(type = PropertyType.SLIDER, name = "Intensity", description = "I love hilarity so much I want to see it more please!",
+            category = "Memes", subcategory = "General", min = 1, max = 3000)
+    public int skiblock = 3000;
 
     @Property(type = PropertyType.SWITCH, name = "Nucleus ESP", description = "ESP for rare items dropped from nucleus",
             category = "ESP", subcategory = "General")

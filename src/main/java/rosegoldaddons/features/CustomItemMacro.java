@@ -23,7 +23,6 @@ public class CustomItemMacro {
         if (thread == null || !thread.isAlive()) {
             thread = new Thread(() -> {
                 try {
-                    milis++;
                     int prevItem = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
                     for (String i : UseCooldown.RCitems.keySet()) {
                         if (milis % Math.floor(UseCooldown.RCitems.get(i)/100) == 0) {
@@ -45,6 +44,7 @@ public class CustomItemMacro {
                         }
                     }
                     Minecraft.getMinecraft().thePlayer.inventory.currentItem = prevItem;
+                    milis++;
                     Thread.sleep(100);
                 } catch (Exception e) {
                     e.printStackTrace();
