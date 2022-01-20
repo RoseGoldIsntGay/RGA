@@ -105,6 +105,23 @@ public class RotationUtils {
         }).start();
     }
 
+    public static void faceAngles(double yaw, double pitch) {
+        if (working) return;
+        new Thread(() -> {
+            try {
+                working = true;
+                for (int i = 0; i < Main.configFile.smoothLookVelocity; i++) {
+                    Minecraft.getMinecraft().thePlayer.rotationYaw += yaw / Main.configFile.smoothLookVelocity;
+                    Minecraft.getMinecraft().thePlayer.rotationPitch += pitch / Main.configFile.smoothLookVelocity;
+                    Thread.sleep(1);
+                }
+                working = false;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     public static void faceEntity(Entity en) {
         if (en instanceof EntityCreeper) {
             facePos(new Vec3(en.posX, en.posY - 1.5, en.posZ));

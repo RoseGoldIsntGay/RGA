@@ -36,7 +36,7 @@ public class EndermanMacro {
         double closest = 9999;
         if(Minecraft.getMinecraft().theWorld == null) return null;
         for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
-            if (entity1 instanceof EntityEnderman && !(((EntityEnderman) entity1).getHealth() == 0)) {
+            if (entity1 instanceof EntityEnderman && !(((EntityEnderman) entity1).getHealth() == 0) && Minecraft.getMinecraft().thePlayer.canEntityBeSeen(entity1)) {
                 double dist = entity1.getDistanceSq(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
                 if (dist < closest) {
                     if(Main.configFile.macroRadius != 0 && dist < Main.configFile.macroRadius) {

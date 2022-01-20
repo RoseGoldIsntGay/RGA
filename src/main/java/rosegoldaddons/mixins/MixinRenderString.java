@@ -19,6 +19,10 @@ public abstract class MixinRenderString {
 
     @Inject(method = "renderStringAtPos", at = @At("HEAD"), cancellable = true)
     private void renderString(String text, boolean shadow, CallbackInfo ci) {
+        if(Main.configFile.wydsi && text.contains("727")) {
+            ci.cancel();
+            renderStringAtPos(text.replace("727", "726"), shadow);
+        }
         if (Main.init) {
             for (Map.Entry<String, String> entry : Main.resp.entrySet()) {
                 String key = entry.getKey();
@@ -26,7 +30,11 @@ public abstract class MixinRenderString {
 
                 if (text.contains(key)) {
                     ci.cancel();
-                    renderStringAtPos(text.replaceAll(key, value).replace("&", "§"), shadow);
+                    try {
+                        renderStringAtPos(text.replaceAll(key, value).replace("&", "§"), shadow);
+                    } catch (Exception e) {
+                        ChatUtils.sendMessage(e.toString());
+                    }
                 }
             }
         }

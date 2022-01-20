@@ -153,6 +153,10 @@ public class Config extends Vigilant {
             category = "Memes", subcategory = "General", min = 1, max = 3000)
     public int skiblock = 3000;
 
+    @Property(type = PropertyType.SWITCH, name = "i dont wanna see it", description = "please i dont wanna see it",
+            category = "Memes", subcategory = "General")
+    public boolean wydsi = true;
+
     @Property(type = PropertyType.SWITCH, name = "Nucleus ESP", description = "ESP for rare items dropped from nucleus",
             category = "ESP", subcategory = "General")
     public boolean nucleusESP = false;

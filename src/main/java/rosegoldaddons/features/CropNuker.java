@@ -8,6 +8,7 @@ import net.minecraft.util.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
+import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.PlayerUtils;
 
 import java.util.ArrayList;
@@ -33,11 +34,14 @@ public class CropNuker {
     }
 
     private BlockPos closestCrop() {
-        int r = 6;
+        double r = 6;
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos = playerPos.add(0, 1, 0);
         Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
+        if (Main.configFile.farmShapeIndex == 1) {
+            vec3i = new Vec3i(r, 2, r);
+        }
         Vec3i vec3iCane = new Vec3i(r, 0, r);
         ArrayList<Vec3> warts = new ArrayList<>();
         if (playerPos != null) {
@@ -46,39 +50,38 @@ public class CropNuker {
                     for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                         IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                         if (blockState.getBlock() == Blocks.nether_wart || blockState.getBlock() == Blocks.potatoes || blockState.getBlock() == Blocks.wheat || blockState.getBlock() == Blocks.carrots || blockState.getBlock() == Blocks.pumpkin || blockState.getBlock() == Blocks.melon_block || blockState.getBlock() == Blocks.brown_mushroom || blockState.getBlock() == Blocks.red_mushroom || blockState.getBlock() == Blocks.cocoa) {
-                            if(Main.configFile.farmShapeIndex == 0) {
+                            if (Main.configFile.farmShapeIndex == 0) {
                                 if (!broken.contains(blockPos)) {
                                     warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                            }
-                            else if(Main.configFile.farmShapeIndex == 1) {
+                            } else if (Main.configFile.farmShapeIndex == 1) {
                                 EnumFacing dir = Minecraft.getMinecraft().thePlayer.getHorizontalFacing();
                                 int x = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posX);
-                                int z =  (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
+                                int z = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
                                 switch (dir) {
                                     case NORTH:
-                                        if(blockPos.getZ() < z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() < z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case SOUTH:
-                                        if(blockPos.getZ() > z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() > z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case WEST:
-                                        if(blockPos.getX() < x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() < x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case EAST:
-                                        if(blockPos.getX() > x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() > x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
@@ -103,39 +106,38 @@ public class CropNuker {
                     for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                         IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                         if (blockState.getBlock() == Blocks.nether_wart) {
-                            if(Main.configFile.farmShapeIndex == 0) {
+                            if (Main.configFile.farmShapeIndex == 0) {
                                 if (!broken.contains(blockPos)) {
                                     warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                            }
-                            else if(Main.configFile.farmShapeIndex == 1) {
+                            } else if (Main.configFile.farmShapeIndex == 1) {
                                 EnumFacing dir = Minecraft.getMinecraft().thePlayer.getHorizontalFacing();
                                 int x = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posX);
-                                int z =  (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
+                                int z = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
                                 switch (dir) {
                                     case NORTH:
-                                        if(blockPos.getZ() < z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() < z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case SOUTH:
-                                        if(blockPos.getZ() > z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() > z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case WEST:
-                                        if(blockPos.getX() < x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() < x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case EAST:
-                                        if(blockPos.getX() > x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() > x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
@@ -150,39 +152,38 @@ public class CropNuker {
                     for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                         IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                         if (blockState.getBlock() == Blocks.wheat) {
-                            if(Main.configFile.farmShapeIndex == 0) {
+                            if (Main.configFile.farmShapeIndex == 0) {
                                 if (!broken.contains(blockPos)) {
                                     warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                            }
-                            else if(Main.configFile.farmShapeIndex == 1) {
+                            } else if (Main.configFile.farmShapeIndex == 1) {
                                 EnumFacing dir = Minecraft.getMinecraft().thePlayer.getHorizontalFacing();
                                 int x = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posX);
-                                int z =  (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
+                                int z = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
                                 switch (dir) {
                                     case NORTH:
-                                        if(blockPos.getZ() < z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() < z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case SOUTH:
-                                        if(blockPos.getZ() > z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() > z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case WEST:
-                                        if(blockPos.getX() < x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() < x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case EAST:
-                                        if(blockPos.getX() > x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() > x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
@@ -197,39 +198,38 @@ public class CropNuker {
                     for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                         IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                         if (blockState.getBlock() == Blocks.carrots) {
-                            if(Main.configFile.farmShapeIndex == 0) {
+                            if (Main.configFile.farmShapeIndex == 0) {
                                 if (!broken.contains(blockPos)) {
                                     warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                            }
-                            else if(Main.configFile.farmShapeIndex == 1) {
+                            } else if (Main.configFile.farmShapeIndex == 1) {
                                 EnumFacing dir = Minecraft.getMinecraft().thePlayer.getHorizontalFacing();
                                 int x = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posX);
-                                int z =  (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
+                                int z = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
                                 switch (dir) {
                                     case NORTH:
-                                        if(blockPos.getZ() < z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() < z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case SOUTH:
-                                        if(blockPos.getZ() > z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() > z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case WEST:
-                                        if(blockPos.getX() < x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() < x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case EAST:
-                                        if(blockPos.getX() > x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() > x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
@@ -244,39 +244,38 @@ public class CropNuker {
                     for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                         IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                         if (blockState.getBlock() == Blocks.potatoes) {
-                            if(Main.configFile.farmShapeIndex == 0) {
+                            if (Main.configFile.farmShapeIndex == 0) {
                                 if (!broken.contains(blockPos)) {
                                     warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                            }
-                            else if(Main.configFile.farmShapeIndex == 1) {
+                            } else if (Main.configFile.farmShapeIndex == 1) {
                                 EnumFacing dir = Minecraft.getMinecraft().thePlayer.getHorizontalFacing();
                                 int x = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posX);
-                                int z =  (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
+                                int z = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
                                 switch (dir) {
                                     case NORTH:
-                                        if(blockPos.getZ() < z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() < z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case SOUTH:
-                                        if(blockPos.getZ() > z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() > z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case WEST:
-                                        if(blockPos.getX() < x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() < x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case EAST:
-                                        if(blockPos.getX() > x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() > x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
@@ -291,39 +290,38 @@ public class CropNuker {
                     for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                         IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                         if (blockState.getBlock() == Blocks.pumpkin) {
-                            if(Main.configFile.farmShapeIndex == 0) {
+                            if (Main.configFile.farmShapeIndex == 0) {
                                 if (!broken.contains(blockPos)) {
                                     warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                            }
-                            else if(Main.configFile.farmShapeIndex == 1) {
+                            } else if (Main.configFile.farmShapeIndex == 1) {
                                 EnumFacing dir = Minecraft.getMinecraft().thePlayer.getHorizontalFacing();
                                 int x = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posX);
-                                int z =  (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
+                                int z = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
                                 switch (dir) {
                                     case NORTH:
-                                        if(blockPos.getZ() < z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() < z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case SOUTH:
-                                        if(blockPos.getZ() > z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() > z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case WEST:
-                                        if(blockPos.getX() < x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() < x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case EAST:
-                                        if(blockPos.getX() > x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() > x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
@@ -338,39 +336,38 @@ public class CropNuker {
                     for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                         IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                         if (blockState.getBlock() == Blocks.melon_block) {
-                            if(Main.configFile.farmShapeIndex == 0) {
+                            if (Main.configFile.farmShapeIndex == 0) {
                                 if (!broken.contains(blockPos)) {
                                     warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                            }
-                            else if(Main.configFile.farmShapeIndex == 1) {
+                            } else if (Main.configFile.farmShapeIndex == 1) {
                                 EnumFacing dir = Minecraft.getMinecraft().thePlayer.getHorizontalFacing();
                                 int x = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posX);
-                                int z =  (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
+                                int z = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
                                 switch (dir) {
                                     case NORTH:
-                                        if(blockPos.getZ() < z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() < z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case SOUTH:
-                                        if(blockPos.getZ() > z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() > z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case WEST:
-                                        if(blockPos.getX() < x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() < x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case EAST:
-                                        if(blockPos.getX() > x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() > x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
@@ -385,39 +382,38 @@ public class CropNuker {
                     for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                         IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
                         if (blockState.getBlock() == Blocks.cocoa) {
-                            if(Main.configFile.farmShapeIndex == 0) {
+                            if (Main.configFile.farmShapeIndex == 0) {
                                 if (!broken.contains(blockPos)) {
                                     warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                            }
-                            else if(Main.configFile.farmShapeIndex == 1) {
+                            } else if (Main.configFile.farmShapeIndex == 1) {
                                 EnumFacing dir = Minecraft.getMinecraft().thePlayer.getHorizontalFacing();
                                 int x = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posX);
-                                int z =  (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
+                                int z = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
                                 switch (dir) {
                                     case NORTH:
-                                        if(blockPos.getZ() < z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() < z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case SOUTH:
-                                        if(blockPos.getZ() > z && blockPos.getX() == x) {
+                                        if (blockPos.getZ() > z && blockPos.getX() == x) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case WEST:
-                                        if(blockPos.getX() < x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() < x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
                                         }
                                         break;
                                     case EAST:
-                                        if(blockPos.getX() > x && blockPos.getZ() == z) {
+                                        if (blockPos.getX() > x && blockPos.getZ() == z) {
                                             if (!broken.contains(blockPos)) {
                                                 warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                             }
