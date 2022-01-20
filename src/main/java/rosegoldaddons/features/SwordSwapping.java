@@ -20,7 +20,7 @@ public class SwordSwapping {
 
     public static void rightClick() {
         try {
-            Method rightClickMouse = null;
+            Method rightClickMouse;
             try {
                 rightClickMouse = Minecraft.class.getDeclaredMethod("rightClickMouse");
             } catch (NoSuchMethodException e) {

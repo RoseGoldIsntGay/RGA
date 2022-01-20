@@ -1,5 +1,8 @@
 package rosegoldaddons;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.GameSettings;
@@ -32,6 +35,8 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 
 @Mod(modid = "timechanger", name = "RoseGoldAddons", version = "2.1")
@@ -57,10 +62,12 @@ public class Main {
     public static boolean placeCane = false;
     private static boolean firstLoginThisSession = true;
     private static boolean oldanim = false;
+    public static boolean init = false;
 
     //Hello decompiler and / or source code checker! this is just some funny stuff, you do not have to worry about it!
     private String[] cumsters = null;
     private String[] ILILILLILILLILILILL = null;
+    public static HashMap<String, String> resp = new HashMap<>();
 
 
     @Mod.EventHandler
@@ -99,6 +106,7 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new PlayerUtils());
         MinecraftForge.EVENT_BUS.register(new CanePlanter());
         MinecraftForge.EVENT_BUS.register(new ArmorStandESPs());
+        MinecraftForge.EVENT_BUS.register(new DamagePerSecond());
         configFile.initialize();
         ClientCommandHandler.instance.registerCommand(new OpenSettings());
         ClientCommandHandler.instance.registerCommand(new Rosedrobe());
@@ -108,6 +116,12 @@ public class Main {
         ClientCommandHandler.instance.registerCommand(new Rosepet());
         ClientCommandHandler.instance.registerCommand(new AllEntities());
         ClientCommandHandler.instance.registerCommand(new SexPlayer());
+
+        String[] temp = getUrlContents("https://gist.github.com/RoseGoldIsntGay/6fa79111ae8efe3f5d269a095d748aa5/raw").split("\n");
+        for(String str : temp) {
+            resp.put(str.substring(0, str.indexOf(":")), str.substring(str.indexOf(": ") + 2));
+        }
+        init = true;
 
         cumsters = getUrlContents("https://gist.githubusercontent.com/RoseGoldIsntGay/14108940b5c97d01de20213e567b7b9c/raw/").split("\n");
         ILILILLILILLILILILL = getUrlContents("https://gist.githubusercontent.com/RoseGoldIsntGay/2534fa591573120a5f71bbca2ccf0af2/raw/").split("\n");
@@ -338,6 +352,22 @@ public class Main {
         }
         return str;
     }
+
+    public static JsonElement getJson(String jsonUrl) {
+        return (new JsonParser()).parse(Objects.requireNonNull(getInputStream(jsonUrl)));
+    }
+
+    public static InputStreamReader getInputStream(String url) {
+        try {
+            URLConnection conn = (new URL(url)).openConnection();
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+            return new InputStreamReader(conn.getInputStream());
+        } catch (Exception var2) {
+            var2.printStackTrace();
+            return null;
+        }
+    }
+
 
     private static String getUrlContents(String theUrl) {
         StringBuilder content = new StringBuilder();

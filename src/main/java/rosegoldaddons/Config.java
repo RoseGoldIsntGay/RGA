@@ -89,7 +89,7 @@ public class Config extends Vigilant {
             category = "Mining", subcategory = "General", max = 5)
     public int hardrange = 0;
 
-    @Property(type = PropertyType.SELECTOR, name = "Hardstone Nuker Type", description = "Choose which pattern hardstone nuker will follow",
+    @Property(type = PropertyType.SELECTOR, name = "Hardstone Nuker Shape", description = "Choose which pattern hardstone nuker will follow",
             category = "Mining", subcategory = "General", options = {"Closest Block", "Facing Axis"})
     public int hardIndex = 0;
 
@@ -112,6 +112,10 @@ public class Config extends Vigilant {
     @Property(type = PropertyType.SELECTOR, name = "Nuker Crop Type", description = "Select the type of crop you want to nuke",
             category = "Farming", subcategory = "General", options = {"Any Crop Except Cane or Cactus", "Cane or Cactus", "Nether Wart", "Wheat", "Carrot", "Potato", "Pumpkin", "Melon", "Mushroom", "Cocoa"})
     public int farmNukeIndex = 0;
+
+    @Property(type = PropertyType.SELECTOR, name = "Crop Nuker Shape", description = "Choose which pattern crop nuker will follow",
+            category = "Farming", subcategory = "General", options = {"Closest Block", "Facing Axis"})
+    public int farmShapeIndex = 0;
 
     @Property(type = PropertyType.SWITCH, name = "Look at nuked block", description = "Looks at currently nuked block to look less sus",
             category = "Mining", subcategory = "General")

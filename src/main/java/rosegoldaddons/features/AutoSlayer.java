@@ -11,12 +11,10 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
-import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.ScoreboardUtils;
 
 import java.util.List;
@@ -126,28 +124,21 @@ public class AutoSlayer {
             Container container = ((GuiChest) event.gui).inventorySlots;
             if (container instanceof ContainerChest) {
                 String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-                ChatUtils.sendMessage(chestName);
                 if (chestName.contains("Slayer")) {
-                    ChatUtils.sendMessage(slayerSlot +" "+slotLevel);
                     List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
                     if (!chestInventory.get(13).getHasStack()) return;
                     if (chestInventory.get(13).getStack().getDisplayName().contains("Ongoing")) {
 
                     } else if (chestInventory.get(13).getStack().getDisplayName().contains("Complete")) {
-                        ChatUtils.sendMessage("will now commence clicks");
                         clickSlot(13, 2, 0);
                         clickSlot(slayerSlot, 2, 1);
                         clickSlot(slotLevel, 2, 2);
                         clickSlot(11, 2, 3); //confirm
-                        ChatUtils.sendMessage("clicked");
                     } else {
-                        ChatUtils.sendMessage("will now commence clicks");
                         clickSlot(slayerSlot, 2, 0);
                         clickSlot(slotLevel, 2, 1);
                         clickSlot(11, 2, 2); //confirm
-                        ChatUtils.sendMessage("clicked");
                     }
-                    ChatUtils.sendMessage("resetting variables");
                     slayerSlot = 0;
                     slotLevel = 0;
                     startSlayer = false;
