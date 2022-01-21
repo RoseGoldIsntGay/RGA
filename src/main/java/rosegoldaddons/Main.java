@@ -107,6 +107,7 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new CanePlanter());
         MinecraftForge.EVENT_BUS.register(new ArmorStandESPs());
         MinecraftForge.EVENT_BUS.register(new DamagePerSecond());
+        MinecraftForge.EVENT_BUS.register(new PinglessMining());
         configFile.initialize();
         ClientCommandHandler.instance.registerCommand(new OpenSettings());
         ClientCommandHandler.instance.registerCommand(new Rosedrobe());
@@ -119,7 +120,8 @@ public class Main {
 
         String[] temp = getUrlContents("https://gist.github.com/RoseGoldIsntGay/6fa79111ae8efe3f5d269a095d748aa5/raw").split("\n");
         for(String str : temp) {
-            resp.put(str.substring(0, str.indexOf(":")), str.substring(str.indexOf(": ") + 2));
+            resp.put(str.substring(0, str.indexOf(":")), str.substring(str.indexOf(": ") + 2).replace("&", "§"));
+            System.out.println(str.substring(0, str.indexOf(":"))+" "+str.substring(str.indexOf(": ") + 2).replace("&", "§"));
         }
         init = true;
 

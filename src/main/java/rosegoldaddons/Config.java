@@ -129,6 +129,14 @@ public class Config extends Vigilant {
             category = "Mining", subcategory = "General")
     public boolean includeOres = false;
 
+    @Property(type = PropertyType.SWITCH, name = "Pingless Mining", description = "Mines the next block before the previous block breaks, instabreak only",
+            category = "Mining", subcategory = "General")
+    public boolean pinglessMining = false;
+
+    @Property(type = PropertyType.SELECTOR, name = "Pingless Mining Speed", description = "Determine how long to wait before mining the next block",
+            category = "Mining", subcategory = "General", options = {"20 BPS (Legit)", "40 BPS", "80 BPS"})
+    public int pinglessSpeed = 0;
+
     @Property(type = PropertyType.SWITCH, name = "Auto Slayer", description = "Automatically use batphone",
             category = "RoseGoldAddons", subcategory = "General")
     public boolean autoSlayer = false;

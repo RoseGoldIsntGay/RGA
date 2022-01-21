@@ -4,14 +4,12 @@ import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
-import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.PlayerUtils;
 import rosegoldaddons.utils.RenderUtils;
 import rosegoldaddons.utils.RotationUtils;
@@ -26,7 +24,7 @@ public class MithrilNuker {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (!Main.mithrilNuker) {
+        if (!Main.mithrilNuker || Minecraft.getMinecraft().thePlayer == null || Minecraft.getMinecraft().theWorld == null) {
             currentDamage = 0;
             return;
         }
@@ -66,7 +64,7 @@ public class MithrilNuker {
 
     @SubscribeEvent
     public void renderWorld(RenderWorldLastEvent event) {
-        if (!Main.mithrilNuker) return;
+        if (!Main.mithrilNuker || Minecraft.getMinecraft().theWorld == null) return;
         if (blockPos != null) {
             IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
             if(blockState.getBlock() == Blocks.stone) {
@@ -79,7 +77,7 @@ public class MithrilNuker {
 
     private BlockPos closestMithril() {
         int r = 6;
-        if (Minecraft.getMinecraft().thePlayer == null) return null;
+        if (Minecraft.getMinecraft().thePlayer == null || Minecraft.getMinecraft().theWorld == null) return null;
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos = playerPos.add(0, 1, 0);
         Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();

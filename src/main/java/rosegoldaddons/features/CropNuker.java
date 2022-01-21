@@ -5,15 +5,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.*;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
 import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.PlayerUtils;
+import rosegoldaddons.utils.RenderUtils;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class CropNuker {
+    private static BlockPos crop = null;
     private static final ArrayList<BlockPos> broken = new ArrayList<>();
     private static int ticks = 0;
 
@@ -24,7 +28,7 @@ public class CropNuker {
             broken.clear();
             return;
         }
-        BlockPos crop = closestCrop();
+        crop = closestCrop();
         if (crop != null) {
             Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, crop, EnumFacing.DOWN));
             PlayerUtils.swingItem();
@@ -33,7 +37,16 @@ public class CropNuker {
 
     }
 
+    @SubscribeEvent
+    public void onRender(RenderWorldLastEvent event) {
+        if (!Main.nukeCrops) return;
+        if(crop != null) {
+            RenderUtils.drawBlockBox(crop, new Color(255, 0, 0), true, event.partialTicks);
+        }
+    }
+
     private BlockPos closestCrop() {
+        if(Minecraft.getMinecraft().theWorld == null) return null;
         double r = 6;
         BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
         playerPos = playerPos.add(0, 1, 0);

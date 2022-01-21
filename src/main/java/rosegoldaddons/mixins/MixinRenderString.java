@@ -1,42 +1,31 @@
 package rosegoldaddons.mixins;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import rosegoldaddons.Main;
-import rosegoldaddons.utils.ChatUtils;
 
 import java.util.Map;
 
-@Mixin(value = FontRenderer.class, priority = 999)
+@Mixin(FontRenderer.class)
 public abstract class MixinRenderString {
-    @Shadow
-    protected abstract void renderStringAtPos(String text, boolean shadow);
 
-    @Inject(method = "renderStringAtPos", at = @At("HEAD"), cancellable = true)
-    private void renderString(String text, boolean shadow, CallbackInfo ci) {
+    @ModifyVariable(method = "renderString", at = @At(value = "FIELD"))
+    private String replaceName(String text) {
         if(Main.configFile.wydsi && text.contains("727")) {
-            ci.cancel();
-            renderStringAtPos(text.replace("727", "726"), shadow);
+            text = text.replace("727", "726");
         }
         if (Main.init) {
             for (Map.Entry<String, String> entry : Main.resp.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
 
-                if (text.contains(key)) {
-                    ci.cancel();
-                    try {
-                        renderStringAtPos(text.replaceAll(key, value).replace("&", "§"), shadow);
-                    } catch (Exception e) {
-                        ChatUtils.sendMessage(e.toString());
-                    }
+                if (text.contains(key) && !text.contains(value)) {
+                    text = text.replace(key, value)+"§r";
                 }
             }
         }
+        return text;
     }
 }
