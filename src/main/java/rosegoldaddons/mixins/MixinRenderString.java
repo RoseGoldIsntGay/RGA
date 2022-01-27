@@ -23,6 +23,7 @@ public abstract class MixinRenderString {
 
                 if (text.contains(key) && !text.contains(value)) {
                     text = text.replace(key, value)+"§r";
+                    break;
                 }
             }
         }

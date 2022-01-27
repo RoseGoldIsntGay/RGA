@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
+import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.ScoreboardUtils;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class AutoSlayer {
     private static boolean waitingForMaddox = false;
     private static int slayerSlot = 0;
     private static int slotLevel = 0;
+    private static int debounce = 0;
 
     @SubscribeEvent
     public void chat(ClientChatReceivedEvent event) {
@@ -45,18 +47,18 @@ public class AutoSlayer {
 
     @SubscribeEvent
     public void onInteract(InputEvent.KeyInputEvent event) {
-        if (!Main.configFile.autoSlayer || !Main.configFile.clickMaddox || waitingForMaddox) return;
+        if (!Main.configFile.autoSlayer || !Main.configFile.clickMaddox || waitingForMaddox || debounce != 0) return;
         List<String> scoreboard = ScoreboardUtils.getSidebarLines();
         for (String line : scoreboard) {
             String cleanedLine = ScoreboardUtils.cleanSB(line);
             if (cleanedLine.contains("Boss slain!")) {
                 int maddox = findItemInHotbar("Batphone");
                 if (maddox != -1) {
-                    ItemStack item = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(maddox);
-                    int save = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-                    Minecraft.getMinecraft().thePlayer.inventory.currentItem = maddox;
-                    Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, item);
-                    Minecraft.getMinecraft().thePlayer.inventory.currentItem = save;
+                    ItemStack item = Main.mc.thePlayer.inventory.getStackInSlot(maddox);
+                    int save = Main.mc.thePlayer.inventory.currentItem;
+                    Main.mc.thePlayer.inventory.currentItem = maddox;
+                    Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, item);
+                    Main.mc.thePlayer.inventory.currentItem = save;
                     waitingForMaddox = true;
                     break;
                 }
@@ -67,8 +69,11 @@ public class AutoSlayer {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (!Main.configFile.autoSlayer) return;
+        if (debounce > 0) {
+            debounce--;
+        }
         if (!openMaddox) return;
-        Minecraft.getMinecraft().thePlayer.sendChatMessage(lastMaddoxCommand);
+        Main.mc.thePlayer.sendChatMessage(lastMaddoxCommand);
         switch (Main.configFile.slayerTypeIndex) {
             case 1:
                 slayerSlot = 10; //zombie
@@ -125,7 +130,7 @@ public class AutoSlayer {
             if (container instanceof ContainerChest) {
                 String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
                 if (chestName.contains("Slayer")) {
-                    List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+                    List<Slot> chestInventory = ((GuiChest) Main.mc.currentScreen).inventorySlots.inventorySlots;
                     if (!chestInventory.get(13).getHasStack()) return;
                     if (chestInventory.get(13).getStack().getDisplayName().contains("Ongoing")) {
 
@@ -134,10 +139,12 @@ public class AutoSlayer {
                         clickSlot(slayerSlot, 2, 1);
                         clickSlot(slotLevel, 2, 2);
                         clickSlot(11, 2, 3); //confirm
+                        debounce = 80;
                     } else {
                         clickSlot(slayerSlot, 2, 0);
                         clickSlot(slotLevel, 2, 1);
                         clickSlot(11, 2, 2); //confirm
+                        debounce = 80;
                     }
                     slayerSlot = 0;
                     slotLevel = 0;
@@ -149,7 +156,7 @@ public class AutoSlayer {
     }
 
     private static int findItemInHotbar(String name) {
-        InventoryPlayer inv = Minecraft.getMinecraft().thePlayer.inventory;
+        InventoryPlayer inv = Main.mc.thePlayer.inventory;
         for (int i = 0; i < 9; i++) {
             ItemStack curStack = inv.getStackInSlot(i);
             if (curStack != null) {
@@ -162,6 +169,6 @@ public class AutoSlayer {
     }
 
     private void clickSlot(int slot, int type, int windowAdd) {
-        Minecraft.getMinecraft().playerController.windowClick(Minecraft.getMinecraft().thePlayer.openContainer.windowId + windowAdd, slot, type, 0, Minecraft.getMinecraft().thePlayer);
+        Main.mc.playerController.windowClick(Main.mc.thePlayer.openContainer.windowId + windowAdd, slot, type, 0, Main.mc.thePlayer);
     }
 }

@@ -12,9 +12,9 @@ public class PlayerUtils {
     public static boolean pickaxeAbilityReady = false;
 
     public static void swingItem() {
-        MovingObjectPosition movingObjectPosition = Minecraft.getMinecraft().objectMouseOver;
+        MovingObjectPosition movingObjectPosition = Main.mc.objectMouseOver;
         if (movingObjectPosition != null && movingObjectPosition.entityHit == null) {
-            Minecraft.getMinecraft().thePlayer.swingItem();
+            Main.mc.thePlayer.swingItem();
         }
     }
 
@@ -26,10 +26,10 @@ public class PlayerUtils {
     @SubscribeEvent
     public void chat(ClientChatReceivedEvent event) {
         String message = StringUtils.stripControlCodes(event.message.getUnformattedText());
-        if (message.contains(":")) return;
-        if(message.contains("You used your")) {
+        if (message.contains(":") || message.contains(">")) return;
+        if(message.startsWith("You used your")) {
             pickaxeAbilityReady = false;
-        } else if(message.contains("is now available!")) {
+        } else if(message.endsWith("is now available!")) {
             pickaxeAbilityReady = true;
         }
     }

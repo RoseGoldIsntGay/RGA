@@ -35,7 +35,7 @@ public class PowderMacro {
                     if (dist < 1) {
                         particlePos = particlePos.add(new Vec3(0, -1, 0));
                         int drill = findItemInHotbar("X655");
-                        if(drill != -1) Minecraft.getMinecraft().thePlayer.inventory.currentItem = drill;
+                        if(drill != -1) Main.mc.thePlayer.inventory.currentItem = drill;
                         RotationUtils.facePos(particlePos);
                     }
                 }
@@ -54,15 +54,15 @@ public class PowderMacro {
 
     private static Vec3 closestChest() {
         int r = 6;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos.add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
         ArrayList<Vec3> chests = new ArrayList<Vec3>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
+                //Main.mc.thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
                 if (blockState.getBlock() == Blocks.chest) {
                     chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
@@ -81,7 +81,7 @@ public class PowderMacro {
     }
 
     public static int findItemInHotbar(String name) {
-        InventoryPlayer inv = Minecraft.getMinecraft().thePlayer.inventory;
+        InventoryPlayer inv = Main.mc.thePlayer.inventory;
         for (int i = 0; i < 9; i++) {
             ItemStack curStack = inv.getStackInSlot(i);
             if (curStack != null) {

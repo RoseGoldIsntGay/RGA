@@ -32,16 +32,16 @@ public class BrewingMacro {
     public void onTick(TickEvent.ClientTickEvent event) {
         if (!Main.brewingMacro || !Main.configFile.openstand || Main.configFile.alchindex != 0) return;
         if (event.phase == TickEvent.Phase.END) {
-            if (Minecraft.getMinecraft().currentScreen == null && stand != null && !sell) {
-                if (Minecraft.getMinecraft().playerController.onPlayerRightClick(
-                        Minecraft.getMinecraft().thePlayer,
-                        Minecraft.getMinecraft().theWorld,
-                        Minecraft.getMinecraft().thePlayer.inventory.getCurrentItem(),
+            if (Main.mc.currentScreen == null && stand != null && !sell) {
+                if (Main.mc.playerController.onPlayerRightClick(
+                        Main.mc.thePlayer,
+                        Main.mc.theWorld,
+                        Main.mc.thePlayer.inventory.getCurrentItem(),
                         stand,
-                        EnumFacing.fromAngle(Minecraft.getMinecraft().thePlayer.rotationYaw),
+                        EnumFacing.fromAngle(Main.mc.thePlayer.rotationYaw),
                         new Vec3(Math.random(), Math.random(), Math.random())
                 )) {
-                    Minecraft.getMinecraft().thePlayer.swingItem();
+                    Main.mc.thePlayer.swingItem();
                 }
             }
         }
@@ -60,7 +60,7 @@ public class BrewingMacro {
                         try {
                             if (Main.configFile.alchindex == 0) {
                                 if (chestName.contains("Brewing Stand")) {
-                                    List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+                                    List<Slot> chestInventory = ((GuiChest) Main.mc.currentScreen).inventorySlots.inventorySlots;
                                     for (Slot slot : chestInventory) {
                                         if (!slot.getHasStack()) continue;
                                         if ((slot.getStack().getDisplayName().contains("Speed") || slot.getStack().getDisplayName().contains("Weakness")) && slot.slotNumber < 54) {
@@ -68,7 +68,7 @@ public class BrewingMacro {
                                             Thread.sleep(sleep);
                                             if (isInventoryFull()) {
                                                 sell = true;
-                                                Minecraft.getMinecraft().thePlayer.sendChatMessage("/sbmenu");
+                                                Main.mc.thePlayer.sendChatMessage("/sbmenu");
                                             }
                                         }
                                     }
@@ -78,7 +78,7 @@ public class BrewingMacro {
                                         Thread.sleep(sleep);
                                         clickSlot(22, 0, 0);
                                     } else if (chestName.contains("Trades")) {
-                                        List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+                                        List<Slot> chestInventory = ((GuiChest) Main.mc.currentScreen).inventorySlots.inventorySlots;
                                         for (Slot slot : chestInventory) {
                                             if (!slot.getHasStack()) continue;
                                             if ((slot.getStack().getDisplayName().contains("Speed") || slot.getStack().getDisplayName().contains("Weakness")) && slot.slotNumber >= 54) {
@@ -86,13 +86,13 @@ public class BrewingMacro {
                                                 Thread.sleep(sleep);
                                             }
                                         }
-                                        Minecraft.getMinecraft().thePlayer.closeScreen();
+                                        Main.mc.thePlayer.closeScreen();
                                         sell = false;
                                     }
                                 }
                             } else if (Main.configFile.alchindex == 1) {
                                 if (chestName.contains("Brewing Stand")) {
-                                    List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+                                    List<Slot> chestInventory = ((GuiChest) Main.mc.currentScreen).inventorySlots.inventorySlots;
                                     for (Slot slot : chestInventory) {
                                         if (!slot.getHasStack()) continue;
                                         if (!chestInventory.get(42).getHasStack()) {
@@ -103,12 +103,12 @@ public class BrewingMacro {
                                         }
                                     }
                                     if (Main.configFile.alchclose) {
-                                        Minecraft.getMinecraft().thePlayer.closeScreen();
+                                        Main.mc.thePlayer.closeScreen();
                                     }
                                 }
                             } else if (Main.configFile.alchindex == 2) {
                                 if (chestName.contains("Brewing Stand")) {
-                                    List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+                                    List<Slot> chestInventory = ((GuiChest) Main.mc.currentScreen).inventorySlots.inventorySlots;
                                     for (Slot slot : chestInventory) {
                                         if (!slot.getHasStack()) continue;
                                         if (!chestInventory.get(13).getHasStack()) {
@@ -123,12 +123,12 @@ public class BrewingMacro {
                                         }
                                     }
                                     if (Main.configFile.alchclose) {
-                                        Minecraft.getMinecraft().thePlayer.closeScreen();
+                                        Main.mc.thePlayer.closeScreen();
                                     }
                                 }
                             } else if (Main.configFile.alchindex == 3) {
                                 if (chestName.contains("Brewing Stand")) {
-                                    List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+                                    List<Slot> chestInventory = ((GuiChest) Main.mc.currentScreen).inventorySlots.inventorySlots;
                                     for (Slot slot : chestInventory) {
                                         if (!slot.getHasStack()) continue;
                                         if (!chestInventory.get(13).getHasStack()) {
@@ -143,12 +143,12 @@ public class BrewingMacro {
                                         }
                                     }
                                     if (Main.configFile.alchclose) {
-                                        Minecraft.getMinecraft().thePlayer.closeScreen();
+                                        Main.mc.thePlayer.closeScreen();
                                     }
                                 }
                             } else if (Main.configFile.alchindex == 4) {
                                 if (chestName.contains("Brewing Stand")) {
-                                    List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+                                    List<Slot> chestInventory = ((GuiChest) Main.mc.currentScreen).inventorySlots.inventorySlots;
                                     for (Slot slot : chestInventory) {
                                         if (!slot.getHasStack()) continue;
                                         if (!chestInventory.get(13).getHasStack()) {
@@ -163,7 +163,7 @@ public class BrewingMacro {
                                         }
                                     }
                                     if (Main.configFile.alchclose) {
-                                        Minecraft.getMinecraft().thePlayer.closeScreen();
+                                        Main.mc.thePlayer.closeScreen();
                                     }
                                 }
                             }
@@ -188,7 +188,7 @@ public class BrewingMacro {
     }
 
     private boolean isInventoryFull() {
-        List<Slot> inventory = Minecraft.getMinecraft().thePlayer.inventoryContainer.inventorySlots;
+        List<Slot> inventory = Main.mc.thePlayer.inventoryContainer.inventorySlots;
         for (Slot slot : inventory) {
             if (!slot.getHasStack() && slot.slotNumber > 8) {
                 return false;
@@ -199,16 +199,16 @@ public class BrewingMacro {
 
     private BlockPos closestStand() {
         int r = 6;
-        if (Minecraft.getMinecraft().thePlayer == null) return null;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        if (Main.mc.thePlayer == null) return null;
+        BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos.add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
         ArrayList<Vec3> stands = new ArrayList<Vec3>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
+                //Main.mc.thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
                 if (blockState.getBlock() == Blocks.brewing_stand) {
                     stands.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
@@ -230,6 +230,6 @@ public class BrewingMacro {
     }
 
     private void clickSlot(int slot, int type, int mode) {
-        Minecraft.getMinecraft().playerController.windowClick(Minecraft.getMinecraft().thePlayer.openContainer.windowId, slot, type, mode, Minecraft.getMinecraft().thePlayer);
+        Main.mc.playerController.windowClick(Main.mc.thePlayer.openContainer.windowId, slot, type, mode, Main.mc.thePlayer);
     }
 }

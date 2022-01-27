@@ -23,13 +23,13 @@ public class CustomItemMacro {
         if (thread == null || !thread.isAlive()) {
             thread = new Thread(() -> {
                 try {
-                    int prevItem = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+                    int prevItem = Main.mc.thePlayer.inventory.currentItem;
                     for (String i : UseCooldown.RCitems.keySet()) {
                         if (milis % Math.floor(UseCooldown.RCitems.get(i)/100) == 0) {
                             int slot = findItemInHotbar(i);
                             if (slot != -1) {
-                                Minecraft.getMinecraft().thePlayer.inventory.currentItem = slot;
-                                Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot));
+                                Main.mc.thePlayer.inventory.currentItem = slot;
+                                Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(slot));
                             }
                         }
                     }
@@ -37,13 +37,13 @@ public class CustomItemMacro {
                         if (milis % Math.floor(UseCooldown.LCitems.get(i)/100) == 0) {
                             int slot = findItemInHotbar(i);
                             if (slot != -1) {
-                                Minecraft.getMinecraft().thePlayer.inventory.currentItem = slot;
+                                Main.mc.thePlayer.inventory.currentItem = slot;
                                 Thread.sleep(100);
                                 click();
                             }
                         }
                     }
-                    Minecraft.getMinecraft().thePlayer.inventory.currentItem = prevItem;
+                    Main.mc.thePlayer.inventory.currentItem = prevItem;
                     milis++;
                     Thread.sleep(100);
                 } catch (Exception e) {
@@ -63,15 +63,15 @@ public class CustomItemMacro {
                 clickMouse = Minecraft.class.getDeclaredMethod("clickMouse");
             }
             clickMouse.setAccessible(true);
-            clickMouse.invoke(Minecraft.getMinecraft());
+            clickMouse.invoke(Main.mc);
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-        Minecraft.getMinecraft().thePlayer.swingItem();
+        Main.mc.thePlayer.swingItem();
     }
 
     private static int findItemInHotbar(String name) {
-        InventoryPlayer inv = Minecraft.getMinecraft().thePlayer.inventory;
+        InventoryPlayer inv = Main.mc.thePlayer.inventory;
         for (int i = 0; i < 9; i++) {
             ItemStack curStack = inv.getStackInSlot(i);
             if (curStack != null) {

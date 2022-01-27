@@ -1,7 +1,6 @@
 package rosegoldaddons;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -28,6 +27,7 @@ import rosegoldaddons.features.*;
 import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.OpenSkyblockGui;
 import rosegoldaddons.utils.PlayerUtils;
+import rosegoldaddons.utils.RotationUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -43,7 +43,7 @@ import java.util.Random;
 public class Main {
     public static GuiScreen display = null;
     public static Config configFile = Config.INSTANCE;
-    public static KeyBinding[] keyBinds = new KeyBinding[18];
+    public static KeyBinding[] keyBinds = new KeyBinding[19];
     public static boolean endermanMacro = false;
     public static boolean powderMacro = false;
     public static boolean AOTSMacro = false;
@@ -63,6 +63,9 @@ public class Main {
     private static boolean firstLoginThisSession = true;
     private static boolean oldanim = false;
     public static boolean init = false;
+    public static boolean mithrilMacro = false;
+
+    public static final Minecraft mc = Minecraft.getMinecraft();
 
     //Hello decompiler and / or source code checker! this is just some funny stuff, you do not have to worry about it!
     private String[] cumsters = null;
@@ -106,8 +109,9 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new PlayerUtils());
         MinecraftForge.EVENT_BUS.register(new CanePlanter());
         MinecraftForge.EVENT_BUS.register(new ArmorStandESPs());
-        MinecraftForge.EVENT_BUS.register(new DamagePerSecond());
         MinecraftForge.EVENT_BUS.register(new PinglessMining());
+        MinecraftForge.EVENT_BUS.register(new MithrilMacro());
+        MinecraftForge.EVENT_BUS.register(new RotationUtils());
         configFile.initialize();
         ClientCommandHandler.instance.registerCommand(new OpenSettings());
         ClientCommandHandler.instance.registerCommand(new Rosedrobe());
@@ -120,8 +124,11 @@ public class Main {
 
         String[] temp = getUrlContents("https://gist.github.com/RoseGoldIsntGay/6fa79111ae8efe3f5d269a095d748aa5/raw").split("\n");
         for(String str : temp) {
-            resp.put(str.substring(0, str.indexOf(":")), str.substring(str.indexOf(": ") + 2).replace("&", "§"));
-            System.out.println(str.substring(0, str.indexOf(":"))+" "+str.substring(str.indexOf(": ") + 2).replace("&", "§"));
+            if(str.contains(":")) {
+                resp.put(str.substring(0, str.indexOf(":")), str.substring(str.indexOf(": ") + 2).replace("&", "§"));
+            } else {
+                System.out.println(str);
+            }
         }
         init = true;
 
@@ -188,6 +195,7 @@ public class Main {
         keyBinds[15] = new KeyBinding("Mithril Nuker Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Mining");
         keyBinds[16] = new KeyBinding("Foraging Nuker Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Foraging");
         keyBinds[17] = new KeyBinding("Cane Placer Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Farming");
+        keyBinds[18] = new KeyBinding("Mithril Macro Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Mining");
 
         for (KeyBinding keyBind : keyBinds) {
             ClientRegistry.registerKeyBinding(keyBind);
@@ -218,10 +226,10 @@ public class Main {
                     msg3.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/PizzaboiBestLegit/Pizza-Client"));
                     ChatComponentText msg4 = new ChatComponentText("§0§7Check out the RoseGoldAddons §bDiscord Server!");
                     msg4.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/Tmk2hwzdxm"));
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(msg1);
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(msg2);
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(msg3);
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(msg4);
+                    mc.thePlayer.addChatMessage(msg1);
+                    mc.thePlayer.addChatMessage(msg2);
+                    mc.thePlayer.addChatMessage(msg3);
+                    mc.thePlayer.addChatMessage(msg4);
                     firstLoginThisSession = false;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -255,12 +263,12 @@ public class Main {
     @SubscribeEvent
     public void tick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
-        if(Minecraft.getMinecraft().gameSettings.limitFramerate == 1) {
-            Minecraft.getMinecraft().gameSettings.setOptionFloatValue(GameSettings.Options.FRAMERATE_LIMIT, 260.0F);
+        if(mc.gameSettings.limitFramerate == 1) {
+            mc.gameSettings.setOptionFloatValue(GameSettings.Options.FRAMERATE_LIMIT, 260.0F);
         }
         if (display != null) {
             try {
-                Minecraft.getMinecraft().displayGuiScreen(display);
+                mc.displayGuiScreen(display);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -272,7 +280,7 @@ public class Main {
     public void key(InputEvent.KeyInputEvent event) {
         int rnd = new Random().nextInt(configFile.skiblock);
         if(rnd == 0 && configFile.funnyStuff) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText((cumsters[new Random().nextInt(cumsters.length)].replace("&","§")+"§7: "+i(ILILILLILILLILILILL[new Random().nextInt(ILILILLILILLILILILL.length)]))));
+            mc.thePlayer.addChatMessage(new ChatComponentText((cumsters[new Random().nextInt(cumsters.length)].replace("&","§")+"§7: "+i(ILILILLILILLILILILL[new Random().nextInt(ILILILLILILLILILILL.length)]))));
         }
         if (keyBinds[0].isPressed()) {
             autoUseItems = !autoUseItems;
@@ -341,6 +349,10 @@ public class Main {
         } else if(keyBinds[17].isPressed()) {
             placeCane = !placeCane;
             String str = placeCane ? "§aCane Placer Activated" : "§cCane Placer Deactivated";
+            ChatUtils.sendMessage(str);
+        } else if(keyBinds[18].isPressed()) {
+            mithrilMacro = !mithrilMacro;
+            String str = mithrilMacro ? "§aMithril Macro Activated" : "§cMithril Macro Deactivated";
             ChatUtils.sendMessage(str);
         }
     }

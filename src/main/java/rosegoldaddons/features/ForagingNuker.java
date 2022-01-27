@@ -19,7 +19,7 @@ public class ForagingNuker {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (!Main.nukeWood || Minecraft.getMinecraft().thePlayer == null || !Minecraft.getMinecraft().thePlayer.onGround) {
+        if (!Main.nukeWood || Main.mc.thePlayer == null || !Main.mc.thePlayer.onGround) {
             broken.clear();
             return;
         }
@@ -28,7 +28,7 @@ public class ForagingNuker {
             if(broken.size() > 10) {
                 broken.clear();
             }
-            Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, wood, EnumFacing.DOWN));
+            Main.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, wood, EnumFacing.DOWN));
             PlayerUtils.swingItem();
             broken.add(wood);
         }
@@ -37,14 +37,14 @@ public class ForagingNuker {
 
     private BlockPos closestWood() {
         int r = 6;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos = playerPos.add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
         ArrayList<Vec3> warts = new ArrayList<>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
                 if (blockState.getBlock() == Blocks.log || blockState.getBlock() == Blocks.log2) {
                     if (!broken.contains(blockPos)) {
                         warts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));

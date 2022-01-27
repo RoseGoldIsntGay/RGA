@@ -11,6 +11,7 @@ import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import org.jetbrains.annotations.NotNull;
+import rosegoldaddons.Main;
 import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.RenderUtils;
 
@@ -36,7 +37,7 @@ public class AllEntities implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
+        for (Entity entity1 : (Main.mc.theWorld.loadedEntityList)) {
             ChatUtils.sendMessage(""+entity1);
             if(entity1 instanceof EntityArmorStand) {
                 ItemStack itemStack = ((EntityArmorStand) entity1).getCurrentArmor(3);

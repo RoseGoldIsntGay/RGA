@@ -13,14 +13,14 @@ public class PartyUntransfer {
         if (!Main.configFile.AutoUntransfer) return;
         String message = StringUtils.stripControlCodes(event.message.getUnformattedText()).toLowerCase();
         if (message.contains("the party was transferred to")) {
-            String playerName = Minecraft.getMinecraft().thePlayer.getName();
+            String playerName = Main.mc.thePlayer.getName();
             String leader = stripRank(message.substring(message.indexOf("by")+3));
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/p transfer "+leader);
+            Main.mc.thePlayer.sendChatMessage("/p transfer "+leader);
         }
         if(message.contains("has promoted")) {
-            String playerName = Minecraft.getMinecraft().thePlayer.getName();
+            String playerName = Main.mc.thePlayer.getName();
             String leader = stripRank(message.substring(0 ,message.indexOf("has promoted")-1));
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/p transfer "+leader);
+            Main.mc.thePlayer.sendChatMessage("/p transfer "+leader);
         }
     }
 

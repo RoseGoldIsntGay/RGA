@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class PinglessMining {
     private static BlockPos block = null;
     private static final ArrayList<BlockPos> broken = new ArrayList<>();
-    private final KeyBinding lc = Minecraft.getMinecraft().gameSettings.keyBindAttack;
+    private final KeyBinding lc = Main.mc.gameSettings.keyBindAttack;
     private static int ticks = 0;
 
     @SubscribeEvent
@@ -33,13 +33,14 @@ public class PinglessMining {
         }
         if (lc != null && lc.isKeyDown()) {
             if (block != null) {
-                MovingObjectPosition movingObjectPosition = Minecraft.getMinecraft().objectMouseOver;
+                MovingObjectPosition movingObjectPosition = Main.mc.objectMouseOver;
                 if (movingObjectPosition != null && movingObjectPosition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                    Block b = Minecraft.getMinecraft().theWorld.getBlockState(movingObjectPosition.getBlockPos()).getBlock();
+                    Block b = Main.mc.theWorld.getBlockState(movingObjectPosition.getBlockPos()).getBlock();
                     if (b == Blocks.stone || b == Blocks.emerald_ore || b == Blocks.lapis_ore || b == Blocks.redstone_ore ||
-                            b == Blocks.iron_ore || b == Blocks.gold_ore || b == Blocks.coal_ore || b == Blocks.diamond_ore) {
+                            b == Blocks.iron_ore || b == Blocks.gold_ore || b == Blocks.coal_ore || b == Blocks.diamond_ore ||
+                    b == Blocks.nether_wart || b == Blocks.reeds || b == Blocks.potatoes || b == Blocks.carrots) {
                         broken.add(block);
-                        Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, block, EnumFacing.DOWN));
+                        Main.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, block, EnumFacing.DOWN));
                         PlayerUtils.swingItem();
                     }
                 }
@@ -48,7 +49,7 @@ public class PinglessMining {
     }
 
     @SubscribeEvent
-    public void onTick40(TickEvent.PlayerTickEvent event) {
+    public void onTick40(TickEvent.ClientTickEvent event) {
         if (!Main.configFile.pinglessMining) return;
         if (Main.configFile.pinglessSpeed == 2) return;
         if (Main.configFile.pinglessSpeed == 0 && event.phase == TickEvent.Phase.END) return;
@@ -58,13 +59,13 @@ public class PinglessMining {
         }
         if (lc != null && lc.isKeyDown()) {
             if (block != null) {
-                MovingObjectPosition movingObjectPosition = Minecraft.getMinecraft().objectMouseOver;
+                MovingObjectPosition movingObjectPosition = Main.mc.objectMouseOver;
                 if (movingObjectPosition != null && movingObjectPosition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                    Block b = Minecraft.getMinecraft().theWorld.getBlockState(movingObjectPosition.getBlockPos()).getBlock();
+                    Block b = Main.mc.theWorld.getBlockState(movingObjectPosition.getBlockPos()).getBlock();
                     if (b == Blocks.stone || b == Blocks.emerald_ore || b == Blocks.lapis_ore || b == Blocks.redstone_ore ||
                             b == Blocks.iron_ore || b == Blocks.gold_ore || b == Blocks.coal_ore || b == Blocks.diamond_ore) {
                         broken.add(block);
-                        Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, block, EnumFacing.DOWN));
+                        Main.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, block, EnumFacing.DOWN));
                         PlayerUtils.swingItem();
                     }
                 }
@@ -74,7 +75,7 @@ public class PinglessMining {
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
-        if (!Main.configFile.pinglessMining || Minecraft.getMinecraft().thePlayer == null || Minecraft.getMinecraft().theWorld == null) {
+        if (!Main.configFile.pinglessMining || Main.mc.thePlayer == null || Main.mc.theWorld == null) {
             broken.clear();
             return;
         }
@@ -86,12 +87,12 @@ public class PinglessMining {
 
     private BlockPos closestBlock(RenderWorldLastEvent event) {
         int r = 5;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition().add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        BlockPos playerPos = Main.mc.thePlayer.getPosition().add(0, 1, 0);
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
         ArrayList<Vec3> blocks = new ArrayList<>();
         for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-            IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+            IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
             if (isLookingAtBlock(blockPos, event) && !broken.contains(blockPos) && blockState.getBlock() != Blocks.air) {
                 blocks.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
             }
@@ -113,8 +114,8 @@ public class PinglessMining {
 
     private boolean isLookingAtBlock(BlockPos blockPos, RenderWorldLastEvent event) {
         AxisAlignedBB aabb = AxisAlignedBB.fromBounds(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1);
-        Vec3 position = new Vec3(Minecraft.getMinecraft().thePlayer.posX, (Minecraft.getMinecraft().thePlayer.posY + Minecraft.getMinecraft().thePlayer.getEyeHeight()), Minecraft.getMinecraft().thePlayer.posZ);
-        Vec3 look = Minecraft.getMinecraft().thePlayer.getLook(event.partialTicks);
+        Vec3 position = new Vec3(Main.mc.thePlayer.posX, (Main.mc.thePlayer.posY + Main.mc.thePlayer.getEyeHeight()), Main.mc.thePlayer.posZ);
+        Vec3 look = Main.mc.thePlayer.getLook(event.partialTicks);
         look = scaleVec(look, 0.2F);
         for (int i = 0; i < 40; i++) {
             if (aabb.minX <= position.xCoord && aabb.maxX >= position.xCoord && aabb.minY <= position.yCoord && aabb.maxY >= position.yCoord && aabb.minZ <= position.zCoord && aabb.maxZ >= position.zCoord) {

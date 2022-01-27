@@ -6,6 +6,7 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import org.jetbrains.annotations.NotNull;
+import rosegoldaddons.Main;
 import rosegoldaddons.utils.ChatUtils;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class Rosepet implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
         if (args.length == 1) {
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
+            Main.mc.thePlayer.sendChatMessage("/pets");
             openPetS = true;
             if(isNumeric(args[0])) {
                 petSlot = Integer.parseInt(args[0]);

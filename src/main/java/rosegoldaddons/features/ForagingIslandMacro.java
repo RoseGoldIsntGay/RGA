@@ -30,7 +30,7 @@ public class ForagingIslandMacro {
                 thread = new Thread(() -> {
                     try {
                         BlockPos furthestDirt = furthestEmptyDirt();
-                        //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("furthest dirt "+furthestDirt));
+                        //Main.mc.thePlayer.addChatMessage(new ChatComponentText("furthest dirt "+furthestDirt));
                         int sapling = findItemInHotbar("Jungle Sapling");
                         if(sapling == -1) {
                             sapling = findItemInHotbar("Oak Sapling");
@@ -60,16 +60,16 @@ public class ForagingIslandMacro {
                             RotationUtils.facePos(new Vec3(furthestDirt.getX() + 0.5, furthestDirt.getY() - 0.5, furthestDirt.getZ() + 0.5));
                             Thread.sleep(Main.configFile.smoothLookVelocity * 2L);
                             if (sapling != -1) {
-                                if (Minecraft.getMinecraft().objectMouseOver.typeOfHit.toString().equals("BLOCK")) {
-                                    BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
-                                    Block block = Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock();
+                                if (Main.mc.objectMouseOver.typeOfHit.toString().equals("BLOCK")) {
+                                    BlockPos pos = Main.mc.objectMouseOver.getBlockPos();
+                                    Block block = Main.mc.theWorld.getBlockState(pos).getBlock();
                                     if (block == Blocks.sapling) {
                                         click();
                                         Thread.sleep(20);
                                     }
                                 }
-                                Minecraft.getMinecraft().thePlayer.inventory.currentItem = sapling;
-                                //Minecraft.getMinecraft().playerController.onPlayerRightClick(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.inventory.getCurrentItem(), furthestDirt, EnumFacing.NORTH, Minecraft.getMinecraft().objectMouseOver.hitVec);
+                                Main.mc.thePlayer.inventory.currentItem = sapling;
+                                //Main.mc.playerController.onPlayerRightClick(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getCurrentItem(), furthestDirt, EnumFacing.NORTH, Main.mc.objectMouseOver.hitVec);
                                 rightClick();
                             }
                         } else {
@@ -77,7 +77,7 @@ public class ForagingIslandMacro {
                             if (dirt != null) {
                                 RotationUtils.facePos(new Vec3(dirt.getX() + 0.5, dirt.getY(), dirt.getZ() + 0.5));
                                 if (bonemeal != -1 && treecap != -1) {
-                                    Minecraft.getMinecraft().thePlayer.inventory.currentItem = bonemeal;
+                                    Main.mc.thePlayer.inventory.currentItem = bonemeal;
                                     Random rand = new Random();
                                     int toAdd = 0;
                                     if(Main.configFile.randomizeForaging) {
@@ -87,13 +87,13 @@ public class ForagingIslandMacro {
                                     Thread.sleep(Math.round(150*(1+(toAdd/100))));
                                     rightClick();
                                     rightClick();
-                                    Minecraft.getMinecraft().thePlayer.inventory.currentItem = treecap;
+                                    Main.mc.thePlayer.inventory.currentItem = treecap;
                                     Thread.sleep(Math.round(Main.configFile.treecapDelay*(1+(toAdd/100))));
-                                    KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode(), true);
+                                    KeyBinding.setKeyBindState(Main.mc.gameSettings.keyBindAttack.getKeyCode(), true);
                                     Thread.sleep(Math.round(150*(1+(toAdd/100))));
-                                    KeyBinding.setKeyBindState(Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode(), false);
+                                    KeyBinding.setKeyBindState(Main.mc.gameSettings.keyBindAttack.getKeyCode(), false);
                                     Thread.sleep(Math.round(25*(1+(toAdd/100))));
-                                    Minecraft.getMinecraft().thePlayer.inventory.currentItem = rod;
+                                    Main.mc.thePlayer.inventory.currentItem = rod;
                                     Thread.sleep(Math.round(Main.configFile.prerodDelay*(1+(toAdd/100))));
                                     rightClick();
                                     Thread.sleep(Math.round(Main.configFile.postrodDelay*(1+(toAdd/100))));
@@ -124,9 +124,9 @@ public class ForagingIslandMacro {
                 new Thread(() -> {
                     try {
                         Thread.sleep(rand2);
-                        Minecraft.getMinecraft().thePlayer.sendChatMessage("/ac "+responses[rand]);
+                        Main.mc.thePlayer.sendChatMessage("/ac "+responses[rand]);
                         Thread.sleep(rand2*2);
-                        Minecraft.getMinecraft().getNetHandler().getNetworkManager().closeChannel(new ChatComponentText("Antisus activated lets hope you didnt get banned"));
+                        Main.mc.getNetHandler().getNetworkManager().closeChannel(new ChatComponentText("Antisus activated lets hope you didnt get banned"));
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
@@ -137,16 +137,16 @@ public class ForagingIslandMacro {
 
     private BlockPos furthestEmptyDirt() {
         int r = 5;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos.add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
         ArrayList<Vec3> dirts = new ArrayList<Vec3>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
-                IBlockState blockState2 = Minecraft.getMinecraft().theWorld.getBlockState(blockPos.add(0, 1, 0));
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
+                IBlockState blockState2 = Main.mc.theWorld.getBlockState(blockPos.add(0, 1, 0));
+                //Main.mc.thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
                 if (blockState.getBlock() == Blocks.dirt && blockState2.getBlock() == Blocks.air) {
                     dirts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
@@ -169,15 +169,15 @@ public class ForagingIslandMacro {
 
     private BlockPos closestDirt() {
         int r = 5;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos.add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
         ArrayList<Vec3> dirts = new ArrayList<Vec3>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
+                //Main.mc.thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
                 if (blockState.getBlock() == Blocks.dirt) {
                     dirts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
@@ -199,7 +199,7 @@ public class ForagingIslandMacro {
     }
 
     private static int findItemInHotbar(String name) {
-        InventoryPlayer inv = Minecraft.getMinecraft().thePlayer.inventory;
+        InventoryPlayer inv = Main.mc.thePlayer.inventory;
         for (int i = 0; i < 9; i++) {
             ItemStack curStack = inv.getStackInSlot(i);
             if (curStack != null) {
@@ -220,7 +220,7 @@ public class ForagingIslandMacro {
                 rightClickMouse = Minecraft.class.getDeclaredMethod("rightClickMouse");
             }
             rightClickMouse.setAccessible(true);
-            rightClickMouse.invoke(Minecraft.getMinecraft());
+            rightClickMouse.invoke(Main.mc);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -235,32 +235,32 @@ public class ForagingIslandMacro {
                 clickMouse = Minecraft.class.getDeclaredMethod("clickMouse");
             }
             clickMouse.setAccessible(true);
-            clickMouse.invoke(Minecraft.getMinecraft());
+            clickMouse.invoke(Main.mc);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static void playAlert() {
-        Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+        Main.mc.thePlayer.playSound("random.orb", 1, 0.5F);
     }
 
     private static void playAnnoyingAlert() {
         new Thread(() -> {
             try {
-                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Main.mc.thePlayer.playSound("random.orb", 1, 0.5F);
                 Thread.sleep(100);
-                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Main.mc.thePlayer.playSound("random.orb", 1, 0.5F);
                 Thread.sleep(100);
-                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Main.mc.thePlayer.playSound("random.orb", 1, 0.5F);
                 Thread.sleep(100);
-                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Main.mc.thePlayer.playSound("random.orb", 1, 0.5F);
                 Thread.sleep(100);
-                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Main.mc.thePlayer.playSound("random.orb", 1, 0.5F);
                 Thread.sleep(100);
-                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Main.mc.thePlayer.playSound("random.orb", 1, 0.5F);
                 Thread.sleep(100);
-                Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 0.5F);
+                Main.mc.thePlayer.playSound("random.orb", 1, 0.5F);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }

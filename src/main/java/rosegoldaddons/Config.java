@@ -129,6 +129,10 @@ public class Config extends Vigilant {
             category = "Mining", subcategory = "General")
     public boolean includeOres = false;
 
+    @Property(type = PropertyType.SELECTOR, name = "Mithril Macro Priority", description = "Determine the order the macro will breaks blocks in",
+            category = "Mining", subcategory = "General", options = {"Highest value to lowest", "Lowest value to highest","Any"})
+    public int mithrilMacroPrio = 0;
+
     @Property(type = PropertyType.SWITCH, name = "Pingless Mining", description = "Mines the next block before the previous block breaks, instabreak only",
             category = "Mining", subcategory = "General")
     public boolean pinglessMining = false;

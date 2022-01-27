@@ -62,7 +62,7 @@ public class AutoArrowAlign {
     public void onRender(RenderWorldLastEvent event) {
         if (!Main.configFile.autoArrowAlign) return;
         itemFrames.clear();
-        for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
+        for (Entity entity1 : (Main.mc.theWorld.loadedEntityList)) {
             if (entity1 instanceof EntityItemFrame) {
                 itemFrames.add(entity1);
             }
@@ -126,8 +126,8 @@ public class AutoArrowAlign {
                     Thread.sleep(500);
                     if(finalSave != null) {
                         interactWithEntity(finalSave);
-                        PlayerControllerMP playerControllerMP = Minecraft.getMinecraft().playerController;
-                        playerControllerMP.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem());
+                        PlayerControllerMP playerControllerMP = Main.mc.playerController;
+                        playerControllerMP.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.getHeldItem());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -317,25 +317,25 @@ public class AutoArrowAlign {
                 rightClickMouse = Minecraft.class.getDeclaredMethod("func_147121_ag");
             }
             rightClickMouse.setAccessible(true);
-            rightClickMouse.invoke(Minecraft.getMinecraft());
+            rightClickMouse.invoke(Main.mc);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static void interactWithEntity(Entity entity) {
-        PlayerControllerMP playerControllerMP = Minecraft.getMinecraft().playerController;
-        playerControllerMP.interactWithEntitySendPacket(Minecraft.getMinecraft().thePlayer, entity);
+        PlayerControllerMP playerControllerMP = Main.mc.playerController;
+        playerControllerMP.interactWithEntitySendPacket(Main.mc.thePlayer, entity);
     }
 
     private static void interactWithEntity2(Entity entity) {
-        PlayerControllerMP playerControllerMP = Minecraft.getMinecraft().playerController;
-        playerControllerMP.isPlayerRightClickingOnEntity(Minecraft.getMinecraft().thePlayer, entity, Minecraft.getMinecraft().objectMouseOver);
+        PlayerControllerMP playerControllerMP = Main.mc.playerController;
+        playerControllerMP.isPlayerRightClickingOnEntity(Main.mc.thePlayer, entity, Main.mc.objectMouseOver);
     }
 
     private static boolean isInSection3() {
-        int x = Minecraft.getMinecraft().thePlayer.getPosition().getX();
-        int z = Minecraft.getMinecraft().thePlayer.getPosition().getZ();
+        int x = Main.mc.thePlayer.getPosition().getX();
+        int z = Main.mc.thePlayer.getPosition().getZ();
         return x < 218 && z > 251 && x > 196 && z < 319;
     }
 }

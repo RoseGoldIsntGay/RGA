@@ -42,7 +42,7 @@ public class ArmorStandESPs {
 
     private static ArrayList<Entity> getAllEntitiesInRange() {
         ArrayList<Entity> entities = new ArrayList<>();
-        for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
+        for (Entity entity1 : (Main.mc.theWorld.loadedEntityList)) {
             if (!(entity1 instanceof EntityItem) && !(entity1 instanceof EntityXPOrb) &&!(entity1 instanceof EntityWither) && !(entity1 instanceof EntityPlayerSP)) {
                 entities.add(entity1);
             }

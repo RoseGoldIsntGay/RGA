@@ -1,5 +1,8 @@
 package rosegoldaddons.features;
 
+import net.minecraft.block.BlockStainedGlass;
+import net.minecraft.block.BlockStainedGlassPane;
+import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -7,6 +10,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.server.S2APacketParticles;
 import net.minecraft.util.*;
@@ -18,6 +22,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
 import rosegoldaddons.events.ReceivePacketEvent;
 import rosegoldaddons.utils.ChatUtils;
+import rosegoldaddons.utils.PlayerUtils;
 import rosegoldaddons.utils.RenderUtils;
 import rosegoldaddons.utils.RotationUtils;
 
@@ -32,6 +37,8 @@ public class HardstoneAura {
     private static Vec3 closestChest;
     private boolean stopHardstone = false;
     private static int ticks = 0;
+    private static BlockPos gemstone;
+    private static BlockPos lastGem;
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
@@ -48,26 +55,35 @@ public class HardstoneAura {
                 }
             }
             if(Main.configFile.hardIndex == 1) {
-                if (broken.size() > 4) {
+                if (broken.size() > 6) {
                     broken.clear();
                 }
             }
-            if(ticks > 15) {
+            if(ticks > 20) {
                 broken.clear();
                 ticks = 0;
             }
             closestStone = closestStone();
-            if (closestStone != null) {
-                MovingObjectPosition fake = Minecraft.getMinecraft().objectMouseOver;
+            if(gemstone != null && Main.mc.thePlayer != null) {
+                if(lastGem != null && !lastGem.equals(gemstone)) {
+                    currentDamage = 0;
+                }
+                lastGem = gemstone;
+                if (currentDamage == 0) {
+                    Main.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, gemstone, EnumFacing.DOWN));
+                }
+                PlayerUtils.swingItem();
+                currentDamage++;
+            }
+            if (closestStone != null && gemstone == null) {
+                currentDamage = 0;
+                MovingObjectPosition fake = Main.mc.objectMouseOver;
                 fake.hitVec = new Vec3(closestStone);
                 EnumFacing enumFacing = fake.sideHit;
-                if (currentDamage == 0 && enumFacing != null && Minecraft.getMinecraft().thePlayer != null) {
-                    Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, closestStone, enumFacing));
+                if (enumFacing != null && Main.mc.thePlayer != null) {
+                    Main.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, closestStone, enumFacing));
                 }
-                MovingObjectPosition real = Minecraft.getMinecraft().objectMouseOver;
-                if (real != null && real.entityHit == null && Minecraft.getMinecraft().thePlayer != null) {
-                    Minecraft.getMinecraft().thePlayer.swingItem();
-                }
+                PlayerUtils.swingItem();
                 broken.add(closestStone);
             }
         }
@@ -79,14 +95,11 @@ public class HardstoneAura {
         if (event.packet instanceof S2APacketParticles) {
             S2APacketParticles packet = (S2APacketParticles) event.packet;
             if (packet.getParticleType().equals(EnumParticleTypes.CRIT)) {
-                Vec3 particlePos = new Vec3(packet.getXCoordinate(), packet.getYCoordinate() - 0.7, packet.getZCoordinate());
+                Vec3 particlePos = new Vec3(packet.getXCoordinate(), packet.getYCoordinate(), packet.getZCoordinate());
                 if (closestChest != null) {
                     stopHardstone = true;
                     double dist = closestChest.distanceTo(particlePos);
                     if (dist < 1) {
-                        particlePos = particlePos.add(new Vec3(0, -1, 0));
-                        int drill = PowderMacro.findItemInHotbar("X655");
-                        if (drill != -1) Minecraft.getMinecraft().thePlayer.inventory.currentItem = drill;
                         RotationUtils.facePos(particlePos);
                     }
                 }
@@ -97,7 +110,7 @@ public class HardstoneAura {
     @SubscribeEvent
     public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
         if(Main.configFile.guilag) {
-            Minecraft.getMinecraft().gameSettings.setOptionFloatValue(GameSettings.Options.FRAMERATE_LIMIT, 1);
+            Main.mc.gameSettings.setOptionFloatValue(GameSettings.Options.FRAMERATE_LIMIT, 1);
         }
         if(!Main.autoHardStone) return;
         if (event.gui instanceof GuiChest) {
@@ -107,7 +120,7 @@ public class HardstoneAura {
                 if (chestName.contains("Treasure")) {
                     solved.add(closestChest);
                     stopHardstone = false;
-                    Minecraft.getMinecraft().thePlayer.closeScreen();
+                    Main.mc.thePlayer.closeScreen();
                 }
             }
         }
@@ -126,6 +139,33 @@ public class HardstoneAura {
         } else {
             stopHardstone = false;
         }
+        if (gemstone != null) {
+            IBlockState blockState = Main.mc.theWorld.getBlockState(gemstone);
+            EnumDyeColor dyeColor = null;
+            Color color = Color.BLACK;
+            if (blockState.getBlock() == Blocks.stained_glass) {
+                dyeColor = blockState.getValue(BlockStainedGlass.COLOR);
+            }
+            if (blockState.getBlock() == Blocks.stained_glass_pane) {
+                dyeColor = blockState.getValue(BlockStainedGlassPane.COLOR);
+            }
+            if (dyeColor == EnumDyeColor.RED) {
+                color = new Color(188, 3, 29);
+            } else if (dyeColor == EnumDyeColor.PURPLE) {
+                color = new Color(137, 0, 201);
+            } else if (dyeColor == EnumDyeColor.LIME) {
+                color = new Color(157, 249, 32);
+            } else if (dyeColor == EnumDyeColor.LIGHT_BLUE) {
+                color = new Color(60, 121, 224);
+            } else if (dyeColor == EnumDyeColor.ORANGE) {
+                color = new Color(237, 139, 35);
+            } else if (dyeColor == EnumDyeColor.YELLOW) {
+                color = new Color(249, 215, 36);
+            } else if (dyeColor == EnumDyeColor.MAGENTA) {
+                color = new Color(214, 15, 150);
+            }
+            RenderUtils.drawBlockBox(gemstone, color, true, event.partialTicks);
+        }
     }
 
     @SubscribeEvent
@@ -134,18 +174,19 @@ public class HardstoneAura {
     }
 
     private BlockPos closestStone() {
-        if(Minecraft.getMinecraft().theWorld == null) return null;
-        if(Minecraft.getMinecraft().thePlayer == null) return null;
+        if(Main.mc.theWorld == null) return null;
+        if(Main.mc.thePlayer == null) return null;
         int r = 6;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos.add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, 1 + Main.configFile.hardrange, r);
         Vec3i vec3i2 = new Vec3i(r, 0, r);
         ArrayList<Vec3> stones = new ArrayList<Vec3>();
+        ArrayList<Vec3> gemstones = new ArrayList<Vec3>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i2))) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
                 if(Main.configFile.hardIndex == 0) {
                     if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                         stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
@@ -157,13 +198,16 @@ public class HardstoneAura {
                     }
                 }
                 if(Main.configFile.hardIndex == 1) {
-                    EnumFacing dir = Minecraft.getMinecraft().thePlayer.getHorizontalFacing();
-                    int x = (int) Math.floor(Minecraft.getMinecraft().thePlayer.posX);
-                    int z =  (int) Math.floor(Minecraft.getMinecraft().thePlayer.posZ);
+                    EnumFacing dir = Main.mc.thePlayer.getHorizontalFacing();
+                    int x = (int) Math.floor(Main.mc.thePlayer.posX);
+                    int z =  (int) Math.floor(Main.mc.thePlayer.posZ);
                     switch (dir) {
                         case NORTH:
-                            if(blockPos.getZ() < z && blockPos.getX() == x) {
-                                if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
+                            if(blockPos.getZ() <= z && blockPos.getX() == x) {
+                                if(isSlow(blockState)) {
+                                    gemstones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                }
+                                else if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
                                 if (Main.configFile.includeOres) {
@@ -174,8 +218,11 @@ public class HardstoneAura {
                             }
                             break;
                         case SOUTH:
-                            if(blockPos.getZ() > z && blockPos.getX() == x) {
-                                if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
+                            if(blockPos.getZ() >= z && blockPos.getX() == x) {
+                                if(isSlow(blockState)) {
+                                    gemstones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                }
+                                else if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
                                 if (Main.configFile.includeOres) {
@@ -186,8 +233,11 @@ public class HardstoneAura {
                             }
                             break;
                         case WEST:
-                            if(blockPos.getX() < x && blockPos.getZ() == z) {
-                                if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
+                            if(blockPos.getX() <= x && blockPos.getZ() == z) {
+                                if(isSlow(blockState)) {
+                                    gemstones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                }
+                                else if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
                                 if (Main.configFile.includeOres) {
@@ -198,8 +248,11 @@ public class HardstoneAura {
                             }
                             break;
                         case EAST:
-                            if(blockPos.getX() > x && blockPos.getZ() == z) {
-                                if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
+                            if(blockPos.getX() >= x && blockPos.getZ() == z) {
+                                if(isSlow(blockState)) {
+                                    gemstones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                }
+                                else if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
                                 if (Main.configFile.includeOres) {
@@ -222,6 +275,21 @@ public class HardstoneAura {
                 closest = stone;
             }
         }
+
+        double smallestgem = 9999;
+        Vec3 closestgem = null;
+        for (Vec3 gem : gemstones) {
+            double dist = gem.distanceTo(playerVec);
+            if (dist < smallestgem) {
+                smallestgem = dist;
+                closestgem = gem;
+            }
+        }
+        if (closestgem != null) {
+            gemstone = new BlockPos(closestgem.xCoord, closestgem.yCoord, closestgem.zCoord);
+        } else {
+            gemstone = null;
+        }
         if (closest != null && smallest < 5) {
             return new BlockPos(closest.xCoord, closest.yCoord, closest.zCoord);
         }
@@ -229,18 +297,18 @@ public class HardstoneAura {
     }
 
     private Vec3 closestChest() {
-        if(Minecraft.getMinecraft().theWorld == null) return null;
-        if(Minecraft.getMinecraft().thePlayer == null) return null;
+        if(Main.mc.theWorld == null) return null;
+        if(Main.mc.thePlayer == null) return null;
         int r = 6;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos.add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
         ArrayList<Vec3> chests = new ArrayList<>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
+                //Main.mc.thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
                 if (blockState.getBlock() == Blocks.chest) {
                     chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
@@ -258,5 +326,22 @@ public class HardstoneAura {
             }
         }
         return closest;
+    }
+
+    private boolean isSlow(IBlockState blockState) {
+        if(blockState.getBlock() == Blocks.prismarine) {
+            return true;
+        } else if(blockState.getBlock() == Blocks.wool) {
+            return true;
+        } else if(blockState.getBlock() == Blocks.stained_hardened_clay) {
+            return true;
+        } else if(!Main.configFile.ignoreTitanium && blockState.getBlock() == Blocks.stone && blockState.getValue(BlockStone.VARIANT) == BlockStone.EnumType.DIORITE_SMOOTH) {
+            return true;
+        } else if(blockState.getBlock() == Blocks.gold_block) {
+            return true;
+        } else if(blockState.getBlock() == Blocks.stained_glass_pane || blockState.getBlock() == Blocks.stained_glass) {
+            return true;
+        }
+        return false;
     }
 }

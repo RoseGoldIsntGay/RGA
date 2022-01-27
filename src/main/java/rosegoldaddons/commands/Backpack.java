@@ -44,10 +44,10 @@ public class Backpack implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
         if (args.length == 0) {
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/storage");
+            Main.mc.thePlayer.sendChatMessage("/storage");
         } else {
             if (isNumeric(args[0])) {
-                Minecraft.getMinecraft().thePlayer.sendChatMessage("/storage");
+                Main.mc.thePlayer.sendChatMessage("/storage");
                 openBP = true;
                 bpSlot = Integer.parseInt(args[0]);
             } else {

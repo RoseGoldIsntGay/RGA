@@ -44,12 +44,12 @@ public class Rosedrobe implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
         if (args.length == 0) {
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
+            Main.mc.thePlayer.sendChatMessage("/pets");
             slot = 0;
             openWardrobe = true;
         } else {
             if (isNumeric(args[0])) {
-                Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
+                Main.mc.thePlayer.sendChatMessage("/pets");
                 openWardrobe = true;
                 slot = Integer.parseInt(args[0]);
             } else {

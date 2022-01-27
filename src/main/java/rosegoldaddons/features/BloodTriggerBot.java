@@ -21,14 +21,14 @@ public class BloodTriggerBot {
         if (event.phase == TickEvent.Phase.END) return;
         for (Entity entity : getAllBloodMobs()) {
             if (isLookingAtAABB(entity.getEntityBoundingBox(), 1F)) {
-                Minecraft.getMinecraft().thePlayer.swingItem();
+                Main.mc.thePlayer.swingItem();
             }
         }
     }
 
     private static boolean isLookingAtAABB(AxisAlignedBB aabb, float partialTicks) {
-        Vec3 position = new Vec3(Minecraft.getMinecraft().thePlayer.posX, (Minecraft.getMinecraft().thePlayer.posY + Minecraft.getMinecraft().thePlayer.getEyeHeight()), Minecraft.getMinecraft().thePlayer.posZ);
-        Vec3 look = Minecraft.getMinecraft().thePlayer.getLook(partialTicks);
+        Vec3 position = new Vec3(Main.mc.thePlayer.posX, (Main.mc.thePlayer.posY + Main.mc.thePlayer.getEyeHeight()), Main.mc.thePlayer.posZ);
+        Vec3 look = Main.mc.thePlayer.getLook(partialTicks);
         look = scaleVec(look, 0.5F);
         for (int i = 0; i < 64; i++) {
             if (aabb.minX <= position.xCoord && aabb.maxX >= position.xCoord && aabb.minY <= position.yCoord && aabb.maxY >= position.yCoord && aabb.minZ <= position.zCoord && aabb.maxZ >= position.zCoord) {
@@ -42,8 +42,8 @@ public class BloodTriggerBot {
 
     private static ArrayList<Entity> getAllBloodMobs() {
         ArrayList<Entity> bloodMobs = new ArrayList<>();
-        if (Minecraft.getMinecraft().theWorld == null) return bloodMobs;
-        for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
+        if (Main.mc.theWorld == null) return bloodMobs;
+        for (Entity entity1 : (Main.mc.theWorld.loadedEntityList)) {
             if (entity1 instanceof EntityOtherPlayerMP && !entity1.isDead) {
                 for (String name : names) {
                     if (entity1.getName().contains(name)) {

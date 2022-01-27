@@ -9,6 +9,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import org.jetbrains.annotations.NotNull;
+import rosegoldaddons.Main;
 import rosegoldaddons.utils.ChatUtils;
 
 import java.io.BufferedWriter;
@@ -55,9 +56,9 @@ public class UseCooldown implements ICommand {
             return;
         }
         if (args.length == 1 && isNumeric(args[0])) {
-            InventoryPlayer inv = Minecraft.getMinecraft().thePlayer.inventory;
+            InventoryPlayer inv = Main.mc.thePlayer.inventory;
 
-            ItemStack curStack = inv.getStackInSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem);
+            ItemStack curStack = inv.getStackInSlot(Main.mc.thePlayer.inventory.currentItem);
             if (curStack != null) {
                 int cd = Integer.parseInt(args[0]);
                 if (cd == 0) {
@@ -78,9 +79,9 @@ public class UseCooldown implements ICommand {
                 ChatUtils.sendMessage("§cError getting current held item.");
             }
         } else if (args.length == 2 && isNumeric(args[0]) && args[1].equalsIgnoreCase("left")) {
-            InventoryPlayer inv = Minecraft.getMinecraft().thePlayer.inventory;
+            InventoryPlayer inv = Main.mc.thePlayer.inventory;
 
-            ItemStack curStack = inv.getStackInSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem);
+            ItemStack curStack = inv.getStackInSlot(Main.mc.thePlayer.inventory.currentItem);
             if (curStack != null) {
                 int cd = Integer.parseInt(args[0]);
                 if (cd == 0) {

@@ -6,6 +6,7 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import org.jetbrains.annotations.NotNull;
+import rosegoldaddons.Main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class LobbySwap implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
         swapLobby = true;
-        Minecraft.getMinecraft().thePlayer.sendChatMessage("/sbmenu");
+        Main.mc.thePlayer.sendChatMessage("/sbmenu");
 
     }
 

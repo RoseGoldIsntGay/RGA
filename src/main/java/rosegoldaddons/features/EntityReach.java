@@ -96,7 +96,7 @@ public class EntityReach {
     private static Entity getClosestArmorStand(Entity entity) {
         Entity closest = null;
         double smallest = 9999;
-        for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
+        for (Entity entity1 : (Main.mc.theWorld.loadedEntityList)) {
             if (entity1 instanceof EntityArmorStand) {
                 double dist = entity.getDistanceToEntity(entity1);
                 if(dist < smallest) {
@@ -109,8 +109,8 @@ public class EntityReach {
     }
 
     private static boolean isLookingAtAABB(AxisAlignedBB aabb, RenderWorldLastEvent event) {
-        Vec3 position = new Vec3(Minecraft.getMinecraft().thePlayer.posX, (Minecraft.getMinecraft().thePlayer.posY + Minecraft.getMinecraft().thePlayer.getEyeHeight()), Minecraft.getMinecraft().thePlayer.posZ);
-        Vec3 look = Minecraft.getMinecraft().thePlayer.getLook(event.partialTicks);
+        Vec3 position = new Vec3(Main.mc.thePlayer.posX, (Main.mc.thePlayer.posY + Main.mc.thePlayer.getEyeHeight()), Main.mc.thePlayer.posZ);
+        Vec3 look = Main.mc.thePlayer.getLook(event.partialTicks);
         look = scaleVec(look, 0.2F);
         for (int i = 0; i < 320; i++) {
             if (aabb.minX <= position.xCoord && aabb.maxX >= position.xCoord && aabb.minY <= position.yCoord && aabb.maxY >= position.yCoord && aabb.minZ <= position.zCoord && aabb.maxZ >= position.zCoord) {
@@ -124,7 +124,7 @@ public class EntityReach {
 
     private static ArrayList<Entity> getAllEntitiesInRange() {
         ArrayList<Entity> entities = new ArrayList<>();
-        for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
+        for (Entity entity1 : (Main.mc.theWorld.loadedEntityList)) {
             if (!(entity1 instanceof EntityItem) && !(entity1 instanceof EntityXPOrb) &&!(entity1 instanceof EntityWither) && !(entity1 instanceof EntityPlayerSP)) {
                 entities.add(entity1);
             }
@@ -133,13 +133,13 @@ public class EntityReach {
     }
 
     private static void interactWithEntity(Entity entity) {
-        PlayerControllerMP playerControllerMP = Minecraft.getMinecraft().playerController;
-        playerControllerMP.interactWithEntitySendPacket(Minecraft.getMinecraft().thePlayer, entity);
+        PlayerControllerMP playerControllerMP = Main.mc.playerController;
+        playerControllerMP.interactWithEntitySendPacket(Main.mc.thePlayer, entity);
     }
 
     private static void interactWithEntity2(Entity entity) {
-        PlayerControllerMP playerControllerMP = Minecraft.getMinecraft().playerController;
-        playerControllerMP.isPlayerRightClickingOnEntity(Minecraft.getMinecraft().thePlayer, entity, Minecraft.getMinecraft().objectMouseOver);
+        PlayerControllerMP playerControllerMP = Main.mc.playerController;
+        playerControllerMP.isPlayerRightClickingOnEntity(Main.mc.thePlayer, entity, Main.mc.objectMouseOver);
     }
 
 

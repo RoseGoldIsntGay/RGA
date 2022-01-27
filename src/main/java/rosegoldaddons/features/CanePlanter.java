@@ -25,24 +25,24 @@ public class CanePlanter {
         int cane = findItemInHotbar("Cane");
         BlockPos dirt = furthestEmptyDirt();
         if (cane != -1 && dirt != null) {
-            ItemStack item = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(cane);
-            Minecraft.getMinecraft().thePlayer.inventory.currentItem = cane;
-            Minecraft.getMinecraft().playerController.onPlayerRightClick(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, item, dirt, EnumFacing.UP, Minecraft.getMinecraft().thePlayer.getLookVec());
+            ItemStack item = Main.mc.thePlayer.inventory.getStackInSlot(cane);
+            Main.mc.thePlayer.inventory.currentItem = cane;
+            Main.mc.playerController.onPlayerRightClick(Main.mc.thePlayer, Main.mc.theWorld, item, dirt, EnumFacing.UP, Main.mc.thePlayer.getLookVec());
         }
     }
 
     private BlockPos furthestEmptyDirt() {
         int r = 5;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos.add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
         ArrayList<Vec3> dirts = new ArrayList<Vec3>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
-                IBlockState blockState2 = Minecraft.getMinecraft().theWorld.getBlockState(blockPos.add(0, 1, 0));
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
+                IBlockState blockState2 = Main.mc.theWorld.getBlockState(blockPos.add(0, 1, 0));
+                //Main.mc.thePlayer.addChatMessage(new ChatComponentText(blockState.getBlock().toString()));
                 if (blockState.getBlock() == Blocks.dirt && blockState2.getBlock() == Blocks.air) {
                     dirts.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
@@ -64,7 +64,7 @@ public class CanePlanter {
     }
 
     private static int findItemInHotbar(String name) {
-        InventoryPlayer inv = Minecraft.getMinecraft().thePlayer.inventory;
+        InventoryPlayer inv = Main.mc.thePlayer.inventory;
         for (int i = 0; i < 9; i++) {
             ItemStack curStack = inv.getStackInSlot(i);
             if (curStack != null) {

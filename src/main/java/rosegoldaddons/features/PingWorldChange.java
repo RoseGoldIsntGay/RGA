@@ -17,7 +17,7 @@ public class PingWorldChange {
         if(Main.configFile.pingworldchange && countdown == 0) {
             String url = Main.configFile.hookurl;
             String id = Main.configFile.discordid;
-            if(url.contains("https://discord.com/api/webhooks/")) {
+            if(url.contains("https://") && (url.contains("discord.com/api/webhooks/") || url.contains("discordapp.com/api/webhooks/"))) {
                 if(!id.equals("")) {
                     DiscordWebhook webhook = new DiscordWebhook(url);
                     webhook.setContent("<@" + id + "> Detected World Change.");

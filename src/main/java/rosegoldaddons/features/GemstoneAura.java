@@ -36,14 +36,14 @@ public class GemstoneAura {
             return;
         }
         if (event.phase == TickEvent.Phase.END) {
-            if (PlayerUtils.pickaxeAbilityReady && Minecraft.getMinecraft().thePlayer != null) {
-                Minecraft.getMinecraft().playerController.sendUseItem(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem));
+            if (PlayerUtils.pickaxeAbilityReady && Main.mc.thePlayer != null) {
+                Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem));
             }
             if (currentDamage > 100) {
                 currentDamage = 0;
             }
             if (blockPos != null) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
                 if (blockState.getBlock() != Blocks.stained_glass && blockState.getBlock() != Blocks.stained_glass_pane) {
                     currentDamage = 0;
                 }
@@ -56,11 +56,11 @@ public class GemstoneAura {
                     blockHitDelay--;
                     return;
                 }
-                MovingObjectPosition fake = Minecraft.getMinecraft().objectMouseOver;
+                MovingObjectPosition fake = Main.mc.objectMouseOver;
                 fake.hitVec = new Vec3(blockPos);
                 EnumFacing enumFacing = fake.sideHit;
                 if (currentDamage == 0 && enumFacing != null) {
-                    Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, blockPos, enumFacing));
+                    Main.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, blockPos, enumFacing));
                 }
 
                 PlayerUtils.swingItem();
@@ -74,7 +74,7 @@ public class GemstoneAura {
     public void renderWorld(RenderWorldLastEvent event) {
         if (!Main.gemNukeToggle) return;
         if (blockPos != null) {
-            IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+            IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
             EnumDyeColor dyeColor = null;
             Color color = Color.BLACK;
             if (blockState.getBlock() == Blocks.stained_glass) {
@@ -104,15 +104,15 @@ public class GemstoneAura {
 
     private BlockPos closestGemstone() {
         int r = 6;
-        if (Minecraft.getMinecraft().thePlayer == null) return null;
-        BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+        if (Main.mc.thePlayer == null) return null;
+        BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos = playerPos.add(0, 1, 0);
-        Vec3 playerVec = Minecraft.getMinecraft().thePlayer.getPositionVector();
+        Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
         ArrayList<Vec3> chests = new ArrayList<Vec3>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-                IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+                IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
                 if (blockState.getBlock() == Blocks.stained_glass) {
                     chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                 }
@@ -124,7 +124,7 @@ public class GemstoneAura {
             }
             if (Main.configFile.prioblocks) {
                 for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
-                    IBlockState blockState = Minecraft.getMinecraft().theWorld.getBlockState(blockPos);
+                    IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
                     if (blockState.getBlock() == Blocks.stained_glass_pane) {
                         chests.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                     }

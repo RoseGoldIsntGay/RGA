@@ -8,6 +8,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import rosegoldaddons.Main;
 import rosegoldaddons.commands.Rosedrobe;
 import rosegoldaddons.commands.Rosepet;
 import scala.Int;
@@ -21,7 +22,6 @@ public class OpenSkyblockGui {
     @SubscribeEvent
     public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
         if(!Rosedrobe.openWardrobe && !openTrades && !Rosepet.openPetS) return;
-        ChatUtils.sendMessage("OpenSkyblockGui");
         if (event.gui instanceof GuiChest) {
             Container container = ((GuiChest) event.gui).inventorySlots;
             if (container instanceof ContainerChest) {
@@ -32,7 +32,7 @@ public class OpenSkyblockGui {
                         clickSlot(32, 0, 1);
                         if (Rosedrobe.slot > 0) {
                             clickSlot(Rosedrobe.slot + 35, 0, 2);
-                            Minecraft.getMinecraft().thePlayer.closeScreen();
+                            Main.mc.thePlayer.closeScreen();
                         }
                         Rosedrobe.openWardrobe = false;
                     }
@@ -59,12 +59,12 @@ public class OpenSkyblockGui {
                             return;
                         }
                         if (!petName.equals("")) {
-                            List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+                            List<Slot> chestInventory = ((GuiChest) Main.mc.currentScreen).inventorySlots.inventorySlots;
                             for (Slot slot : chestInventory) {
                                 if (!slot.getHasStack()) continue;
                                 if (slot.getStack().getDisplayName().contains(petName)) {
                                     clickSlot(slot.slotNumber, 0, 0);
-                                    Minecraft.getMinecraft().thePlayer.closeScreen();
+                                    Main.mc.thePlayer.closeScreen();
                                     Rosepet.openPetS = false;
                                     return;
                                 }
@@ -73,7 +73,7 @@ public class OpenSkyblockGui {
                                 clickSlot(53, 0, 0);
                             } else {
                                 Rosepet.openPetS = false;
-                                Minecraft.getMinecraft().thePlayer.closeScreen();
+                                Main.mc.thePlayer.closeScreen();
                                 ChatUtils.sendMessage("No pet named "+petName+" found.");
                             }
                         } else {
@@ -89,10 +89,10 @@ public class OpenSkyblockGui {
 
     public static void openTradesMenu() {
         openTrades = true;
-        Minecraft.getMinecraft().thePlayer.sendChatMessage("/pets");
+        Main.mc.thePlayer.sendChatMessage("/pets");
     }
 
     private void clickSlot(int slot, int type, int windowAdd) {
-        Minecraft.getMinecraft().playerController.windowClick(Minecraft.getMinecraft().thePlayer.openContainer.windowId + windowAdd, slot, type, 0, Minecraft.getMinecraft().thePlayer);
+        Main.mc.playerController.windowClick(Main.mc.thePlayer.openContainer.windowId + windowAdd, slot, type, 0, Main.mc.thePlayer);
     }
 }

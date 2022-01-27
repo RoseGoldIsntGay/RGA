@@ -8,6 +8,7 @@ import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import org.jetbrains.annotations.NotNull;
+import rosegoldaddons.Main;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,8 +19,8 @@ public class ChatUtils {
     /* § */
 
     public static void sendMessage(String message) {
-        if (Minecraft.getMinecraft().thePlayer != null) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§f[§aRoseGoldAddons§f] " + message));
+        if (Main.mc.thePlayer != null) {
+            Main.mc.thePlayer.addChatMessage(new ChatComponentText("§f[§aRoseGoldAddons§f] " + message));
         }
     }
 

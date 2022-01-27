@@ -8,6 +8,7 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.StringUtils;
+import rosegoldaddons.Main;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,8 +35,8 @@ public class ScoreboardUtils {
 
     public static List<String> getSidebarLines() {
         List<String> lines = new ArrayList<>();
-        if (Minecraft.getMinecraft().theWorld == null) return lines;
-        Scoreboard scoreboard = Minecraft.getMinecraft().theWorld.getScoreboard();
+        if (Main.mc.theWorld == null) return lines;
+        Scoreboard scoreboard = Main.mc.theWorld.getScoreboard();
         if (scoreboard == null) return lines;
 
         ScoreObjective objective = scoreboard.getObjectiveInDisplaySlot(1);

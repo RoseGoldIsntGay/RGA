@@ -26,9 +26,9 @@ public class NecronAimbot {
     private static Entity getClosestWither() {
         Entity necron = null;
         Double closest = Double.valueOf(9999);
-        for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
+        for (Entity entity1 : (Main.mc.theWorld.loadedEntityList)) {
             if (entity1 instanceof EntityWither && !(((EntityWither) entity1).getHealth() == 0)) {
-                double dist = entity1.getDistanceSq(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
+                double dist = entity1.getDistanceSq(Main.mc.thePlayer.posX, Main.mc.thePlayer.posY, Main.mc.thePlayer.posZ);
                 if (dist < closest) {
                     closest = dist;
                     necron = entity1;

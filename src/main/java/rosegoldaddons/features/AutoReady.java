@@ -22,8 +22,8 @@ public class AutoReady {
     static int windowId;
 
     private static void interactWithEntity(Entity entity) {
-        PlayerControllerMP playerControllerMP = Minecraft.getMinecraft().playerController;
-        playerControllerMP.interactWithEntitySendPacket(Minecraft.getMinecraft().thePlayer, entity);
+        PlayerControllerMP playerControllerMP = Main.mc.playerController;
+        playerControllerMP.interactWithEntitySendPacket(Main.mc.thePlayer, entity);
     }
 
     @SubscribeEvent
@@ -34,7 +34,7 @@ public class AutoReady {
                 checkingEntities = true;
                 Thread.sleep(500);
                 Entity mort = null;
-                for (Entity entity1 : (Minecraft.getMinecraft().theWorld.loadedEntityList)) {
+                for (Entity entity1 : (Main.mc.theWorld.loadedEntityList)) {
                     if (entity1.getName().contains("Mort")) {
                         mort = entity1;
                         interactWithEntity(mort);
@@ -64,7 +64,7 @@ public class AutoReady {
             if (container instanceof ContainerChest) {
                 String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
                 List<Slot> invSlots = container.inventorySlots;
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(chestName));
+                //Main.mc.thePlayer.addChatMessage(new ChatComponentText(chestName));
                 if (chestName.contains("Start Dungeon?")) {
                     int i;
                     for(i = 0; i < invSlots.size(); i++) {
@@ -79,7 +79,7 @@ public class AutoReady {
                     for(i = 0; i < invSlots.size(); i++) {
                         if(!invSlots.get(i).getHasStack()) continue;
                         String slotName = StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName());
-                        if(slotName.contains(Minecraft.getMinecraft().thePlayer.getName())) {
+                        if(slotName.contains(Main.mc.thePlayer.getName())) {
                             i += 9;
                             if(invSlots.get(i).getHasStack()) {
                                 if (StringUtils.stripControlCodes(invSlots.get(i).getStack().getDisplayName()).equals("Not Ready")) {
@@ -94,7 +94,7 @@ public class AutoReady {
     }
 
     private void clickSlot(Slot slot) {
-        windowId = Minecraft.getMinecraft().thePlayer.openContainer.windowId;
-        Minecraft.getMinecraft().playerController.windowClick(windowId, slot.slotNumber, 1, 0, Minecraft.getMinecraft().thePlayer);
+        windowId = Main.mc.thePlayer.openContainer.windowId;
+        Main.mc.playerController.windowClick(windowId, slot.slotNumber, 1, 0, Main.mc.thePlayer);
     }
 }

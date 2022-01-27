@@ -27,14 +27,14 @@ public class SwordSwapping {
                 rightClickMouse = Minecraft.class.getDeclaredMethod("func_147121_ag");
             }
             rightClickMouse.setAccessible(true);
-            rightClickMouse.invoke(Minecraft.getMinecraft());
+            rightClickMouse.invoke(Main.mc);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static int findItemInHotbar(String name) {
-        InventoryPlayer inv = Minecraft.getMinecraft().thePlayer.inventory;
+        InventoryPlayer inv = Main.mc.thePlayer.inventory;
         for (int i = 0; i < 9; i++) {
             ItemStack curStack = inv.getStackInSlot(i);
             if (curStack != null) {
@@ -48,7 +48,7 @@ public class SwordSwapping {
 
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent event) {
-        if (Minecraft.getMinecraft().currentScreen != null) return;
+        if (Main.mc.currentScreen != null) return;
         if (!Main.AOTSMacro && !Main.SoulWhipMacro) {
             tickCount = 0;
             return;
@@ -57,7 +57,7 @@ public class SwordSwapping {
             thread = new Thread(() -> {
                 try {
                     Thread.sleep(Main.configFile.swapFrequency);
-                    int prevItem = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
+                    int prevItem = Main.mc.thePlayer.inventory.currentItem;
                     int orbSlot = findItemInHotbar("Power Orb");
                     int tubaSlot = findItemInHotbar("Tuba");
                     int wandSlot = findItemInHotbar("Atonement");
@@ -70,31 +70,31 @@ public class SwordSwapping {
                         whipSlot = findItemInHotbar("Whip");
                     }
                     if(whipSlot != -1) {
-                        Minecraft.getMinecraft().thePlayer.inventory.currentItem = whipSlot;
+                        Main.mc.thePlayer.inventory.currentItem = whipSlot;
                         rightClick();
                     }
                     if(aotsSlot != -1) {
-                        Minecraft.getMinecraft().thePlayer.inventory.currentItem = aotsSlot;
+                        Main.mc.thePlayer.inventory.currentItem = aotsSlot;
                         rightClick();
                     }
                     if(Main.configFile.UseUtility) {
                         if(tickCount % Math.round((1000/Main.configFile.swapFrequency*20)) == 1 && tubaSlot != -1) {
                             Thread.sleep(1);
-                            Minecraft.getMinecraft().thePlayer.inventory.currentItem = tubaSlot;
+                            Main.mc.thePlayer.inventory.currentItem = tubaSlot;
                             rightClick();
                         }
                         if(tickCount % Math.round((1000/Main.configFile.swapFrequency*59)) == 1 && orbSlot != -1) {
                             Thread.sleep(1);
-                            Minecraft.getMinecraft().thePlayer.inventory.currentItem = orbSlot;
+                            Main.mc.thePlayer.inventory.currentItem = orbSlot;
                             rightClick();
                         }
                         if(tickCount % Math.round((1000/Main.configFile.swapFrequency*7)) == 1 && wandSlot != -1) {
                             Thread.sleep(1);
-                            Minecraft.getMinecraft().thePlayer.inventory.currentItem = wandSlot;
+                            Main.mc.thePlayer.inventory.currentItem = wandSlot;
                             rightClick();
                         }
                     }
-                    Minecraft.getMinecraft().thePlayer.inventory.currentItem = prevItem;
+                    Main.mc.thePlayer.inventory.currentItem = prevItem;
                     tickCount++;
                 } catch (Exception e) {
                     e.printStackTrace();

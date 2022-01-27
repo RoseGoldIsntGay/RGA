@@ -12,12 +12,10 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
+import rosegoldaddons.Main;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -30,7 +28,7 @@ public class RenderUtils {
 
     private static final Map<Integer, Boolean> glCapMap = new HashMap<>();
     private static final int[] DISPLAY_LISTS_2D = new int[4];
-    private static final Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Main.mc;
 
     static {
         for (int i = 0; i < DISPLAY_LISTS_2D.length; i++) {
@@ -113,6 +111,34 @@ public class RenderUtils {
 
             drawSelectionBoundingBox(axisAlignedBB);
         }
+
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        glDepthMask(true);
+        resetCaps();
+    }
+
+    public static void drawPixelBox(final Vec3 vec, final Color color, final double size, float partialTicks) {
+        final RenderManager renderManager = mc.getRenderManager();
+
+        final double x = vec.xCoord - renderManager.viewerPosX;
+        final double y = vec.yCoord - renderManager.viewerPosY;
+        final double z = vec.zCoord - renderManager.viewerPosZ;
+
+        AxisAlignedBB axisAlignedBB = new AxisAlignedBB(x, y, z, x + size, y + size, z + size);
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        enableGlCap(GL_BLEND);
+        disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST);
+        glDepthMask(false);
+
+        glColor(color.getRed(), color.getGreen(), color.getBlue(), 35);
+        //drawFilledBox(axisAlignedBB);
+
+        glLineWidth(3F);
+        enableGlCap(GL_LINE_SMOOTH);
+        glColor(color);
+
+        drawSelectionBoundingBox(axisAlignedBB);
 
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         glDepthMask(true);
@@ -637,7 +663,7 @@ public class RenderUtils {
 
         GlStateManager.pushMatrix();
 
-        Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
+        Entity viewer = Main.mc.getRenderViewEntity();
         double viewerX = viewer.lastTickPosX + (viewer.posX - viewer.lastTickPosX) * partialTicks;
         double viewerY = viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * partialTicks;
         double viewerZ = viewer.lastTickPosZ + (viewer.posZ - viewer.lastTickPosZ) * partialTicks;
@@ -648,7 +674,7 @@ public class RenderUtils {
 
         double distSq = x * x + y * y + z * z;
         double dist = Math.sqrt(distSq);
-        if(distSq > 144) {
+        if (distSq > 144) {
             x *= 12 / dist;
             y *= 12 / dist;
             z *= 12 / dist;
@@ -658,11 +684,11 @@ public class RenderUtils {
 
         drawNametag(str);
 
-        GlStateManager.rotate(-Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(-Main.mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(Main.mc.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
         GlStateManager.translate(0, -0.25f, 0);
-        GlStateManager.rotate(-Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-Main.mc.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(Main.mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
 
         drawNametag(EnumChatFormatting.YELLOW.toString() + Math.round(dist) + " blocks");
 
@@ -672,13 +698,13 @@ public class RenderUtils {
     }
 
     public static void drawNametag(String str) {
-        FontRenderer fontrenderer = Minecraft.getMinecraft().fontRendererObj;
+        FontRenderer fontrenderer = Main.mc.fontRendererObj;
         float f = 1.6F;
         float f1 = 0.016666668F * f;
         GlStateManager.pushMatrix();
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(-Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(-Main.mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(Main.mc.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
         GlStateManager.scale(-f1, -f1, f1);
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
