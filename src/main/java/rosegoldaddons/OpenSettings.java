@@ -28,10 +28,7 @@ public class OpenSettings implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
-        /*EntityPlayerSP player = (EntityPlayerSP) sender;
-        player.addChatMessage(new ChatComponentText("hi "+player.getName()+"!"));*/
         Main.display = Main.configFile.gui();
-        return;
     }
 
     @Override

@@ -16,6 +16,7 @@ import rosegoldaddons.Main;
 import rosegoldaddons.events.ReceivePacketEvent;
 import rosegoldaddons.utils.RenderUtils;
 import rosegoldaddons.utils.RotationUtils;
+import rosegoldaddons.utils.ShadyRotation;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,14 +30,11 @@ public class PowderMacro {
         if (event.packet instanceof S2APacketParticles) {
             S2APacketParticles packet = (S2APacketParticles) event.packet;
             if (packet.getParticleType().equals(EnumParticleTypes.CRIT)) {
-                Vec3 particlePos = new Vec3(packet.getXCoordinate(), packet.getYCoordinate() - 0.7, packet.getZCoordinate());
+                Vec3 particlePos = new Vec3(packet.getXCoordinate(), packet.getYCoordinate(), packet.getZCoordinate());
                 if (closestChest != null) {
                     double dist = closestChest.distanceTo(particlePos);
                     if (dist < 1) {
-                        particlePos = particlePos.add(new Vec3(0, -1, 0));
-                        int drill = findItemInHotbar("X655");
-                        if(drill != -1) Main.mc.thePlayer.inventory.currentItem = drill;
-                        RotationUtils.facePos(particlePos);
+                        ShadyRotation.smoothLook(ShadyRotation.vec3ToRotation(particlePos), Main.configFile.smoothLookVelocity, () -> {});
                     }
                 }
             }

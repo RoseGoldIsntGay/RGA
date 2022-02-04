@@ -13,6 +13,7 @@ import rosegoldaddons.Main;
 import rosegoldaddons.utils.PlayerUtils;
 import rosegoldaddons.utils.RenderUtils;
 import rosegoldaddons.utils.RotationUtils;
+import rosegoldaddons.utils.ShadyRotation;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,15 +22,17 @@ public class MithrilNuker {
     private static int currentDamage;
     private static byte blockHitDelay = 0;
     private static BlockPos blockPos;
+    private BlockPos lastBlockPos = null;
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (!Main.mithrilNuker || Main.mc.thePlayer == null || Main.mc.theWorld == null) {
+        if(Main.mc.thePlayer == null || Main.mc.theWorld == null) return;
+        if (!Main.mithrilNuker) {
             currentDamage = 0;
             return;
         }
         if (event.phase == TickEvent.Phase.END) {
-            if(PlayerUtils.pickaxeAbilityReady) {
+            if(PlayerUtils.pickaxeAbilityReady && Main.mc.playerController != null) {
                 Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem));
             }
             if(currentDamage > 100) {
@@ -42,6 +45,7 @@ public class MithrilNuker {
                 }
             }
             if(currentDamage == 0) {
+                lastBlockPos = blockPos;
                 blockPos = closestMithril();
             }
             if (blockPos != null) {
@@ -52,7 +56,7 @@ public class MithrilNuker {
                 if (currentDamage == 0) {
                     Main.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, blockPos, EnumFacing.DOWN));
                     if(Main.configFile.mithrilLook) {
-                        RotationUtils.facePos(new Vec3(blockPos.getX() + 0.5, blockPos.getY() - 1, blockPos.getZ() + 0.5));
+                        ShadyRotation.smoothLook(ShadyRotation.getRotationToBlock(blockPos), Main.configFile.smoothLookVelocity, () -> {});
                     }
                 }
                 PlayerUtils.swingItem();

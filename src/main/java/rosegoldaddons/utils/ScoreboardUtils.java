@@ -8,6 +8,8 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.StringUtils;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
  */
 
 public class ScoreboardUtils {
+    public static boolean inSkyblock = false;
     public static String cleanSB(String scoreboard) {
         char[] nvString = StringUtils.stripControlCodes(scoreboard).toCharArray();
         StringBuilder cleaned = new StringBuilder();
@@ -60,5 +63,24 @@ public class ScoreboardUtils {
         }
 
         return lines;
+    }
+
+    public static String removeFormatting(String input) {
+        return input.replaceAll("§[0-9a-fk-or]", "");
+    }
+
+    private int ticks = 0;
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if(ticks % 20 == 0) {
+            if(Main.mc.thePlayer != null && Main.mc.theWorld != null) {
+                ScoreObjective scoreboardObj = Main.mc.theWorld.getScoreboard().getObjectiveInDisplaySlot(1);
+                if(scoreboardObj != null) {
+                    inSkyblock = removeFormatting(scoreboardObj.getDisplayName()).contains("SKYBLOCK");
+                }
+            }
+            ticks = 0;
+        }
+        ticks++;
     }
 }

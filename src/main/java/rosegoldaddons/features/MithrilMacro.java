@@ -1,10 +1,13 @@
 package rosegoldaddons.features;
 
+import net.minecraft.block.BlockHardenedClay;
+import net.minecraft.block.BlockStainedGlass;
 import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -29,6 +32,7 @@ public class MithrilMacro {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) return;
+        if(Main.mc.thePlayer == null || Main.mc.theWorld == null) return;
         if (Main.mc.currentScreen != null) return;
         if (!Main.mithrilMacro) {
             if (holdingLeft) {
@@ -50,7 +54,6 @@ public class MithrilMacro {
         lastBlockPos = blockPos;
         blockPos = closestMithril();
         if (lastBlockPos != null && blockPos != null && !lastBlockPos.equals(blockPos)) {
-            ChatUtils.sendMessage("Block pos was changed.");
             currentDamage = 0;
         }
         if (blockPos != null) {
@@ -58,7 +61,7 @@ public class MithrilMacro {
             if (vec3s.size() > 0) {
                 vec = vec3s.get(0);
                 if (vec != null) {
-                    RotationUtils.facePos(vec);
+                    ShadyRotation.smoothLook(ShadyRotation.vec3ToRotation(vec), Main.configFile.smoothLookVelocity, () -> {});
                     lastVec = vec;
                     KeyBinding.setKeyBindState(lc.getKeyCode(), true);
                     holdingLeft = true;
@@ -117,17 +120,24 @@ public class MithrilMacro {
     }
 
     private boolean isMithril(IBlockState blockState) {
-        if (blockState.getBlock() == Blocks.prismarine) {
-            return true;
-        } else if (blockState.getBlock() == Blocks.wool) {
-            return true;
-        } else if (blockState.getBlock() == Blocks.stained_hardened_clay) {
-            return true;
-        } else if (!Main.configFile.ignoreTitanium && blockState.getBlock() == Blocks.stone && blockState.getValue(BlockStone.VARIANT) == BlockStone.EnumType.DIORITE_SMOOTH) {
-            return true;
-        } else if (blockState.getBlock() == Blocks.gold_block) {
-            return true;
+        if (!Main.configFile.onlyOres) {
+            if (blockState.getBlock() == Blocks.prismarine) {
+                return true;
+            } else if (blockState.getBlock() == Blocks.wool && (blockState.getValue(BlockStainedGlass.COLOR) == EnumDyeColor.LIGHT_BLUE || blockState.getValue(BlockStainedGlass.COLOR) == EnumDyeColor.GRAY)) {
+                return true;
+            } else if (blockState.getBlock() == Blocks.stained_hardened_clay && blockState.getValue(BlockStainedGlass.COLOR) == EnumDyeColor.CYAN) {
+                return true;
+            } else if (!Main.configFile.ignoreTitanium && blockState.getBlock() == Blocks.stone && blockState.getValue(BlockStone.VARIANT) == BlockStone.EnumType.DIORITE_SMOOTH) {
+                return true;
+            } else if (blockState.getBlock() == Blocks.gold_block) {
+                return true;
+            }
         }
+
+        if (Main.configFile.includeOres || Main.configFile.onlyOres) {
+            return blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack;
+        }
+
         return false;
     }
 }

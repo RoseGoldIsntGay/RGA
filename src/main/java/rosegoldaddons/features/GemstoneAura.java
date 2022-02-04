@@ -1,23 +1,16 @@
 package rosegoldaddons.features;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockStainedGlass;
 import net.minecraft.block.BlockStainedGlassPane;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.util.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
-import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.PlayerUtils;
 import rosegoldaddons.utils.RenderUtils;
 
@@ -35,8 +28,8 @@ public class GemstoneAura {
             currentDamage = 0;
             return;
         }
-        if (event.phase == TickEvent.Phase.END) {
-            if (PlayerUtils.pickaxeAbilityReady && Main.mc.thePlayer != null) {
+        if (event.phase == TickEvent.Phase.END && Main.mc.theWorld != null && Main.mc.thePlayer != null) {
+            if (PlayerUtils.pickaxeAbilityReady) {
                 Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem));
             }
             if (currentDamage > 100) {
@@ -109,7 +102,7 @@ public class GemstoneAura {
         playerPos = playerPos.add(0, 1, 0);
         Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, r, r);
-        ArrayList<Vec3> chests = new ArrayList<Vec3>();
+        ArrayList<Vec3> chests = new ArrayList<>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i))) {
                 IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
@@ -133,11 +126,11 @@ public class GemstoneAura {
         }
         double smallest = 9999;
         Vec3 closest = null;
-        for (int i = 0; i < chests.size(); i++) {
-            double dist = chests.get(i).distanceTo(playerVec);
+        for (Vec3 chest : chests) {
+            double dist = chest.distanceTo(playerVec);
             if (dist < smallest) {
                 smallest = dist;
-                closest = chests.get(i);
+                closest = chest;
             }
         }
         if (closest != null && smallest < 5) {

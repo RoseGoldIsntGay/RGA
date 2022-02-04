@@ -1,6 +1,8 @@
 package rosegoldaddons;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -20,24 +22,17 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.lwjgl.input.Keyboard;
 import rosegoldaddons.commands.*;
 import rosegoldaddons.features.*;
-import rosegoldaddons.utils.ChatUtils;
-import rosegoldaddons.utils.OpenSkyblockGui;
-import rosegoldaddons.utils.PlayerUtils;
-import rosegoldaddons.utils.RotationUtils;
+import rosegoldaddons.utils.*;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Mod(modid = "timechanger", name = "RoseGoldAddons", version = "2.1")
 public class Main {
@@ -64,14 +59,20 @@ public class Main {
     private static boolean oldanim = false;
     public static boolean init = false;
     public static boolean mithrilMacro = false;
+    private boolean issue = false;
 
     public static final Minecraft mc = Minecraft.getMinecraft();
+    public static JsonObject rga;
 
-    //Hello decompiler and / or source code checker! this is just some funny stuff, you do not have to worry about it!
+    String info = "Hello decompiler! this is just some funny stuff, you do not have to worry about it!";
     private String[] cumsters = null;
     private String[] ILILILLILILLILILILL = null;
-    public static HashMap<String, String> resp = new HashMap<>();
 
+    public static HashMap<String, String> nameCache = new HashMap<>();
+    public static HashMap<String, String> rankCache = new HashMap<>();
+    public static ArrayList<String> hashedCache = new ArrayList<>();
+    public static HashMap<String, String> names = new HashMap<>();
+    public static HashMap<String, String> ranks = new HashMap<>();
 
     @Mod.EventHandler
     public void onFMLInitialization(FMLPreInitializationEvent event) {
@@ -79,10 +80,18 @@ public class Main {
         if (!directory.exists()) {
             directory.mkdirs();
         }
+
+        try {
+            rga = getJson("https://gist.githubusercontent.com/RoseGoldIsntGay/2d15ef10d53629455a40f5c027db1dfb/raw/").getAsJsonObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            issue = true;
+        }
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+        if (issue) return;
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new AutoReady());
         MinecraftForge.EVENT_BUS.register(new OpenSkyblockGui());
@@ -107,11 +116,11 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new ForagingNuker());
         MinecraftForge.EVENT_BUS.register(new AutoSlayer());
         MinecraftForge.EVENT_BUS.register(new PlayerUtils());
-        MinecraftForge.EVENT_BUS.register(new CanePlanter());
         MinecraftForge.EVENT_BUS.register(new ArmorStandESPs());
         MinecraftForge.EVENT_BUS.register(new PinglessMining());
         MinecraftForge.EVENT_BUS.register(new MithrilMacro());
-        MinecraftForge.EVENT_BUS.register(new RotationUtils());
+        MinecraftForge.EVENT_BUS.register(new AutoGhostBlock());
+        MinecraftForge.EVENT_BUS.register(new ShadyRotation());
         configFile.initialize();
         ClientCommandHandler.instance.registerCommand(new OpenSettings());
         ClientCommandHandler.instance.registerCommand(new Rosedrobe());
@@ -122,21 +131,41 @@ public class Main {
         ClientCommandHandler.instance.registerCommand(new AllEntities());
         ClientCommandHandler.instance.registerCommand(new SexPlayer());
 
-        String[] temp = getUrlContents("https://gist.github.com/RoseGoldIsntGay/6fa79111ae8efe3f5d269a095d748aa5/raw").split("\n");
-        for(String str : temp) {
-            if(str.contains(":")) {
-                resp.put(str.substring(0, str.indexOf(":")), str.substring(str.indexOf(": ") + 2).replace("&", "§"));
-            } else {
-                System.out.println(str);
-            }
+        JsonArray funnynames = rga.get("funnynames").getAsJsonArray();
+        cumsters = new String[funnynames.size()];
+        Iterator<JsonElement> fn = funnynames.iterator();
+        int count = 0;
+        while(fn.hasNext()) {
+            JsonElement name = fn.next();
+            cumsters[count] = name.getAsString();
+            count++;
         }
-        init = true;
+        JsonArray funnymessages = rga.get("funnymessages").getAsJsonArray();
+        ILILILLILILLILILILL = new String[funnymessages.size()];
+        Iterator<JsonElement> fm = funnymessages.iterator();
+        count = 0;
+        while(fm.hasNext()) {
+            JsonElement message = fm.next();
+            ILILILLILILLILILILL[count] = message.getAsString();
+            count++;
+        }
 
-        cumsters = getUrlContents("https://gist.githubusercontent.com/RoseGoldIsntGay/14108940b5c97d01de20213e567b7b9c/raw/").split("\n");
-        ILILILLILILLILILILL = getUrlContents("https://gist.githubusercontent.com/RoseGoldIsntGay/2534fa591573120a5f71bbca2ccf0af2/raw/").split("\n");
-        for(String str : ILILILLILILLILILILL) {
-            System.out.println(str);
-        }
+        JsonObject replacions = rga.get("replacions").getAsJsonObject();
+        Set<Map.Entry<String, JsonElement>> set = replacions.entrySet();
+
+        set.forEach(stringJsonElementEntry -> {
+            names.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+            System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+        });
+
+        replacions = rga.get("ranks").getAsJsonObject();
+        set = replacions.entrySet();
+
+        set.forEach(stringJsonElementEntry -> {
+            ranks.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+            System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+        });
+        init = true;
 
         try {
             Reader reader = Files.newBufferedReader(Paths.get("./config/rosegoldaddons/rcmacros.json"));
@@ -146,9 +175,7 @@ public class Main {
                 str += (char) data;
                 data = reader.read();
             }
-            str = str.replace("\"","");
-            str = str.replace("{","");
-            str = str.replace("}","");
+            str = str.replace("\"","").replace("{","").replace("}","");
             String[] arr = str.split(",");
             for(int i = 0; i < arr.length; i++) {
                 String[] arr2 = arr[i].split(":");
@@ -163,9 +190,7 @@ public class Main {
                 str2 += (char) data2;
                 data2 = reader.read();
             }
-            str2 = str2.replace("\"","");
-            str2 = str2.replace("{","");
-            str2 = str2.replace("}","");
+            str2 = str2.replace("\"","").replace("{","").replace("}","");
             String[] arr3 = str2.split(",");
             for(int i = 0; i < arr3.length; i++) {
                 String[] arr4 = arr3[i].split(":");
@@ -211,58 +236,41 @@ public class Main {
         });
     }
 
-
-    @SubscribeEvent
-    public void onConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        if(firstLoginThisSession) {
-            new Thread(() -> {
-                try {
-                    Thread.sleep(4000);
-                    ChatComponentText msg1 = new ChatComponentText("§0§7Thanks to ShadyAddons:§b https://cheatersgetbanned.me");
-                    msg1.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://cheatersgetbanned.me"));
-                    ChatComponentText msg2 = new ChatComponentText("§0§7Thanks to Harry282 (SBClient):§b https://github.com/Harry282/Skyblock-Client");
-                    msg2.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/Harry282/Skyblock-Client"));
-                    ChatComponentText msg3 = new ChatComponentText("§0§7Thanks to pizza boy (Pizza Client):§b https://github.com/PizzaboiBestLegit/Pizza-Client");
-                    msg3.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/PizzaboiBestLegit/Pizza-Client"));
-                    ChatComponentText msg4 = new ChatComponentText("§0§7Check out the RoseGoldAddons §bDiscord Server!");
-                    msg4.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/Tmk2hwzdxm"));
-                    mc.thePlayer.addChatMessage(msg1);
-                    mc.thePlayer.addChatMessage(msg2);
-                    mc.thePlayer.addChatMessage(msg3);
-                    mc.thePlayer.addChatMessage(msg4);
-                    firstLoginThisSession = false;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
-        if(oldanim) {
-            new Thread(() -> {
-                try {
-                    Thread.sleep(6000);
-                    ChatUtils.sendMessage("§l§4Old Animations Mod was detected in your mods folder. This mod breaks some key RoseGoldAddons features, please uninstall it before asking for support as it is known to cause a lot of issues. Thanks.");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
-    }
-
     @SubscribeEvent
     public void onWorldChange(WorldEvent.Unload event) {
-        if(forageOnIsland || nukeWood || nukeCrops || mithrilNuker || gemNukeToggle) {
+        if(forageOnIsland || nukeWood || nukeCrops || mithrilNuker || gemNukeToggle || mithrilMacro) {
             ChatUtils.sendMessage("§cDetected World Change, Stopping All Macros");
             forageOnIsland = false;
             nukeWood = false;
             nukeCrops = false;
             mithrilNuker = false;
             gemNukeToggle = false;
+            mithrilMacro = false;
         }
     }
 
     @SubscribeEvent
     public void tick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
+        if(mc.thePlayer == null || mc.theWorld == null) return;
+        if(firstLoginThisSession) {
+            ChatComponentText msg1 = new ChatComponentText("§0§7Thanks to ShadyAddons:§b https://cheatersgetbanned.me");
+            msg1.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://cheatersgetbanned.me"));
+            ChatComponentText msg2 = new ChatComponentText("§0§7Thanks to Harry282 (SBClient):§b https://github.com/Harry282/Skyblock-Client");
+            msg2.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/Harry282/Skyblock-Client"));
+            ChatComponentText msg3 = new ChatComponentText("§0§7Thanks to pizza boy (Pizza Client):§b https://github.com/PizzaboiBestLegit/Pizza-Client");
+            msg3.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/PizzaboiBestLegit/Pizza-Client"));
+            ChatComponentText msg4 = new ChatComponentText("§0§7Check out the RoseGoldAddons §bDiscord Server!");
+            msg4.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/Tmk2hwzdxm"));
+            mc.thePlayer.addChatMessage(msg1);
+            mc.thePlayer.addChatMessage(msg2);
+            mc.thePlayer.addChatMessage(msg3);
+            mc.thePlayer.addChatMessage(msg4);
+            if(oldanim) {
+                ChatUtils.sendMessage("§l§4Old Animations Mod was detected in your mods folder. This mod breaks some key RoseGoldAddons features, please uninstall it before asking for support as it is known to cause a lot of issues. Thanks.");
+            }
+            firstLoginThisSession = false;
+        }
         if(mc.gameSettings.limitFramerate == 1) {
             mc.gameSettings.setOptionFloatValue(GameSettings.Options.FRAMERATE_LIMIT, 260.0F);
         }

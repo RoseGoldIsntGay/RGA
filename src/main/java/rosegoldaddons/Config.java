@@ -13,7 +13,23 @@ public class Config extends Vigilant {
 
     @Property(type = PropertyType.SWITCH, name = "Auto Start Dungeon + Ready", description = "Automatically starts the dungeon and gets ready.",
             category = "Dungeons", subcategory = "General")
-    public boolean AutoReady = true;
+    public boolean AutoReady = false;
+
+    @Property(type = PropertyType.SELECTOR, name = "Auto Ghost Block", description = "Choose which mode auto ghost block will follow",
+            category = "Dungeons", subcategory = "General", options = {"While Held", "On Press"})
+    public int ghostIndex = 0;
+
+    @Property(type = PropertyType.SWITCH, name = "Auto Ghost Block Stairs", description = "Automatically ghost block stairs you are standing on when you sneak",
+            category = "Dungeons", subcategory = "General")
+    public boolean AutoGB = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Add Flipped Stairs", description = "Ghost Block upside-down stair when jumped into",
+            category = "Dungeons", subcategory = "General")
+    public boolean AutoGBTopStair = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Add Misc. Blocks", description = "Adds other phase-able blocks to Auto Ghost Block",
+            category = "Dungeons", subcategory = "General")
+    public boolean AutoGBMisc = false;
 
     public boolean autoArrowAlign = true;
 
@@ -41,9 +57,9 @@ public class Config extends Vigilant {
             category = "RoseGoldAddons", subcategory = "General", max = 2000)
     public int swapFrequency = 500;
 
-    @Property(type = PropertyType.SLIDER, name = "Smooth Look Velocity", description = "How fast should head rotation changes be (in miliseconds)",
-            category = "RoseGoldAddons", subcategory = "General", min = 1, max = 200)
-    public int smoothLookVelocity = 50;
+    @Property(type = PropertyType.SLIDER, name = "Smooth Look Velocity", description = "How fast should head rotation changes be (in ticks)",
+            category = "RoseGoldAddons", subcategory = "General", min = 1, max = 40)
+    public int smoothLookVelocity = 5;
 
     @Property(type = PropertyType.SLIDER, name = "Macro Range", description = "Look for entities only in radius of the player, 0 = unlimited",
             category = "RoseGoldAddons", subcategory = "General", max = 300)
@@ -75,7 +91,7 @@ public class Config extends Vigilant {
 
     @Property(type = PropertyType.SWITCH, name = "Radomize Delay", description = "Add slight randomization to delay",
             category = "Foraging", subcategory = "General")
-    public boolean randomizeForaging = true;
+    public boolean randomizeForaging = false;
 
     @Property(type = PropertyType.SWITCH, name = "Admin Antisus", description = "Act as if you're there when you get AFK checked (not recommended to leave on)",
             category = "Foraging", subcategory = "General")
@@ -86,8 +102,12 @@ public class Config extends Vigilant {
     public boolean prioblocks = false;
 
     @Property(type = PropertyType.SLIDER, name = "Hardstone Nuker Height", description = "Range to break above the player",
-            category = "Mining", subcategory = "General", max = 5)
+            category = "Mining", subcategory = "General",max = 5)
     public int hardrange = 0;
+
+    @Property(type = PropertyType.SLIDER, name = "Hardstone Nuker Depth", description = "Range to break below the player",
+            category = "Mining", subcategory = "General",max = 3)
+    public int hardrangeDown = 0;
 
     @Property(type = PropertyType.SELECTOR, name = "Hardstone Nuker Shape", description = "Choose which pattern hardstone nuker will follow",
             category = "Mining", subcategory = "General", options = {"Closest Block", "Facing Axis"})
@@ -125,9 +145,17 @@ public class Config extends Vigilant {
             category = "Mining", subcategory = "General")
     public boolean ignoreTitanium = false;
 
-    @Property(type = PropertyType.SWITCH, name = "Include Ores", description = "Hardstone & Mithril Nukers will also nuke ores",
+    @Property(type = PropertyType.SWITCH, name = "Include Ores", description = "Hardstone Nuker, Mithril Nuker and Mithril Macro will also target ores",
             category = "Mining", subcategory = "General")
     public boolean includeOres = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Include Sand & Gravel", description = "Hardstone Nuker will also target sand and gravel",
+            category = "Mining", subcategory = "General")
+    public boolean includeExcavatable = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Only Ores", description = "Mithril Macro will only target ores",
+            category = "Mining", subcategory = "General")
+    public boolean onlyOres = false;
 
     @Property(type = PropertyType.SELECTOR, name = "Mithril Macro Priority", description = "Determine the order the macro will breaks blocks in",
             category = "Mining", subcategory = "General", options = {"Highest value to lowest", "Lowest value to highest","Any"})

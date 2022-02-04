@@ -16,13 +16,16 @@ import java.lang.reflect.Method;
 public class CustomItemMacro {
     private Thread thread;
     private int milis = 0;
+    private boolean working = false;
 
     @SubscribeEvent
-    public void onRender(RenderWorldLastEvent event) {
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if(event.phase == TickEvent.Phase.END || working) return;
         if (!Main.autoUseItems) return;
         if (thread == null || !thread.isAlive()) {
             thread = new Thread(() -> {
                 try {
+                    working = true;
                     int prevItem = Main.mc.thePlayer.inventory.currentItem;
                     for (String i : UseCooldown.RCitems.keySet()) {
                         if (milis % Math.floor(UseCooldown.RCitems.get(i)/100) == 0) {
@@ -46,6 +49,7 @@ public class CustomItemMacro {
                     Main.mc.thePlayer.inventory.currentItem = prevItem;
                     milis++;
                     Thread.sleep(100);
+                    working = false;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

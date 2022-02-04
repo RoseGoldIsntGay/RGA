@@ -10,9 +10,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
 import rosegoldaddons.utils.ChatUtils;
 import rosegoldaddons.utils.RotationUtils;
+import rosegoldaddons.utils.ShadyRotation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class ForagingIslandMacro {
     private final String[] responses = {"wtf??", "hello?", "hi?", "uhhhhhh", "what the", "??????"};
 
     @SubscribeEvent
-    public void renderWorld(RenderWorldLastEvent event) {
+    public void onTick(TickEvent.ClientTickEvent event) {
         if (Main.forageOnIsland) {
             if (thread == null || !thread.isAlive()) {
                 thread = new Thread(() -> {
@@ -57,8 +59,8 @@ public class ForagingIslandMacro {
                             return;
                         }
                         if (furthestDirt != null) {
-                            RotationUtils.facePos(new Vec3(furthestDirt.getX() + 0.5, furthestDirt.getY() - 0.5, furthestDirt.getZ() + 0.5));
-                            Thread.sleep(Main.configFile.smoothLookVelocity * 2L);
+                            ShadyRotation.smoothLook(ShadyRotation.vec3ToRotation(new Vec3(furthestDirt.getX() +0.5, furthestDirt.getY() + 1, furthestDirt.getZ() + 0.5)), Main.configFile.smoothLookVelocity, () -> {});
+                            Thread.sleep(Main.configFile.smoothLookVelocity * 40L);
                             if (sapling != -1) {
                                 if (Main.mc.objectMouseOver.typeOfHit.toString().equals("BLOCK")) {
                                     BlockPos pos = Main.mc.objectMouseOver.getBlockPos();
@@ -75,7 +77,8 @@ public class ForagingIslandMacro {
                         } else {
                             BlockPos dirt = closestDirt();
                             if (dirt != null) {
-                                RotationUtils.facePos(new Vec3(dirt.getX() + 0.5, dirt.getY(), dirt.getZ() + 0.5));
+                                ShadyRotation.smoothLook(ShadyRotation.vec3ToRotation(new Vec3(dirt.getX() + 0.5, dirt.getY() + 1, dirt.getZ() + 0.5)), Main.configFile.smoothLookVelocity, () -> {});
+                                Thread.sleep(Main.configFile.smoothLookVelocity * 40L);
                                 if (bonemeal != -1 && treecap != -1) {
                                     Main.mc.thePlayer.inventory.currentItem = bonemeal;
                                     Random rand = new Random();
@@ -84,19 +87,19 @@ public class ForagingIslandMacro {
                                         toAdd = rand.nextInt(20);
                                     }
                                     //ChatUtils.sendMessage("extra delay: "+toAdd+"%");
-                                    Thread.sleep(Math.round(150*(1+(toAdd/100))));
+                                    Thread.sleep(Math.round(150*(1+(toAdd/100F))));
                                     rightClick();
                                     rightClick();
                                     Main.mc.thePlayer.inventory.currentItem = treecap;
-                                    Thread.sleep(Math.round(Main.configFile.treecapDelay*(1+(toAdd/100))));
+                                    Thread.sleep(Math.round(Main.configFile.treecapDelay*(1+(toAdd/100F))));
                                     KeyBinding.setKeyBindState(Main.mc.gameSettings.keyBindAttack.getKeyCode(), true);
-                                    Thread.sleep(Math.round(150*(1+(toAdd/100))));
+                                    Thread.sleep(Math.round(150*(1+(toAdd/100F))));
                                     KeyBinding.setKeyBindState(Main.mc.gameSettings.keyBindAttack.getKeyCode(), false);
-                                    Thread.sleep(Math.round(25*(1+(toAdd/100))));
+                                    Thread.sleep(Math.round(25*(1+(toAdd/100F))));
                                     Main.mc.thePlayer.inventory.currentItem = rod;
-                                    Thread.sleep(Math.round(Main.configFile.prerodDelay*(1+(toAdd/100))));
+                                    Thread.sleep(Math.round(Main.configFile.prerodDelay*(1+(toAdd/100F))));
                                     rightClick();
-                                    Thread.sleep(Math.round(Main.configFile.postrodDelay*(1+(toAdd/100))));
+                                    Thread.sleep(Math.round(Main.configFile.postrodDelay*(1+(toAdd/100F))));
                                 }
                             }
                         }

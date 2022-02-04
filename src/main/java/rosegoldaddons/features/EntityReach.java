@@ -55,6 +55,7 @@ public class EntityReach {
 
     @SubscribeEvent
     public void renderWorld(RenderWorldLastEvent event) {
+        if(Main.mc.thePlayer == null || Main.mc.theWorld == null) return;
         if (!Main.configFile.entityReach) return;
         if (toInteract != null) {
             Entity stand = getClosestArmorStand(toInteract);

@@ -21,10 +21,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
 import rosegoldaddons.events.ReceivePacketEvent;
-import rosegoldaddons.utils.ChatUtils;
-import rosegoldaddons.utils.PlayerUtils;
-import rosegoldaddons.utils.RenderUtils;
-import rosegoldaddons.utils.RotationUtils;
+import rosegoldaddons.utils.*;
+import scala.concurrent.impl.CallbackRunnable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -100,7 +98,7 @@ public class HardstoneAura {
                     stopHardstone = true;
                     double dist = closestChest.distanceTo(particlePos);
                     if (dist < 1) {
-                        RotationUtils.facePos(particlePos);
+                        ShadyRotation.smoothLook(ShadyRotation.vec3ToRotation(particlePos), Main.configFile.smoothLookVelocity, () -> {});
                     }
                 }
             }
@@ -176,23 +174,32 @@ public class HardstoneAura {
     private BlockPos closestStone() {
         if(Main.mc.theWorld == null) return null;
         if(Main.mc.thePlayer == null) return null;
-        int r = 6;
+        int r = 5;
         BlockPos playerPos = Main.mc.thePlayer.getPosition();
         playerPos.add(0, 1, 0);
         Vec3 playerVec = Main.mc.thePlayer.getPositionVector();
         Vec3i vec3i = new Vec3i(r, 1 + Main.configFile.hardrange, r);
-        Vec3i vec3i2 = new Vec3i(r, 0, r);
+        Vec3i vec3i2 = new Vec3i(r, Main.configFile.hardrangeDown, r);
         ArrayList<Vec3> stones = new ArrayList<Vec3>();
         ArrayList<Vec3> gemstones = new ArrayList<Vec3>();
         if (playerPos != null) {
             for (BlockPos blockPos : BlockPos.getAllInBox(playerPos.add(vec3i), playerPos.subtract(vec3i2))) {
                 IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
                 if(Main.configFile.hardIndex == 0) {
-                    if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
+                    if (!Main.configFile.includeExcavatable && blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                         stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                     }
                     if (Main.configFile.includeOres) {
-                        if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack && !broken.contains(blockPos)) {
+                        if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore
+                                || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore
+                                || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore
+                                || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack
+                                && !broken.contains(blockPos)) {
+                            stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                        }
+                    }
+                    if(Main.configFile.includeExcavatable) {
+                        if (blockState.getBlock() == Blocks.gravel || blockState.getBlock() == Blocks.sand && !broken.contains(blockPos)) {
                             stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                         }
                     }
@@ -207,11 +214,20 @@ public class HardstoneAura {
                                 if(isSlow(blockState)) {
                                     gemstones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                                else if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
+                                else if (!Main.configFile.includeExcavatable && blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
                                 if (Main.configFile.includeOres) {
-                                    if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack && !broken.contains(blockPos)) {
+                                    if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore
+                                            || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore
+                                            || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore
+                                            || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack
+                                            && !broken.contains(blockPos)) {
+                                        stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                    }
+                                }
+                                if(Main.configFile.includeExcavatable) {
+                                    if (blockState.getBlock() == Blocks.gravel || blockState.getBlock() == Blocks.sand && !broken.contains(blockPos)) {
                                         stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                     }
                                 }
@@ -222,11 +238,20 @@ public class HardstoneAura {
                                 if(isSlow(blockState)) {
                                     gemstones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                                else if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
+                                else if (!Main.configFile.includeExcavatable && blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
                                 if (Main.configFile.includeOres) {
-                                    if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack && !broken.contains(blockPos)) {
+                                    if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore
+                                            || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore
+                                            || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore
+                                            || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack
+                                            && !broken.contains(blockPos)) {
+                                        stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                    }
+                                }
+                                if(Main.configFile.includeExcavatable) {
+                                    if (blockState.getBlock() == Blocks.gravel || blockState.getBlock() == Blocks.sand && !broken.contains(blockPos)) {
                                         stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                     }
                                 }
@@ -237,11 +262,20 @@ public class HardstoneAura {
                                 if(isSlow(blockState)) {
                                     gemstones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                                else if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
+                                else if (!Main.configFile.includeExcavatable && blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
                                 if (Main.configFile.includeOres) {
-                                    if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack && !broken.contains(blockPos)) {
+                                    if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore
+                                            || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore
+                                            || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore
+                                            || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack
+                                            && !broken.contains(blockPos)) {
+                                        stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                    }
+                                }
+                                if(Main.configFile.includeExcavatable) {
+                                    if (blockState.getBlock() == Blocks.gravel || blockState.getBlock() == Blocks.sand && !broken.contains(blockPos)) {
                                         stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                     }
                                 }
@@ -252,11 +286,20 @@ public class HardstoneAura {
                                 if(isSlow(blockState)) {
                                     gemstones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
-                                else if (blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
+                                else if (!Main.configFile.includeExcavatable && blockState.getBlock() == Blocks.stone && !broken.contains(blockPos)) {
                                     stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                 }
                                 if (Main.configFile.includeOres) {
-                                    if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack && !broken.contains(blockPos)) {
+                                    if (blockState.getBlock() == Blocks.coal_ore || blockState.getBlock() == Blocks.diamond_ore
+                                            || blockState.getBlock() == Blocks.gold_ore || blockState.getBlock() == Blocks.redstone_ore
+                                            || blockState.getBlock() == Blocks.iron_ore || blockState.getBlock() == Blocks.lapis_ore
+                                            || blockState.getBlock() == Blocks.emerald_ore || blockState.getBlock() == Blocks.netherrack
+                                            && !broken.contains(blockPos)) {
+                                        stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
+                                    }
+                                }
+                                if(Main.configFile.includeExcavatable) {
+                                    if (blockState.getBlock() == Blocks.gravel || blockState.getBlock() == Blocks.sand && !broken.contains(blockPos)) {
                                         stones.add(new Vec3(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5));
                                     }
                                 }
