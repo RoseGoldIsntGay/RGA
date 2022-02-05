@@ -7,9 +7,10 @@
     "MixinNetworkManager"
   ],
   "client": [
+    "MixinEntityPlayer",
     "MixinMinecraft",
     "MixinRendererLivingEntity",
-    "MixinEntityPlayer",
+    "MixinEntity",
     "MixinRenderString"
   ]
 }

@@ -194,6 +194,10 @@ public class Config extends Vigilant {
             category = "RoseGoldAddons", subcategory = "General", options = {"None", "Zombie 3", "Zombie 4", "Zombie 5", "Spider 3", "Spider 4", "Sven 3", "Sven 4", "Enderman 2", "Enderman 3", "Enderman 4"})
     public int slayerTypeIndex = 0;
 
+    @Property(type = PropertyType.SELECTOR, name = "Custom Name Type", description = "ignore if you dont know what these mean",
+            category = "RoseGoldAddons", subcategory = "General", options = {"MixinEntityPlayer", "MixinEntityPlayer + MixinEntity"})
+    public int nameRenderType = 0;
+
     @Property(type = PropertyType.SWITCH, name = "Potato Mode", description = "This brings back memories...",
             category = "Memes", subcategory = "General")
     public boolean guilag = false;

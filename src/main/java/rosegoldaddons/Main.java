@@ -158,7 +158,7 @@ public class Main {
 
         set.forEach(stringJsonElementEntry -> {
             names.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
-            //System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+            System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
         });
 
         replacions = rga.get("ranks").getAsJsonObject();
@@ -166,7 +166,7 @@ public class Main {
 
         set.forEach(stringJsonElementEntry -> {
             ranks.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
-            //System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+            System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
         });
         init = true;
 

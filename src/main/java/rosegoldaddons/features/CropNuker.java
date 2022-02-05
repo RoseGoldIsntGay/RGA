@@ -28,6 +28,9 @@ public class CropNuker {
             broken.clear();
             return;
         }
+        if(broken.size() > 40) {
+            broken.clear();
+        }
         crop = closestCrop();
         if (crop != null) {
             Main.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, crop, EnumFacing.DOWN));
