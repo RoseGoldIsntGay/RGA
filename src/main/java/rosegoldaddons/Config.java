@@ -15,6 +15,14 @@ public class Config extends Vigilant {
             category = "Dungeons", subcategory = "General")
     public boolean AutoReady = false;
 
+    @Property(type = PropertyType.SLIDER, name = "Highlight Line Width", description = "Determine the line thickness of all ESPs, 0 to disable ESPs",
+            category = "ESP", subcategory = "General", max = 10)
+    public int lineWidth = 3;
+
+    @Property(type = PropertyType.SWITCH, name = "Dungeon ESPs", description = "Edited from ShadyAddons' ESP",
+            category = "ESP", subcategory = "General")
+    public boolean dungeonESP = false;
+
     @Property(type = PropertyType.SELECTOR, name = "Auto Ghost Block", description = "Choose which mode auto ghost block will follow",
             category = "Dungeons", subcategory = "General", options = {"While Held", "On Press"})
     public int ghostIndex = 0;
@@ -37,8 +45,12 @@ public class Config extends Vigilant {
             category = "RoseGoldAddons", subcategory = "General")
     public boolean AutoUntransfer = false;
 
+    @Property(type = PropertyType.SLIDER, name = "Smooth Look Velocity", description = "How fast should head rotation changes be (in ticks)",
+            category = "RoseGoldAddons", subcategory = "General", min = 1, max = 40)
+    public int smoothLookVelocity = 5;
+
     @Property(type = PropertyType.SWITCH, name = "Enderman ESP", description = "**NOT** Needed for enderman macro.",
-            category = "RoseGoldAddons", subcategory = "General")
+            category = "ESP", subcategory = "General")
     public boolean EndermanESP = false;
 
     @Property(type = PropertyType.SWITCH, name = "Use Utility Items when Swapping", description = "Automatically use Tuba / Orb / Wand when AOTS or Whip swap are enabled",
@@ -56,10 +68,6 @@ public class Config extends Vigilant {
     @Property(type = PropertyType.SLIDER, name = "Sword Swap Delay", description = "How often to swap swords (in miliseconds)",
             category = "RoseGoldAddons", subcategory = "General", max = 2000)
     public int swapFrequency = 500;
-
-    @Property(type = PropertyType.SLIDER, name = "Smooth Look Velocity", description = "How fast should head rotation changes be (in ticks)",
-            category = "RoseGoldAddons", subcategory = "General", min = 1, max = 40)
-    public int smoothLookVelocity = 5;
 
     @Property(type = PropertyType.SLIDER, name = "Macro Range", description = "Look for entities only in radius of the player, 0 = unlimited",
             category = "RoseGoldAddons", subcategory = "General", max = 300)
@@ -136,6 +144,11 @@ public class Config extends Vigilant {
     @Property(type = PropertyType.SELECTOR, name = "Crop Nuker Shape", description = "Choose which pattern crop nuker will follow",
             category = "Farming", subcategory = "General", options = {"Closest Block", "Facing Axis"})
     public int farmShapeIndex = 0;
+
+    @Property(type = PropertyType.SELECTOR, name = "Crop Nuker Speed", description = "Choose how many blocks per second Crop Nuker will break",
+            category = "Farming", subcategory = "General", options = {"40 BPS", "80 BPS"})
+    public int farmSpeedIndex = 0;
+
 
     @Property(type = PropertyType.SWITCH, name = "Look at nuked block", description = "Looks at currently nuked block to look less sus",
             category = "Mining", subcategory = "General")

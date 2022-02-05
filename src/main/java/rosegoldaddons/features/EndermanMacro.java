@@ -42,7 +42,7 @@ public class EndermanMacro {
     public void renderWorld(RenderWorldLastEvent event) {
         if (!Main.configFile.EndermanESP) return;
         if (enderman == null) return;
-        RenderUtils.drawEntityBox(enderman, Color.RED, true, event.partialTicks);
+        RenderUtils.drawEntityBox(enderman, Color.RED, Main.configFile.lineWidth, event.partialTicks);
     }
 
     private static Entity getClosestEnderman() {

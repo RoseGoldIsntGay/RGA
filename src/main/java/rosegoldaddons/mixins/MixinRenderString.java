@@ -14,6 +14,7 @@ public abstract class MixinRenderString {
     @ModifyVariable(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At(value = "FIELD"))
     private String replaceName(String text) {
         if (Main.mc.theWorld == null || Main.mc.thePlayer == null) return text;
+        if(Main.pauseCustom) return text;
         if (Main.configFile.wydsi && text.contains("727")) {
             text = text.replace("727", "726");
         }
@@ -21,6 +22,7 @@ public abstract class MixinRenderString {
             String[] words = stripString(text).replace(":"," ").replace("'"," ").split(" ");
             String[] formatteds = text.replace(":"," ").replace("'"," ").split(" ");
             for (String word : words) {
+                if(word.equals("")) continue;
                 if (Main.hashedCache.contains(word)) continue;
                 if(Main.rankCache.containsKey(word)) {
                     String rank = getRank(text, word);
@@ -39,6 +41,7 @@ public abstract class MixinRenderString {
                 }
             }
             for (String word : words) {
+                if(word.equals("")) continue;
                 if (Main.hashedCache.contains(word)) continue;
                 if (Main.nameCache.containsKey(word)) {
                     String[] replaces = Main.nameCache.get(word).split(" ");
@@ -84,9 +87,13 @@ public abstract class MixinRenderString {
     }
 
     private String stripString(String s) {
-        char[] nonValidatedString = StringUtils.stripControlCodes(s).toCharArray();
+        char[] nonValidatedString;
+        try {
+            nonValidatedString = StringUtils.stripControlCodes(s).toCharArray();
+        } catch (Exception e) {
+            return "";
+        }
         StringBuilder validated = new StringBuilder();
-
         for (char a : nonValidatedString) {
             if ((int) a < 127 && (int) a > 20) {
                 validated.append(a);

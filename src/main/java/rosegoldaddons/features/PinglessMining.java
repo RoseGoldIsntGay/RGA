@@ -81,7 +81,7 @@ public class PinglessMining {
         }
         block = closestBlock(event);
         if (block != null) {
-            RenderUtils.drawBlockBox(block, new Color(255, 0, 0), true, event.partialTicks);
+            RenderUtils.drawBlockBox(block, new Color(255, 0, 0), Main.configFile.lineWidth, event.partialTicks);
         }
     }
 

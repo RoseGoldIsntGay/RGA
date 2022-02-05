@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 public class ScoreboardUtils {
     public static boolean inSkyblock = false;
+    public static boolean inDungeon = false;
+
     public static String cleanSB(String scoreboard) {
         char[] nvString = StringUtils.stripControlCodes(scoreboard).toCharArray();
         StringBuilder cleaned = new StringBuilder();
@@ -65,11 +67,56 @@ public class ScoreboardUtils {
         return lines;
     }
 
+    @SuppressWarnings({"ExecutionException", "IllegalArgumentException"})
+    public static List<String> getScoreboard() {
+        List<String> lines = new ArrayList<>();
+        if (Minecraft.getMinecraft().theWorld == null) return lines;
+        Scoreboard scoreboard = Minecraft.getMinecraft().theWorld.getScoreboard();
+        if (scoreboard == null) return lines;
+
+        ScoreObjective objective = scoreboard.getObjectiveInDisplaySlot(1);
+        if (objective == null) return lines;
+
+        Collection<Score> scores = scoreboard.getSortedScores(objective);
+        List<Score> list = scores.stream()
+                .filter(input -> input != null && input.getPlayerName() != null && !input.getPlayerName()
+                        .startsWith("#"))
+                .collect(Collectors.toList());
+
+        if (list.size() > 15) {
+            scores = Lists.newArrayList(Iterables.skip(list, scores.size() - 15));
+        } else {
+            scores = list;
+        }
+
+        for (Score score : scores) {
+            ScorePlayerTeam team = scoreboard.getPlayersTeam(score.getPlayerName());
+            lines.add(ScorePlayerTeam.formatPlayerName(team, score.getPlayerName()));
+        }
+
+        return lines;
+    }
+
+    public static boolean scoreboardContains(String string) {
+        boolean result = false;
+        List<String> scoreboard = getScoreboard();
+        for (String line : scoreboard) {
+            line = cleanSB(line);
+            line = removeFormatting(line);
+            if(line.contains(string)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
     public static String removeFormatting(String input) {
         return input.replaceAll("§[0-9a-fk-or]", "");
     }
 
     private int ticks = 0;
+
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if(ticks % 20 == 0) {
@@ -78,6 +125,7 @@ public class ScoreboardUtils {
                 if(scoreboardObj != null) {
                     inSkyblock = removeFormatting(scoreboardObj.getDisplayName()).contains("SKYBLOCK");
                 }
+                inDungeon = inSkyblock && ScoreboardUtils.scoreboardContains("The Catacombs");
             }
             ticks = 0;
         }

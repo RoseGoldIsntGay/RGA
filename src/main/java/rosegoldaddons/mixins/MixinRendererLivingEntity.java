@@ -8,6 +8,7 @@ import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,13 +30,17 @@ public abstract class MixinRendererLivingEntity {
             ci.cancel();
     }
 
+    /*
     @Redirect(method = "renderName(Lnet/minecraft/entity/EntityLivingBase;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/IChatComponent;getFormattedText()Ljava/lang/String;"))
     public String redirectGetFormattedText(IChatComponent instance) {
+        if(!Main.configFile.customNames) return instance.getFormattedText();
         if (Main.init && Main.configFile.alchsleep == 63 && Main.configFile.skiblock == 263) return instance.getFormattedText();
         String unformatted = stripString(instance.getUnformattedText()).replace(":"," ").replace("'"," ");
         String[] words = unformatted.split(" ");
         String[] formatteds = instance.getUnformattedText().replace(":"," ").replace("'"," ").split(" ");
         for(String word : words) {
+            if (Main.hashedCache.contains(word)) continue;
+            if(word.equals("")) continue;
             if (Main.nameCache.containsKey(word)) {
                 String[] replaces = Main.nameCache.get(word).split(" ");
                 for(String replace : replaces) {
@@ -45,11 +50,18 @@ public abstract class MixinRendererLivingEntity {
                 }
                 String color = getColorBeforeIndex(instance.getUnformattedText(), instance.getUnformattedText().indexOf(word));
                 return instance.getUnformattedText().replace(word, Main.nameCache.get(word) + color);
+            } else {
+                String hashed = DigestUtils.sha256Hex(word + word);
+                if (Main.names.containsKey(hashed)) {
+                    Main.nameCache.put(word, Main.names.get(hashed));
+                } else {
+                    Main.hashedCache.add(word);
+                }
             }
         }
         return instance.getFormattedText();
     }
-
+    */
 
     private String getColorBeforeIndex(String str, int index) {
         String lastColor = "";

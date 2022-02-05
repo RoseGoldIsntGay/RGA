@@ -44,8 +44,10 @@ public class MithrilMacro {
         }
         if (PlayerUtils.pickaxeAbilityReady) {
             KeyBinding.setKeyBindState(lc.getKeyCode(), false);
-            Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem));
-            PlayerUtils.pickaxeAbilityReady = false;
+            if(Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem) != null) {
+                Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem));
+                PlayerUtils.pickaxeAbilityReady = false;
+            }
         }
         if (currentDamage > 100) {
             KeyBinding.setKeyBindState(lc.getKeyCode(), false);
@@ -80,7 +82,7 @@ public class MithrilMacro {
             RenderUtils.drawPixelBox(vec, Color.RED, 0.01, event.partialTicks);
         }
         if (blockPos != null) {
-            RenderUtils.drawBlockBox(blockPos, Color.CYAN, true, event.partialTicks);
+            RenderUtils.drawBlockBox(blockPos, Color.CYAN, Main.configFile.lineWidth, event.partialTicks);
         }
     }
 

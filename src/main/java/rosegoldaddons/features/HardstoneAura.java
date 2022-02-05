@@ -130,10 +130,10 @@ public class HardstoneAura {
         closestStone = closestStone();
         closestChest = closestChest();
         if (closestStone != null) {
-            RenderUtils.drawBlockBox(closestStone, new Color(128, 128, 128), true, event.partialTicks);
+            RenderUtils.drawBlockBox(closestStone, new Color(128, 128, 128), Main.configFile.lineWidth, event.partialTicks);
         }
         if (closestChest != null) {
-            RenderUtils.drawBlockBox(new BlockPos(closestChest.xCoord, closestChest.yCoord, closestChest.zCoord), new Color(255, 128, 0), true, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(closestChest.xCoord, closestChest.yCoord, closestChest.zCoord), new Color(255, 128, 0), Main.configFile.lineWidth, event.partialTicks);
         } else {
             stopHardstone = false;
         }
@@ -162,7 +162,7 @@ public class HardstoneAura {
             } else if (dyeColor == EnumDyeColor.MAGENTA) {
                 color = new Color(214, 15, 150);
             }
-            RenderUtils.drawBlockBox(gemstone, color, true, event.partialTicks);
+            RenderUtils.drawBlockBox(gemstone, color, Main.configFile.lineWidth, event.partialTicks);
         }
     }
 

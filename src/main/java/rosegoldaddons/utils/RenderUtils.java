@@ -72,7 +72,8 @@ public class RenderUtils {
         glEndList();
     }
 
-    public static void drawBlockBox(final BlockPos blockPos, final Color color, final boolean outline, float partialTicks) {
+    public static void drawBlockBox(final BlockPos blockPos, final Color color, final int width, float partialTicks) {
+        if(width == 0) return;
         final RenderManager renderManager = mc.getRenderManager();
 
         final double x = blockPos.getX() - renderManager.viewerPosX;
@@ -101,16 +102,15 @@ public class RenderUtils {
         disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST);
         glDepthMask(false);
 
-        glColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() != 255 ? color.getAlpha() : outline ? 26 : 35);
+        glColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() != 255 ? color.getAlpha() : 26);
         //drawFilledBox(axisAlignedBB);
 
-        if (outline) {
-            glLineWidth(3F);
-            enableGlCap(GL_LINE_SMOOTH);
-            glColor(color);
+        glLineWidth((float) width);
+        enableGlCap(GL_LINE_SMOOTH);
+        glColor(color);
 
-            drawSelectionBoundingBox(axisAlignedBB);
-        }
+        drawSelectionBoundingBox(axisAlignedBB);
+
 
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         glDepthMask(true);
@@ -178,7 +178,8 @@ public class RenderUtils {
         tessellator.draw();
     }
 
-    public static void drawEntityBox(final Entity entity, final Color color, final boolean outline, float partialTicks) {
+    public static void drawEntityBox(final Entity entity, final Color color, final int width, float partialTicks) {
+        if(width == 0) return;
         final RenderManager renderManager = mc.getRenderManager();
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -203,14 +204,12 @@ public class RenderUtils {
                 entityBox.maxZ - entity.posZ + z + 0.05D
         );
 
-        if (outline) {
-            glLineWidth(3F);
-            enableGlCap(GL_LINE_SMOOTH);
-            glColor(color.getRed(), color.getGreen(), color.getBlue(), 95);
-            drawSelectionBoundingBox(axisAlignedBB);
-        }
+        glLineWidth((float) width);
+        enableGlCap(GL_LINE_SMOOTH);
+        glColor(color.getRed(), color.getGreen(), color.getBlue(), 95);
+        drawSelectionBoundingBox(axisAlignedBB);
 
-        glColor(color.getRed(), color.getGreen(), color.getBlue(), outline ? 26 : 35);
+        glColor(color.getRed(), color.getGreen(), color.getBlue(), 26);
         //drawFilledBox(axisAlignedBB);
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         glDepthMask(true);

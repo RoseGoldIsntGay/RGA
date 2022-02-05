@@ -30,6 +30,10 @@ public class ShadyRotation {
         return angle - Math.floor(angle / 360 + 0.5) * 360;
     }
 
+    private static float wrapAngleTo180(float angle) {
+        return (float) (angle - Math.floor(angle / 360 + 0.5) * 360);
+    }
+
     public static Rotation getRotationToBlock(BlockPos block) {
         double diffX = block.getX() - Main.mc.thePlayer.posX + 0.5;
         double diffY = block.getY() - Main.mc.thePlayer.posY + 0.5 - Main.mc.thePlayer.getEyeHeight();
@@ -81,8 +85,8 @@ public class ShadyRotation {
 
         ShadyRotation.callback = callback;
 
-        pitchDifference = rotation.pitch - Main.mc.thePlayer.rotationPitch;
-        yawDifference = rotation.yaw - Main.mc.thePlayer.rotationYaw;
+        pitchDifference = wrapAngleTo180(rotation.pitch - Main.mc.thePlayer.rotationPitch);
+        yawDifference = wrapAngleTo180(rotation.yaw - Main.mc.thePlayer.rotationYaw);
 
         ShadyRotation.ticks = ticks * 20;
         ShadyRotation.tickCounter = 0;

@@ -30,7 +30,7 @@ public class GhostMacro {
     public void renderWorld(RenderWorldLastEvent event) {
         if (!Main.GhostMacro) return;
         if (creeper == null) return;
-        RenderUtils.drawEntityBox(creeper, Color.RED, true, event.partialTicks);
+        RenderUtils.drawEntityBox(creeper, Color.RED, Main.configFile.lineWidth, event.partialTicks);
     }
 
     private static Entity getClosestCreeper() {

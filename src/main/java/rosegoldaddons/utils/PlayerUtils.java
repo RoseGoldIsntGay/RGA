@@ -25,12 +25,17 @@ public class PlayerUtils {
 
     @SubscribeEvent
     public void chat(ClientChatReceivedEvent event) {
-        String message = StringUtils.stripControlCodes(event.message.getUnformattedText());
-        if (message.contains(":") || message.contains(">")) return;
-        if(message.startsWith("You used your")) {
-            pickaxeAbilityReady = false;
-        } else if(message.endsWith("is now available!")) {
-            pickaxeAbilityReady = true;
+        try {
+            String message = StringUtils.stripControlCodes(event.message.getUnformattedText());
+            if (message.contains(":") || message.contains(">")) return;
+            if(message.startsWith("You used your")) {
+                pickaxeAbilityReady = false;
+            } else if(message.endsWith("is now available!")) {
+                pickaxeAbilityReady = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 }

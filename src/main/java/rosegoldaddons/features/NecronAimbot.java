@@ -19,7 +19,7 @@ public class NecronAimbot {
         if (!Main.necronAimbot) return;
         Entity necron = getClosestWither();
         if (necron == null) return;
-        RenderUtils.drawEntityBox(necron, Color.RED, true, event.partialTicks);
+        RenderUtils.drawEntityBox(necron, Color.RED, Main.configFile.lineWidth, event.partialTicks);
         RotationUtils.faceEntity(necron);
     }
 

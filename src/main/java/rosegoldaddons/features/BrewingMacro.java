@@ -183,7 +183,7 @@ public class BrewingMacro {
         if (!Main.brewingMacro) return;
         stand = closestStand();
         if (stand != null) {
-            RenderUtils.drawBlockBox(stand, Color.YELLOW, true, event.partialTicks);
+            RenderUtils.drawBlockBox(stand, Color.YELLOW, Main.configFile.lineWidth, event.partialTicks);
         }
     }
 

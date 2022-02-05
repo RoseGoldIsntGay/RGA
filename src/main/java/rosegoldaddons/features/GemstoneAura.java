@@ -30,7 +30,10 @@ public class GemstoneAura {
         }
         if (event.phase == TickEvent.Phase.END && Main.mc.theWorld != null && Main.mc.thePlayer != null) {
             if (PlayerUtils.pickaxeAbilityReady) {
-                Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem));
+                if(Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem) != null) {
+                    Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem));
+                    PlayerUtils.pickaxeAbilityReady = false;
+                }
             }
             if (currentDamage > 100) {
                 currentDamage = 0;
@@ -91,7 +94,7 @@ public class GemstoneAura {
             } else if (dyeColor == EnumDyeColor.MAGENTA) {
                 color = new Color(214, 15, 150);
             }
-            RenderUtils.drawBlockBox(blockPos, color, true, event.partialTicks);
+            RenderUtils.drawBlockBox(blockPos, color, Main.configFile.lineWidth, event.partialTicks);
         }
     }
 

@@ -46,7 +46,7 @@ public class PowderMacro {
         if (!Main.powderMacro) return;
         closestChest = closestChest();
         if (closestChest != null) {
-            RenderUtils.drawBlockBox(new BlockPos(closestChest.xCoord, closestChest.yCoord, closestChest.zCoord), new Color(255, 128, 0), true, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(closestChest.xCoord, closestChest.yCoord, closestChest.zCoord), new Color(255, 128, 0), Main.configFile.lineWidth, event.partialTicks);
         }
     }
 

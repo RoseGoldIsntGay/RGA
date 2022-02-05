@@ -23,7 +23,7 @@ public class CropNuker {
 
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent event) {
-        //if(event.phase == TickEvent.Phase.END) return;
+        if(Main.configFile.farmSpeedIndex == 0 && event.phase == TickEvent.Phase.END) return;
         if (!Main.nukeCrops || Main.mc.thePlayer == null) {
             broken.clear();
             return;
@@ -41,7 +41,7 @@ public class CropNuker {
     public void onRender(RenderWorldLastEvent event) {
         if (!Main.nukeCrops) return;
         if(crop != null) {
-            RenderUtils.drawBlockBox(crop, new Color(255, 0, 0), true, event.partialTicks);
+            RenderUtils.drawBlockBox(crop, new Color(255, 0, 0), Main.configFile.lineWidth, event.partialTicks);
         }
     }
 

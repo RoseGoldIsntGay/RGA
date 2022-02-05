@@ -38,7 +38,7 @@ import java.util.*;
 public class Main {
     public static GuiScreen display = null;
     public static Config configFile = Config.INSTANCE;
-    public static KeyBinding[] keyBinds = new KeyBinding[19];
+    public static KeyBinding[] keyBinds = new KeyBinding[20];
     public static boolean endermanMacro = false;
     public static boolean powderMacro = false;
     public static boolean AOTSMacro = false;
@@ -60,6 +60,7 @@ public class Main {
     public static boolean init = false;
     public static boolean mithrilMacro = false;
     private boolean issue = false;
+    public static boolean pauseCustom = false;
 
     public static final Minecraft mc = Minecraft.getMinecraft();
     public static JsonObject rga;
@@ -121,6 +122,8 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new MithrilMacro());
         MinecraftForge.EVENT_BUS.register(new AutoGhostBlock());
         MinecraftForge.EVENT_BUS.register(new ShadyRotation());
+        MinecraftForge.EVENT_BUS.register(new DungeonESP());
+        MinecraftForge.EVENT_BUS.register(new ScoreboardUtils());
         configFile.initialize();
         ClientCommandHandler.instance.registerCommand(new OpenSettings());
         ClientCommandHandler.instance.registerCommand(new Rosedrobe());
@@ -155,7 +158,7 @@ public class Main {
 
         set.forEach(stringJsonElementEntry -> {
             names.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
-            System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+            //System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
         });
 
         replacions = rga.get("ranks").getAsJsonObject();
@@ -163,7 +166,7 @@ public class Main {
 
         set.forEach(stringJsonElementEntry -> {
             ranks.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
-            System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+            //System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
         });
         init = true;
 
@@ -221,6 +224,7 @@ public class Main {
         keyBinds[16] = new KeyBinding("Foraging Nuker Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Foraging");
         keyBinds[17] = new KeyBinding("Cane Placer Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Farming");
         keyBinds[18] = new KeyBinding("Mithril Macro Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Mining");
+        keyBinds[19] = new KeyBinding("Peek Custom Names", Keyboard.KEY_NONE, "RoseGoldAddons");
 
         for (KeyBinding keyBind : keyBinds) {
             ClientRegistry.registerKeyBinding(keyBind);
@@ -282,6 +286,11 @@ public class Main {
             }
             display = null;
         }
+    }
+
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent event) {
+        pauseCustom = keyBinds[19].isKeyDown();
     }
 
     @SubscribeEvent

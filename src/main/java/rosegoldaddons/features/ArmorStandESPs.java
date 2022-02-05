@@ -28,11 +28,11 @@ public class ArmorStandESPs {
                     ItemStack itemStack = ((EntityArmorStand) entity).getCurrentArmor(3);
                     if (itemStack != null && itemStack.getItem() instanceof ItemSkull) {
                         if (itemStack.serializeNBT().getCompoundTag("tag").getCompoundTag("SkullOwner").getCompoundTag("Properties").toString().contains("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZhZGRiZDVkZWRhZDQwOTk5NDczYmU0YTdmNDhmNjIzNmE3OWEwZGNlOTcxYjVkYmQ3MzcyMDE0YWUzOTRkIn19fQ==")) {
-                            RenderUtils.drawEntityBox(entity, Color.GREEN, true, event.partialTicks);
+                            RenderUtils.drawEntityBox(entity, Color.GREEN, Main.configFile.lineWidth, event.partialTicks);
                         } else if (itemStack.serializeNBT().getCompoundTag("tag").getCompoundTag("SkullOwner").getCompoundTag("Properties").toString().contains("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRhNDE0ZDI5Y2M5ZWJiZmMxY2JkY2QyMTFlZWU0NzI2ZDA2NzZiZTI2MmU5Y2I4ZWVmZmFmZDFmYzM4MGIxNCJ9fX0=")) {
-                            RenderUtils.drawEntityBox(entity, Color.YELLOW, true, event.partialTicks);
+                            RenderUtils.drawEntityBox(entity, Color.YELLOW, Main.configFile.lineWidth, event.partialTicks);
                         } else if (itemStack.serializeNBT().getCompoundTag("tag").getCompoundTag("SkullOwner").getCompoundTag("Properties").toString().contains("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjMxMmE1YTEyZWNiMjRkNjg1MmRiMzg4ZTZhMzQ3MjFjYzY3ZjUyMmNjZGU3ZTgyNGI5Zjc1ZTk1MDM2YWM5MyJ9fX0=")) {
-                            RenderUtils.drawEntityBox(entity, Color.WHITE, true, event.partialTicks);
+                            RenderUtils.drawEntityBox(entity, Color.WHITE, Main.configFile.lineWidth, event.partialTicks);
                         }
                     }
                 }

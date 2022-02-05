@@ -66,7 +66,7 @@ public class EntityReach {
             if(entityName.equals("") && stand != null) {
                 entityName = stand.getName();
             }
-            RenderUtils.drawEntityBox(toInteract, Color.RED, true, event.partialTicks);
+            RenderUtils.drawEntityBox(toInteract, Color.RED, Main.configFile.lineWidth, event.partialTicks);
             RenderUtils.renderWaypointText(entityName, toInteract.posX, toInteract.posY + toInteract.height, toInteract.posZ, event.partialTicks);
         }
         boolean found = false;
@@ -81,9 +81,9 @@ public class EntityReach {
                 if (itemStack != null && itemStack.getItem() instanceof ItemSkull) {
                     if(itemStack.serializeNBT().getCompoundTag("tag").getCompoundTag("SkullOwner").getCompoundTag("Properties").toString().contains("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk2OTIzYWQyNDczMTAwMDdmNmFlNWQzMjZkODQ3YWQ1Mzg2NGNmMTZjMzU2NWExODFkYzhlNmIyMGJlMjM4NyJ9fX0=")) {
                         if(solved.contains(entity)) {
-                            RenderUtils.drawEntityBox(entity, Color.YELLOW, true, event.partialTicks);
+                            RenderUtils.drawEntityBox(entity, Color.YELLOW, Main.configFile.lineWidth, event.partialTicks);
                         } else {
-                            RenderUtils.drawEntityBox(entity, Color.MAGENTA, true, event.partialTicks);
+                            RenderUtils.drawEntityBox(entity, Color.MAGENTA, Main.configFile.lineWidth, event.partialTicks);
                         }
                     }
                 }

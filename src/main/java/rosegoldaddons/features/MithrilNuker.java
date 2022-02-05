@@ -33,7 +33,10 @@ public class MithrilNuker {
         }
         if (event.phase == TickEvent.Phase.END) {
             if(PlayerUtils.pickaxeAbilityReady && Main.mc.playerController != null) {
-                Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem));
+                if(Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem) != null) {
+                    Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, Main.mc.thePlayer.inventory.getStackInSlot(Main.mc.thePlayer.inventory.currentItem));
+                    PlayerUtils.pickaxeAbilityReady = false;
+                }
             }
             if(currentDamage > 100) {
                 currentDamage = 0;
@@ -72,9 +75,9 @@ public class MithrilNuker {
         if (blockPos != null) {
             IBlockState blockState = Main.mc.theWorld.getBlockState(blockPos);
             if(blockState.getBlock() == Blocks.stone) {
-                RenderUtils.drawBlockBox(blockPos, Color.WHITE, true, event.partialTicks);
+                RenderUtils.drawBlockBox(blockPos, Color.WHITE, Main.configFile.lineWidth, event.partialTicks);
             } else {
-                RenderUtils.drawBlockBox(blockPos, Color.BLUE, true, event.partialTicks);
+                RenderUtils.drawBlockBox(blockPos, Color.BLUE, Main.configFile.lineWidth, event.partialTicks);
             }
         }
     }
