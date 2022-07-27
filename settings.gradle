@@ -28,4 +28,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "ForgeTemplate"
+rootProject.name = "RoseGoldAddons"

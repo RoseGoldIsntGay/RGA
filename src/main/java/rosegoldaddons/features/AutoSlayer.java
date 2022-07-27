@@ -25,6 +25,8 @@ public class AutoSlayer {
     private static boolean openMaddox = false;
     private static boolean startSlayer = false;
     private static boolean waitingForMaddox = false;
+    private static boolean restart = false;
+    private static int countdown = 0;
     private static int slayerSlot = 0;
     private static int slotLevel = 0;
     private static int debounce = 0;
@@ -46,12 +48,12 @@ public class AutoSlayer {
     }
 
     @SubscribeEvent
-    public void onInteract(InputEvent.KeyInputEvent event) {
+    public void interactHandler(TickEvent.ClientTickEvent event) {
+        if(Main.mc.thePlayer == null || Main.mc.theWorld == null) return;
+        if(ScoreboardUtils.inPrivateIsland) return;
         if (!Main.configFile.autoSlayer || !Main.configFile.clickMaddox || waitingForMaddox || debounce != 0) return;
-        List<String> scoreboard = ScoreboardUtils.getSidebarLines();
-        for (String line : scoreboard) {
-            String cleanedLine = ScoreboardUtils.cleanSB(line);
-            if (cleanedLine.contains("Boss slain!")) {
+        if (Main.configFile.forceSlayer) {
+            if (!ScoreboardUtils.scoreboardContains("Slay the boss!") && !ScoreboardUtils.scoreboardContains("Kills") && !ScoreboardUtils.scoreboardContains("Combat XP")) {
                 int maddox = findItemInHotbar("Batphone");
                 if (maddox != -1) {
                     ItemStack item = Main.mc.thePlayer.inventory.getStackInSlot(maddox);
@@ -60,7 +62,44 @@ public class AutoSlayer {
                     Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, item);
                     Main.mc.thePlayer.inventory.currentItem = save;
                     waitingForMaddox = true;
-                    break;
+                    restart = false;
+                }
+            }
+            if (ScoreboardUtils.scoreboardContains("Slay the boss!")) {
+                if (!restart) {
+                    countdown = 800;
+                    restart = true;
+                } else {
+                    if (countdown > 0) {
+                        if (countdown % 40 == 0) {
+                            ChatUtils.sendMessage("§ccountdown: " + countdown / 40);
+                        }
+                        countdown--;
+                    } else {
+                        int maddox = findItemInHotbar("Batphone");
+                        if (maddox != -1) {
+                            ItemStack item = Main.mc.thePlayer.inventory.getStackInSlot(maddox);
+                            int save = Main.mc.thePlayer.inventory.currentItem;
+                            Main.mc.thePlayer.inventory.currentItem = maddox;
+                            Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, item);
+                            Main.mc.thePlayer.inventory.currentItem = save;
+                            waitingForMaddox = true;
+                            restart = false;
+                        }
+                    }
+                }
+            }
+        } else {
+            if (ScoreboardUtils.scoreboardContains("Boss slain!")) {
+                int maddox = findItemInHotbar("Batphone");
+                if (maddox != -1) {
+                    ItemStack item = Main.mc.thePlayer.inventory.getStackInSlot(maddox);
+                    int save = Main.mc.thePlayer.inventory.currentItem;
+                    Main.mc.thePlayer.inventory.currentItem = maddox;
+                    Main.mc.playerController.sendUseItem(Main.mc.thePlayer, Main.mc.theWorld, item);
+                    Main.mc.thePlayer.inventory.currentItem = save;
+                    waitingForMaddox = true;
+                    restart = false;
                 }
             }
         }
@@ -133,8 +172,21 @@ public class AutoSlayer {
                     List<Slot> chestInventory = ((GuiChest) Main.mc.currentScreen).inventorySlots.inventorySlots;
                     if (!chestInventory.get(13).getHasStack()) return;
                     if (chestInventory.get(13).getStack().getDisplayName().contains("Ongoing")) {
-
+                        if (Main.configFile.forceSlayer) {
+                            clickSlot(13, 2, 0);
+                            clickSlot(11, 2, 1);
+                            clickSlot(slayerSlot, 2, 2);
+                            clickSlot(slotLevel, 2, 3);
+                            clickSlot(11, 2, 4); //confirm
+                            debounce = 80;
+                        }
                     } else if (chestInventory.get(13).getStack().getDisplayName().contains("Complete")) {
+                        clickSlot(13, 2, 0);
+                        clickSlot(slayerSlot, 2, 1);
+                        clickSlot(slotLevel, 2, 2);
+                        clickSlot(11, 2, 3); //confirm
+                        debounce = 80;
+                    } else if (chestInventory.get(13).getStack().getDisplayName().contains("Failed")) {
                         clickSlot(13, 2, 0);
                         clickSlot(slayerSlot, 2, 1);
                         clickSlot(slotLevel, 2, 2);

@@ -32,7 +32,7 @@ public class AutoArrowAlign {
     private static final Map<BlockPos, Integer> clicksPerFrame = new HashMap<>();
     private static final Map<BlockPos, Integer> toClickMap = new HashMap<>();
     private static boolean init = false;
-    private static final BlockPos topLeft = new BlockPos(196, 125, 278);
+    private static final BlockPos topLeft = new BlockPos(196 - 100, 125, 278 - 100);
 
     /*@SubscribeEvent
     public void debugging(TickEvent.ClientTickEvent event) {
@@ -336,6 +336,6 @@ public class AutoArrowAlign {
     private static boolean isInSection3() {
         int x = Main.mc.thePlayer.getPosition().getX();
         int z = Main.mc.thePlayer.getPosition().getZ();
-        return x < 218 && z > 251 && x > 196 && z < 319;
+        return x < (218 - 200) && z > (251 - 200) && x > (196 - 200) && z < (319 - 200);
     }
 }

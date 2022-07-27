@@ -15,8 +15,7 @@ import java.util.Map;
 public class MixinEntityPlayer {
     @Inject(method = "getDisplayName", at = @At(value = "RETURN"), cancellable = true)
     public void getFormattedText(CallbackInfoReturnable<IChatComponent> cir) {
-        if(Main.pauseCustom) return;
-        if (Main.init && Main.configFile.alchsleep != 63 || Main.configFile.skiblock != 263) {
+        if (Main.init && Main.configFile.alchsleep != 88 || Main.configFile.skiblock != 263) {
             IChatComponent ict = new ChatComponentText("");
             ict.setChatStyle(cir.getReturnValue().getChatStyle());
             String text = cir.getReturnValue().getFormattedText();

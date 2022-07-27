@@ -3,6 +3,8 @@ package rosegoldaddons;
 import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.*;
 import org.jetbrains.annotations.NotNull;
+import rosegoldaddons.utils.ChatUtils;
+import rosegoldaddons.utils.OpenSkyblockGui;
 
 import java.io.File;
 import java.util.Comparator;
@@ -97,7 +99,7 @@ public class Config extends Vigilant {
             category = "Foraging", subcategory = "General", max = 500)
     public int postrodDelay = 150;
 
-    @Property(type = PropertyType.SWITCH, name = "Radomize Delay", description = "Add slight randomization to delay",
+    @Property(type = PropertyType.SWITCH, name = "Randomize Delay", description = "Add slight randomization to delay",
             category = "Foraging", subcategory = "General")
     public boolean randomizeForaging = false;
 
@@ -120,6 +122,10 @@ public class Config extends Vigilant {
     @Property(type = PropertyType.SELECTOR, name = "Hardstone Nuker Shape", description = "Choose which pattern hardstone nuker will follow",
             category = "Mining", subcategory = "General", options = {"Closest Block", "Facing Axis"})
     public int hardIndex = 0;
+
+    @Property(type = PropertyType.SWITCH, name = "Server Side Rotations", description = "Hardstone nuker's chest solver will use server side rotations for opening treasure chests",
+            category = "Mining", subcategory = "General")
+    public boolean serverSideChest = false;
 
     @Property(type = PropertyType.SELECTOR, name = "Actions", description = "Type of action to perform when opening a brewing stand",
             category = "Alchemy", subcategory = "General", options = {"Collect + Sell", "Insert Water Bottles", "Insert Nether Wart", "Insert Cane / Eye", "Insert Glowstone"})
@@ -148,7 +154,6 @@ public class Config extends Vigilant {
     @Property(type = PropertyType.SELECTOR, name = "Crop Nuker Speed", description = "Choose how many blocks per second Crop Nuker will break",
             category = "Farming", subcategory = "General", options = {"40 BPS", "80 BPS"})
     public int farmSpeedIndex = 0;
-
 
     @Property(type = PropertyType.SWITCH, name = "Look at nuked block", description = "Looks at currently nuked block to look less sus",
             category = "Mining", subcategory = "General")
@@ -183,16 +188,88 @@ public class Config extends Vigilant {
     public int pinglessSpeed = 0;
 
     @Property(type = PropertyType.SWITCH, name = "Auto Slayer", description = "Automatically use batphone",
-            category = "RoseGoldAddons", subcategory = "General")
+            category = "Slayer", subcategory = "General")
     public boolean autoSlayer = false;
 
     @Property(type = PropertyType.SWITCH, name = "Click Maddox", description = "Automatically click maddox on boss kill",
-            category = "RoseGoldAddons", subcategory = "General")
+            category = "Slayer", subcategory = "General")
     public boolean clickMaddox = false;
 
     @Property(type = PropertyType.SELECTOR, name = "Slayer Type", description = "Type of slayer to auto start",
-            category = "RoseGoldAddons", subcategory = "General", options = {"None", "Zombie 3", "Zombie 4", "Zombie 5", "Spider 3", "Spider 4", "Sven 3", "Sven 4", "Enderman 2", "Enderman 3", "Enderman 4"})
+            category = "Slayer", subcategory = "General", options = {"None", "Zombie 3", "Zombie 4", "Zombie 5", "Spider 3", "Spider 4", "Sven 3", "Sven 4", "Enderman 2", "Enderman 3", "Enderman 4"})
     public int slayerTypeIndex = 0;
+
+    @Property(type = PropertyType.SWITCH, name = "Force Slayer", description = "Starts a slayer quest if you dont have one, restarts if it is not done after 5 minutes",
+            category = "Slayer", subcategory = "General")
+    public boolean forceSlayer = false;
+
+    @Property(type = PropertyType.SELECTOR, name = "Anti Racism", description = "Prevent racist messages from showing up in chat",
+            category = "RoseGoldAddons", subcategory = "General", options = {"Censor", "Block", "None"})
+    public int antiRacism = 0;
+
+    @Property(type = PropertyType.SWITCH, name = "Pause All Macros", description = "Pause all macros on world change",
+            category = "Macros", subcategory = "General")
+    public boolean pauseAllWorldChange = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Auto Leave Limbo", description = "Automatically leaves limbo",
+            category = "Macros", subcategory = "General")
+    public boolean autoLeaveLimbo = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Join SkyBlock", description = "Automatically joins skyblock after leaving limbo",
+            category = "Macros", subcategory = "General")
+    public boolean autoLimboSB = true;
+
+    @Property(type = PropertyType.SWITCH, name = "Enderman Move Macro", description = "Add primitive movement to enderman macro",
+            category = "Macros", subcategory = "Enderman")
+    public boolean endermanMove = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Enderman Lobby", description = "Go to lobby instead of island when switching lobbies",
+            category = "Macros", subcategory = "Enderman")
+    public boolean endermanLobby = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Randomization", description = "Random head movements when not shooting endermen",
+            category = "Macros", subcategory = "Enderman")
+    public boolean endermanRandom = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Right Click", description = "Right click instead of shifting",
+            category = "Macros", subcategory = "Enderman")
+    public boolean endermanRC = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Special Zealot Right Click", description = "Right click on special zealots (spirit sceptre recommended)",
+            category = "Macros", subcategory = "Enderman")
+    public boolean zealotRC = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Zealot Only", description = "Only target zealots",
+            category = "Macros", subcategory = "Enderman")
+    public boolean zealotOnly = false;
+
+    @Property(type = PropertyType.SLIDER, name = "Lobby Swap Timer", description = "How many minutes to wait until finding a new lobby",
+            category = "Macros", subcategory = "Enderman", max = 30)
+    public int endermanTimer = 10;
+
+    @Property(type = PropertyType.SWITCH, name = "Ironman Mode", description = "Lobby swap without using the bazaar",
+            category = "Macros", subcategory = "Enderman")
+    public boolean endermanIronman = false;
+
+    @Property(type = PropertyType.SELECTOR, name = "Shifting / Right Click Speed", description = "Determine the speed of the enderman macro",
+            category = "Macros", subcategory = "Enderman", options = {"x2", "x1", "x0.5", "x0.25"})
+    public int endermanSpeed = 1;
+
+    @Property(type = PropertyType.SLIDER, name = "Stuck Distance", description = "Distance to block to turn away (square)",
+            category = "Macros", subcategory = "Enderman", max = 10)
+    public int endermanStuckDist = 3;
+
+    @Property(type = PropertyType.SELECTOR, name = "Type", description = "Choose a type",
+            category = "Macros", subcategory = "Stranded Villagers", options = {"Cocoa", "Potato", "Sugar Cane", "Ender Pearls"})
+    public int strandedType = 0;
+
+    @Property(type = PropertyType.SLIDER, name = "Interaction Delay", description = "How many ticks to wait next interaction",
+            category = "Macros", subcategory = "Stranded Villagers", max = 20)
+    public int strandedCropDebounc = 10;
+
+    @Property(type = PropertyType.SLIDER, name = "GUI Interaction Delay", description = "How many ticks to wait next GUI interaction",
+            category = "Macros", subcategory = "Stranded Villagers", max = 10)
+    public int strandedGUIDebounc = 5;
 
     @Property(type = PropertyType.SELECTOR, name = "Custom Name Type", description = "ignore if you dont know what these mean",
             category = "RoseGoldAddons", subcategory = "General", options = {"MixinEntityPlayer", "MixinEntityPlayer + MixinEntity"})
@@ -217,6 +294,38 @@ public class Config extends Vigilant {
     @Property(type = PropertyType.SWITCH, name = "Nucleus ESP", description = "ESP for rare items dropped from nucleus",
             category = "ESP", subcategory = "General")
     public boolean nucleusESP = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Big Blocks", description = "Change levers, buttons, chests and Redstone Key skulls to 1x1x1",
+            category = "Dungeons", subcategory = "General")
+    public boolean dungeonBlocksBig = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Auto 3 Weirdos", description = "beta",
+            category = "Dungeons", subcategory = "General")
+    public boolean autoThreeWeirdos = false;
+
+    @Property(type = PropertyType.SWITCH, name = "Force Dungeon", description = "",
+            category = "testing", subcategory = "General")
+    public boolean forceDungeon = false;
+
+    @Property(type = PropertyType.BUTTON, name = "Sell All", description = "",
+            category = "testing", subcategory = "General")
+    public void sellAllTest() {
+        ChatUtils.sendMessage("Selling All!");
+        Main.mc.thePlayer.sendChatMessage("/bz");
+        OpenSkyblockGui.sellAll = true;
+    }
+
+    @Property(type = PropertyType.SWITCH, name = "KeyBoard Event Cancel", description = "",
+            category = "testing", subcategory = "General")
+    public boolean stopKeyboard = false;
+
+    @Property(type = PropertyType.SELECTOR, name = "Auto Click Mode", description = "",
+            category = "Macros", subcategory = "General", options = {"Right Click", "Left Click"})
+    public int autoClickerMode = 0;
+
+    @Property(type = PropertyType.SLIDER, name = "Auto Click CPS", description = "",
+            category = "Macros", subcategory = "General", min = 1, max = 1000)
+    public int autoClickerCPS = 10;
 
     public Config() {
         super(new File("./config/rosegoldaddons/config.toml"), "RoseGoldAddons", new JVMAnnotationPropertyCollector(), new ConfigSorting());

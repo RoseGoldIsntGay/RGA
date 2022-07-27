@@ -3,6 +3,7 @@ package rosegoldaddons.utils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -110,7 +111,6 @@ public class RenderUtils {
         glColor(color);
 
         drawSelectionBoundingBox(axisAlignedBB);
-
 
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         glDepthMask(true);
@@ -651,6 +651,24 @@ public class RenderUtils {
         final ScaledResolution scaledResolution = new ScaledResolution(mc);
         final int factor = scaledResolution.getScaleFactor();
         glScissor((int) (x * factor), (int) ((scaledResolution.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
+    }
+
+
+    public static void drawRectangle(int x, int y, int width, int height) {
+        glEnable(GL_BLEND);
+        glColor3f(0,0,0);
+        glRecti(x, y, width, height);
+        glFlush();
+    }
+
+    public static void drawTexture(ResourceLocation resourceLocation, int x, int y, int width, int height, int textureWidth, int textureHeight, int textureX, int textureY) {
+        Main.mc.getTextureManager().bindTexture(resourceLocation);
+        GlStateManager.color(255, 255, 255);
+        Gui.drawModalRectWithCustomSizedTexture(x, y, textureX, textureY, width, height, textureWidth, textureHeight);
+    }
+
+    public static void drawTexture(ResourceLocation resourceLocation, int x, int y, int width, int height) {
+        drawTexture(resourceLocation, x, y, width, height, width, height, 0, 0);
     }
 
     /**

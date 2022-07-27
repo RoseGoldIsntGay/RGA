@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rosegoldaddons.events.RenderLivingEntityEvent;
 
-@Mixin(value = RendererLivingEntity.class, priority = 1001)
+@Mixin(value = RendererLivingEntity.class)
 @SideOnly(Side.CLIENT)
 public abstract class MixinRendererLivingEntity {
     @Shadow

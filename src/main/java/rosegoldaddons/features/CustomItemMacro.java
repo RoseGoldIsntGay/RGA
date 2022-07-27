@@ -1,17 +1,11 @@
 package rosegoldaddons.features;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import rosegoldaddons.Main;
 import rosegoldaddons.commands.UseCooldown;
-
-import java.lang.reflect.Method;
 
 public class CustomItemMacro {
     private Thread thread;

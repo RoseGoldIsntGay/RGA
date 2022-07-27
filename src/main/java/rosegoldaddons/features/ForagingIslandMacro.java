@@ -37,11 +37,14 @@ public class ForagingIslandMacro {
                         if(sapling == -1) {
                             sapling = findItemInHotbar("Oak Sapling");
                         }
+                        if(sapling == -1) {
+                            sapling = findItemInHotbar("Spruce Sapling");
+                        }
                         int bonemeal = findItemInHotbar("Bone Meal");
                         int treecap = findItemInHotbar("Treecapitator");
                         int rod = findItemInHotbar("Rod");
                         if(sapling == -1) {
-                            ChatUtils.sendMessage("§cNo jungle saplings in hotbar");
+                            ChatUtils.sendMessage("§cNo saplings in hotbar");
                         }
                         if(bonemeal == -1) {
                             ChatUtils.sendMessage("§cNo bonemeal in hotbar");

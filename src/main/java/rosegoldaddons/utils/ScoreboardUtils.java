@@ -18,12 +18,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /*
-* Stolen from Danker's Skyblock Mod: https://github.com/bowser0000/SkyblockMod
+* Edited from Danker's Skyblock Mod: https://github.com/bowser0000/SkyblockMod
  */
 
 public class ScoreboardUtils {
     public static boolean inSkyblock = false;
     public static boolean inDungeon = false;
+    public static boolean inPrivateIsland = false;
+    public static boolean inDragonNest = false;
+    public static boolean inLimbo = false;
 
     public static String cleanSB(String scoreboard) {
         char[] nvString = StringUtils.stripControlCodes(scoreboard).toCharArray();
@@ -119,13 +122,25 @@ public class ScoreboardUtils {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if(ticks % 20 == 0) {
-            if(Main.mc.thePlayer != null && Main.mc.theWorld != null) {
-                ScoreObjective scoreboardObj = Main.mc.theWorld.getScoreboard().getObjectiveInDisplaySlot(1);
-                if(scoreboardObj != null) {
-                    inSkyblock = removeFormatting(scoreboardObj.getDisplayName()).contains("SKYBLOCK");
+        if(ticks % 10 == 0) {
+            if (Main.configFile.forceDungeon) {
+                inSkyblock = true;
+                inDungeon = true;
+            } else {
+                if (Main.mc.thePlayer != null && Main.mc.theWorld != null) {
+                    Scoreboard scoreboard = Main.mc.theWorld.getScoreboard();
+                    ScoreObjective scoreboardObj = scoreboard.getObjectiveInDisplaySlot(1);
+                    if (scoreboardObj != null) {
+                        inSkyblock = removeFormatting(scoreboardObj.getDisplayName()).contains("SKYBLOCK");
+                        inLimbo = false;
+                    } else {
+                        inSkyblock = false;
+                        inLimbo = true;
+                    }
+                    inPrivateIsland = inSkyblock && scoreboardContains("Your Island");
+                    inDragonNest = inSkyblock && scoreboardContains("Dragon's Nest");
+                    inDungeon = inSkyblock && scoreboardContains("The Catacombs");
                 }
-                inDungeon = inSkyblock && ScoreboardUtils.scoreboardContains("The Catacombs");
             }
             ticks = 0;
         }

@@ -4,13 +4,20 @@
   "package": "rosegoldaddons.mixins",
   "refmap": "mixins.rosegoldaddons.refmap.json",
   "mixins": [
-    "MixinNetworkManager"
+    "MixinNetworkManager",
+    "blocksize.MixinCrops"
   ],
   "client": [
+    "MixinEntity",
     "MixinEntityPlayer",
+    "MixinEntityPlayerSP",
+    "MixinFMLHandShake",
     "MixinMinecraft",
     "MixinRendererLivingEntity",
-    "MixinEntity",
-    "MixinRenderString"
+    "MixinRenderString",
+    "blocksize.MixinBlockLever",
+    "blocksize.MixinButton",
+    "blocksize.MixinChest",
+    "blocksize.MixinSkull"
   ]
 }

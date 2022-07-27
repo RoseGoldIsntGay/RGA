@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.event.ClickEvent;
@@ -24,6 +25,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import rosegoldaddons.commands.*;
+import rosegoldaddons.events.MillisecondEvent;
 import rosegoldaddons.features.*;
 import rosegoldaddons.utils.*;
 
@@ -32,10 +34,18 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-@Mod(modid = "timechanger", name = "RoseGoldAddons", version = "2.1")
+@Mod(modid = Main.MOD_ID, name = "RoseGoldAddons", version = "2.9.0")
 public class Main {
+    public static final String MOD_ID = "RoseGoldAddons";
+
+    private static final boolean stranded = false;
+
     public static GuiScreen display = null;
     public static Config configFile = Config.INSTANCE;
     public static KeyBinding[] keyBinds = new KeyBinding[20];
@@ -54,13 +64,14 @@ public class Main {
     public static boolean brewingMacro = false;
     public static boolean nukeCrops = false;
     public static boolean nukeWood = false;
-    public static boolean placeCane = false;
     private static boolean firstLoginThisSession = true;
     private static boolean oldanim = false;
+    public static boolean oringo = false;
     public static boolean init = false;
     public static boolean mithrilMacro = false;
     private boolean issue = false;
     public static boolean pauseCustom = false;
+    public static boolean strandedVillagers = false;
 
     public static final Minecraft mc = Minecraft.getMinecraft();
     public static JsonObject rga;
@@ -68,6 +79,9 @@ public class Main {
     String info = "Hello decompiler! this is just some funny stuff, you do not have to worry about it!";
     private String[] cumsters = null;
     private String[] ILILILLILILLILILILL = null;
+
+    public static String[] cheatar = null;
+    public static ArrayList<String> blacklist = new ArrayList<>();
 
     public static HashMap<String, String> nameCache = new HashMap<>();
     public static HashMap<String, String> rankCache = new HashMap<>();
@@ -79,6 +93,7 @@ public class Main {
     public void onFMLInitialization(FMLPreInitializationEvent event) {
         File directory = new File(event.getModConfigurationDirectory(), "rosegoldaddons");
         if (!directory.exists()) {
+
             directory.mkdirs();
         }
 
@@ -92,7 +107,6 @@ public class Main {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        if (issue) return;
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new AutoReady());
         MinecraftForge.EVENT_BUS.register(new OpenSkyblockGui());
@@ -124,6 +138,11 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new ShadyRotation());
         MinecraftForge.EVENT_BUS.register(new DungeonESP());
         MinecraftForge.EVENT_BUS.register(new ScoreboardUtils());
+        MinecraftForge.EVENT_BUS.register(new PrecEyeMacro());
+        MinecraftForge.EVENT_BUS.register(new StrandedVillagerMacro());
+        MinecraftForge.EVENT_BUS.register(new AutoLeaveLimbo());
+        MinecraftForge.EVENT_BUS.register(new AutoThreeWeirdos());
+        MinecraftForge.EVENT_BUS.register(new AutoClicker());
         configFile.initialize();
         ClientCommandHandler.instance.registerCommand(new OpenSettings());
         ClientCommandHandler.instance.registerCommand(new Rosedrobe());
@@ -134,41 +153,58 @@ public class Main {
         ClientCommandHandler.instance.registerCommand(new AllEntities());
         ClientCommandHandler.instance.registerCommand(new SexPlayer());
 
-        JsonArray funnynames = rga.get("funnynames").getAsJsonArray();
-        cumsters = new String[funnynames.size()];
-        Iterator<JsonElement> fn = funnynames.iterator();
-        int count = 0;
-        while(fn.hasNext()) {
-            JsonElement name = fn.next();
-            cumsters[count] = name.getAsString();
-            count++;
+        if(!issue) {
+            JsonArray funnynames = rga.get("funnynames").getAsJsonArray();
+            cumsters = new String[funnynames.size()];
+            Iterator<JsonElement> fn = funnynames.iterator();
+            int count = 0;
+            while (fn.hasNext()) {
+                JsonElement name = fn.next();
+                cumsters[count] = name.getAsString();
+                count++;
+            }
+            JsonArray funnymessages = rga.get("funnymessages").getAsJsonArray();
+            ILILILLILILLILILILL = new String[funnymessages.size()];
+            Iterator<JsonElement> fm = funnymessages.iterator();
+            count = 0;
+            while (fm.hasNext()) {
+                JsonElement message = fm.next();
+                ILILILLILILLILILILL[count] = message.getAsString();
+                count++;
+            }
+
+            JsonArray cheaters = rga.get("cheaters").getAsJsonArray();
+            cheatar = new String[cheaters.size()];
+            Iterator<JsonElement> ch = cheaters.iterator();
+            count = 0;
+            while (ch.hasNext()) {
+                JsonElement name = ch.next();
+                cheatar[count] = name.getAsString();
+                count++;
+            }
+
+            JsonObject replacions = rga.get("replacions").getAsJsonObject();
+            Set<Map.Entry<String, JsonElement>> set = replacions.entrySet();
+
+            set.forEach(stringJsonElementEntry -> {
+                names.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+                System.out.println(stringJsonElementEntry.getKey() + ": " + stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+            });
+
+            replacions = rga.get("ranks").getAsJsonObject();
+            set = replacions.entrySet();
+
+            set.forEach(stringJsonElementEntry -> {
+                ranks.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+                System.out.println(stringJsonElementEntry.getKey() + ": " + stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
+            });
+
+            JsonArray jsonArray = rga.get("blacklist").getAsJsonArray();
+            for(JsonElement jsonElement : jsonArray) {
+                blacklist.add(jsonElement.getAsString());
+            }
+            init = true;
         }
-        JsonArray funnymessages = rga.get("funnymessages").getAsJsonArray();
-        ILILILLILILLILILILL = new String[funnymessages.size()];
-        Iterator<JsonElement> fm = funnymessages.iterator();
-        count = 0;
-        while(fm.hasNext()) {
-            JsonElement message = fm.next();
-            ILILILLILILLILILILL[count] = message.getAsString();
-            count++;
-        }
-
-        JsonObject replacions = rga.get("replacions").getAsJsonObject();
-        Set<Map.Entry<String, JsonElement>> set = replacions.entrySet();
-
-        set.forEach(stringJsonElementEntry -> {
-            names.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
-            System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
-        });
-
-        replacions = rga.get("ranks").getAsJsonObject();
-        set = replacions.entrySet();
-
-        set.forEach(stringJsonElementEntry -> {
-            ranks.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
-            System.out.println(stringJsonElementEntry.getKey()+": "+stringJsonElementEntry.getValue().getAsString().replace("&", "§"));
-        });
-        init = true;
 
         try {
             Reader reader = Files.newBufferedReader(Paths.get("./config/rosegoldaddons/rcmacros.json"));
@@ -208,7 +244,7 @@ public class Main {
         keyBinds[0] = new KeyBinding("Custom Item Macro Toggle", Keyboard.KEY_NONE, "RoseGoldAddons");
         keyBinds[1] = new KeyBinding("Toggle Enderman Macro", Keyboard.KEY_NONE, "RoseGoldAddons");
         keyBinds[2] = new KeyBinding("Arrow Align Aura", Keyboard.KEY_NONE, "RoseGoldAddons - Dungeons");
-        keyBinds[3] = new KeyBinding("Powder Macro Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Mining");
+        keyBinds[3] = new KeyBinding("Powder Chest Macro Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Mining");
         keyBinds[4] = new KeyBinding("AOTS SS Toggle", Keyboard.KEY_NONE, "RoseGoldAddons");
         keyBinds[5] = new KeyBinding("Soul Whip SS Toggle", Keyboard.KEY_NONE, "RoseGoldAddons");
         keyBinds[6] = new KeyBinding("Ghost Macro Toggle", Keyboard.KEY_NONE, "RoseGoldAddons");
@@ -222,13 +258,15 @@ public class Main {
         keyBinds[14] = new KeyBinding("Crop Nuker Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Farming");
         keyBinds[15] = new KeyBinding("Mithril Nuker Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Mining");
         keyBinds[16] = new KeyBinding("Foraging Nuker Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Foraging");
-        keyBinds[17] = new KeyBinding("Cane Placer Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Farming");
-        keyBinds[18] = new KeyBinding("Mithril Macro Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Mining");
-        keyBinds[19] = new KeyBinding("Peek Custom Names", Keyboard.KEY_NONE, "RoseGoldAddons");
+        keyBinds[17] = new KeyBinding("Mithril Macro Toggle", Keyboard.KEY_NONE, "RoseGoldAddons - Mining");
+        keyBinds[18] = new KeyBinding("Toggle Custom Names", Keyboard.KEY_NONE, "RoseGoldAddons");
+        keyBinds[19] = new KeyBinding("Toggle Stranded Villager Trading", Keyboard.KEY_NONE, "RoseGoldAddons");
 
         for (KeyBinding keyBind : keyBinds) {
             ClientRegistry.registerKeyBinding(keyBind);
         }
+
+        AutoClicker.init();
     }
 
     @Mod.EventHandler
@@ -237,19 +275,36 @@ public class Main {
             if (modContainer.getModId().equals("oldanimations")) {
                 oldanim = true;
             }
+            if (modContainer.getModId().equals("examplemod")) {
+                oringo = true;
+            }
         });
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime firstRun = now.withSecond(0).plusMinutes(1);
+        Duration initialDelay = Duration.between(now, firstRun);
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+            System.out.println("Reset hashed cache!");
+            hashedCache.clear();
+        }, initialDelay.getSeconds(), 600, TimeUnit.SECONDS);
+
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> MinecraftForge.EVENT_BUS.post(new MillisecondEvent()), initialDelay.getSeconds(), 1, TimeUnit.MILLISECONDS);
+
     }
 
     @SubscribeEvent
     public void onWorldChange(WorldEvent.Unload event) {
-        if(forageOnIsland || nukeWood || nukeCrops || mithrilNuker || gemNukeToggle || mithrilMacro) {
-            ChatUtils.sendMessage("§cDetected World Change, Stopping All Macros");
-            forageOnIsland = false;
-            nukeWood = false;
-            nukeCrops = false;
-            mithrilNuker = false;
-            gemNukeToggle = false;
-            mithrilMacro = false;
+        if(configFile.pauseAllWorldChange) {
+            if (forageOnIsland || nukeWood || nukeCrops || mithrilNuker || gemNukeToggle || mithrilMacro || autoHardStone) {
+                ChatUtils.sendMessage("§cDetected World Change, Stopping All Macros");
+                forageOnIsland = false;
+                nukeWood = false;
+                nukeCrops = false;
+                mithrilNuker = false;
+                gemNukeToggle = false;
+                mithrilMacro = false;
+                autoHardStone = false;
+            }
         }
     }
 
@@ -258,8 +313,8 @@ public class Main {
         if (event.phase != TickEvent.Phase.START) return;
         if(mc.thePlayer == null || mc.theWorld == null) return;
         if(firstLoginThisSession) {
-            ChatComponentText msg1 = new ChatComponentText("§0§7Thanks to ShadyAddons:§b https://cheatersgetbanned.me");
-            msg1.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://cheatersgetbanned.me"));
+            ChatComponentText msg1 = new ChatComponentText("§0§7Thanks to ShadyAddons:§b https://shadyaddons.com/");
+            msg1.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://shadyaddons.com/"));
             ChatComponentText msg2 = new ChatComponentText("§0§7Thanks to Harry282 (SBClient):§b https://github.com/Harry282/Skyblock-Client");
             msg2.setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://github.com/Harry282/Skyblock-Client"));
             ChatComponentText msg3 = new ChatComponentText("§0§7Thanks to pizza boy (Pizza Client):§b https://github.com/PizzaboiBestLegit/Pizza-Client");
@@ -271,7 +326,13 @@ public class Main {
             mc.thePlayer.addChatMessage(msg3);
             mc.thePlayer.addChatMessage(msg4);
             if(oldanim) {
-                ChatUtils.sendMessage("§l§4Old Animations Mod was detected in your mods folder. This mod breaks some key RoseGoldAddons features, please uninstall it before asking for support as it is known to cause a lot of issues. Thanks.");
+                ChatUtils.sendMessage("§l§cOld Animations Mod was detected in your mods folder. This mod breaks some key RoseGoldAddons features, please uninstall it before asking for support as it is known to cause a lot of issues. Thanks.");
+            }
+            if(oringo) {
+                ChatUtils.sendMessage("§l§cDetected Oringo Client loaded, server side rotations will not work during this session if oringo version is before 1.7.0.");
+            }
+            if(issue) {
+                ChatUtils.sendMessage("§l§cAn error has occurred while retrieving info from the RoseGoldAddons database, certain features will not work during this session");
             }
             firstLoginThisSession = false;
         }
@@ -289,14 +350,9 @@ public class Main {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent event) {
-        pauseCustom = keyBinds[19].isKeyDown();
-    }
-
-    @SubscribeEvent
     public void key(InputEvent.KeyInputEvent event) {
         int rnd = new Random().nextInt(configFile.skiblock);
-        if(rnd == 0 && configFile.funnyStuff) {
+        if(rnd == 0 && configFile.funnyStuff && init) {
             mc.thePlayer.addChatMessage(new ChatComponentText((cumsters[new Random().nextInt(cumsters.length)].replace("&","§")+"§7: "+i(ILILILLILILLILILILL[new Random().nextInt(ILILILLILILLILILILL.length)]))));
         }
         if (keyBinds[0].isPressed()) {
@@ -306,12 +362,30 @@ public class Main {
         } else if (keyBinds[1].isPressed()) {
             endermanMacro = !endermanMacro;
             String str = endermanMacro ? "§aZealot Macro Activated" : "§cZealot Macro Deactivated";
+            EndermanMacro.ticks = 0;
             ChatUtils.sendMessage(str);
+            if(endermanMacro) {
+                EndermanMacro.ms = System.currentTimeMillis();
+                if(configFile.endermanMove) {
+                    if(Main.configFile.endermanIronman) {
+                        ChatUtils.sendMessage("Needed: " + "§6Precursor Eye§f, §b/warp drag§f, Chest near island spawn");
+                    } else {
+                        if (Main.configFile.endermanTimer != 0) {
+                            ChatUtils.sendMessage("Needed: " + "§6Precursor Eye§f, §b/warp drag§f, §b/bz");
+                        } else {
+                            ChatUtils.sendMessage("Needed: " + "§6Precursor Eye§f");
+                        }
+                    }
+                    ChatUtils.sendMessage("Recommended to hold a §6Spirit Sceptre");
+                } else {
+                    ChatUtils.sendMessage("Needed: "+"§6Precursor Eye");
+                }
+            }
         } else if (keyBinds[2].isPressed()) {
             AutoArrowAlign.cheat();
         } else if (keyBinds[3].isPressed()) {
             powderMacro = !powderMacro;
-            String str = powderMacro ? "§aPowder Macro Activated" : "§cPowder Macro Deactivated";
+            String str = powderMacro ? "§aPowder Chest Macro Activated" : "§cPowder Chest Macro Deactivated";
             ChatUtils.sendMessage(str);
         } else if (keyBinds[4].isPressed()) {
             AOTSMacro = !AOTSMacro;
@@ -364,13 +438,23 @@ public class Main {
             String str = nukeWood ? "§aForaging Nuker Activated" : "§cForaging Nuker Deactivated";
             ChatUtils.sendMessage(str);
         } else if(keyBinds[17].isPressed()) {
-            placeCane = !placeCane;
-            String str = placeCane ? "§aCane Placer Activated" : "§cCane Placer Deactivated";
-            ChatUtils.sendMessage(str);
-        } else if(keyBinds[18].isPressed()) {
             mithrilMacro = !mithrilMacro;
             String str = mithrilMacro ? "§aMithril Macro Activated" : "§cMithril Macro Deactivated";
             ChatUtils.sendMessage(str);
+        } else if(keyBinds[18].isPressed()) {
+            pauseCustom = !pauseCustom;
+            ChatUtils.sendMessage(pauseCustom ? "§cCustom Names Deactivated" : "§aCustom Names Activated");
+        } else if(keyBinds[19].isPressed()) {
+            if(stranded) {
+                strandedVillagers = !strandedVillagers;
+                StrandedVillagerMacro.drop = false;
+                StrandedVillagerMacro.dropped = false;
+                StrandedVillagerMacro.trade = false;
+                StrandedVillagerMacro.traded = false;
+                StrandedVillagerMacro.emptySack = false;
+                StrandedVillagerMacro.emptied = false;
+                ChatUtils.sendMessage(strandedVillagers ? "§aStranded Villager Trading Activated" : "§cStranded Villager Trading Deactivated");
+            }
         }
     }
 

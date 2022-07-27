@@ -1,6 +1,5 @@
 package rosegoldaddons.features;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.EntityWither;
